@@ -1,5 +1,4 @@
 public abstract class User {
-
     protected String userID;
     protected String name;
     protected Role role;
@@ -29,16 +28,9 @@ public abstract class User {
     }
 
     public void changePassword(String newPassword) {
+        // Placeholder for password change logic
         System.out.println("Password changed.");
     }
 
     public abstract void displayMenu();
-
-    public void login(String username, String password) {
-        System.out.println("User logged in.");
-    }
-
-    public void logout() {
-        System.out.println("User logged out.");
-    }
 }

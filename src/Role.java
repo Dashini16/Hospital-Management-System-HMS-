@@ -1,5 +1,3 @@
 public enum Role {
-    ADMIN,
-    GUEST,
-    USER
+    DOCTOR, PATIENT, ADMINISTRATOR, PHARMACIST
 }
