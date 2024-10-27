@@ -21,4 +21,8 @@ public class Medicine {
     public int getLowStockLevelAlert() {
         return lowStockLevelAlert;
     }
+
+    public void setInitialStock(int initialStock) {
+        this.initialStock = initialStock;
+    }
 }
