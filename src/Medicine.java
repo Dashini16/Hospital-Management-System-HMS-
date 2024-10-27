@@ -22,7 +22,15 @@ public class Medicine {
         return lowStockLevelAlert;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }   
     public void setInitialStock(int initialStock) {
         this.initialStock = initialStock;
     }
+
+    public void setLowStockLevelAlert(int lowStockLevelAlert) {
+        this.lowStockLevelAlert = lowStockLevelAlert;
+    }
+    
 }

@@ -159,6 +159,17 @@ public class InitialData {
             }
         }
     }
+    public void rewriteMedicines(String filename) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            // Write the header
+            bw.write("Name,InitialStock,LowStockLevelAlert\n");
+    
+            // Write each medicine's details
+            for (Medicine medicine : medicines) {
+                bw.write(medicine.getName() + "," + medicine.getInitialStock() + "," + medicine.getLowStockLevelAlert() + "\n");
+            }
+        }
+    }
     
     public List<Patient> getPatients() {
         return patients;

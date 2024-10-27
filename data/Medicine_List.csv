@@ -1,4 +1,5 @@
-﻿Medicine Name,Initial Stock,Low Stock Level Alert
+Name,InitialStock,LowStockLevelAlert
 Paracetamol,100,20
 Ibuprofen,50,10
 Amoxicillin,75,15
+KOOKIWA,100,30

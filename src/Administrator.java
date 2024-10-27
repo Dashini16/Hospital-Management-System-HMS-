@@ -27,9 +27,8 @@ public class Administrator extends User {
             System.out.println("Administrator Menu:");
             System.out.println("1. View and Manage Hospital Staff");
             System.out.println("2. View Appointments Details");
-            System.out.println("3. View and Manage Medication Inventory");
-            System.out.println("4. Approve Replenishment Requests");
-            System.out.println("5. Logout");
+            System.out.println("3. Manage Medication Inventory");
+            System.out.println("4. Logout");
 
             Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
@@ -48,10 +47,6 @@ public class Administrator extends User {
                     inventoryManager.manageInventory();
                     break;
                 case 4:
-                    InventoryManager inventoryManagerreplenish = new InventoryManager(data);
-                    inventoryManagerreplenish.manageInventory();
-                    break;
-                case 5:
                     return; // Logout
                 default:
                     System.out.println("Invalid choice. Please try again.");
