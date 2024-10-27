@@ -13,11 +13,8 @@ public class Main {
         // Import initial data (patients, staff, medicines)
         initialData.importData();
 
-        // Populate AuthorizationControl with sample credentials
-        authControl.addCredential("D001", "password1");
-        authControl.addCredential("D002", "password2");
-        authControl.addCredential("P001", "password3");
-        authControl.addCredential("A001", "password4");
+        // Load credentials from the imported staff data
+        authControl.loadCredentialsFromStaff(initialData);
 
         // Scanner for user input
         Scanner scanner = new Scanner(System.in);

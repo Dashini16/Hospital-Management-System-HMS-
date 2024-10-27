@@ -77,4 +77,20 @@ public class AuthorizationControl {
         }
         return null; // User not found
     }
+
+
+    public void loadCredentialsFromStaff(InitialData initialData) {
+        for (Doctor doctor : initialData.getDoctors()) {
+            addCredential(doctor.getUserID(), "defaultPassword"); // or implement a better way to manage passwords
+        }
+        for (Administrator admin : initialData.getAdministrators()) {
+            addCredential(admin.getUserID(), "defaultPassword");
+        }
+        for (Pharmacist pharmacist : initialData.getPharmacists()) {
+            addCredential(pharmacist.getUserID(), "defaultPassword");
+        }
+        for (Patient patient : initialData.getPatients()) {
+            addCredential(patient.getUserID(), "defaultPassword");
+        }
+    }
 }
