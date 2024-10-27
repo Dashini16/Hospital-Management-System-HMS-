@@ -63,6 +63,44 @@ public class InventoryManager {
         }
     }
 
+    private void addNewMedicine(Scanner scanner) {
+        System.out.print("Enter new medicine name: ");
+        String name = scanner.nextLine();
+    
+        System.out.print("Enter initial stock: ");
+        int initialStock = scanner.nextInt();
+    
+        System.out.print("Enter low stock level alert: ");
+        int lowStockLevelAlert = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+    
+        Medicine newMedicine = new Medicine(name, initialStock, lowStockLevelAlert);
+        try {
+            data.appendMedicine("../data/Medicine_List.csv", newMedicine); // Update CSV file
+            System.out.println("Medicine added successfully.");
+        } catch (IOException e) {
+            System.out.println("Error adding medicine: " + e.getMessage());
+        }
+    }
+    
+    private void removeMedicine(Scanner scanner) {
+        System.out.print("Enter medicine name to remove: ");
+        String name = scanner.nextLine();
+    
+        Medicine medicine = findMedicineByName(name);
+        if (medicine != null) {
+            data.getMedicines().remove(medicine); // Remove from memory
+            try {
+                data.rewriteMedicines("../data/Medicine_List.csv"); // Update CSV file
+                System.out.println("Medicine removed successfully.");
+            } catch (IOException e) {
+                System.out.println("Error removing medicine: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Medicine not found.");
+        }
+    }
+    
     private void displayInventory() {
         System.out.println("Current Medication Inventory:");
         for (Medicine medicine : data.getMedicines()) {
@@ -83,46 +121,6 @@ public class InventoryManager {
         replenishmentRequests.add(request);
         System.out.println("Replenishment request created for " + name + " with quantity " + requestedStock);
     }
-
-
-    private void addNewMedicine(Scanner scanner) {
-        System.out.print("Enter new medicine name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Enter initial stock: ");
-        int initialStock = scanner.nextInt();
-
-        System.out.print("Enter low stock level alert: ");
-        int lowStockLevelAlert = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        Medicine newMedicine = new Medicine(name, initialStock, lowStockLevelAlert);
-        try {
-            data.appendMedicine("../data/Medicine_List.csv", newMedicine); // Update CSV file
-            System.out.println("Medicine added successfully.");
-        } catch (IOException e) {
-            System.out.println("Error adding medicine: " + e.getMessage());
-        }
-    }
-
-    private void removeMedicine(Scanner scanner) {
-        System.out.print("Enter medicine name to remove: ");
-        String name = scanner.nextLine();
-
-        Medicine medicine = findMedicineByName(name);
-        if (medicine != null) {
-            data.getMedicines().remove(medicine); // Remove from memory
-            try {
-                data.rewriteMedicines("../data/Medicine_List.csv"); // Update CSV file
-                System.out.println("Medicine removed successfully.");
-            } catch (IOException e) {
-                System.out.println("Error removing medicine: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Medicine not found.");
-        }
-    }
-
 
     private void updateStockInitial(Scanner scanner) {
         System.out.print("Enter medicine name to update stock: ");

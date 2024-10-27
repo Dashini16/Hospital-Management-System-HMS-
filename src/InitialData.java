@@ -171,6 +171,7 @@ public class InitialData {
         }
     }
     
+    
     public List<Patient> getPatients() {
         return patients;
     }
