@@ -22,13 +22,16 @@ class ReplenishmentRequest {
         return status;
     }
 
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
+    }
+    
+    public void setRequestedStock(int requestedStock) {
+        this.requestedStock = requestedStock;
+    }   
+
     public void setStatus(RequestStatus status) {
         this.status = status;
     }
-}
 
-enum RequestStatus {
-    PENDING,
-    FULFILLED,
-    CANCELLED
 }

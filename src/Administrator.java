@@ -1,8 +1,20 @@
 import java.util.Scanner;
 
 public class Administrator extends User {
-    public Administrator(String userID, String name, String contactInfo) {
-        super(userID, name, Role.ADMINISTRATOR, contactInfo);
+
+    private int age;
+
+    public Administrator(String userID, String name, String gender,int age) {
+        super(userID, name, Role.ADMINISTRATOR, gender);
+        this.age = age;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {   
+        this.age = age;
     }
 
     @Override
@@ -38,7 +50,6 @@ public class Administrator extends User {
                 case 4:
                     InventoryManager inventoryManagerreplenish = new InventoryManager(data);
                     inventoryManagerreplenish.manageInventory();
-                    // approveReplenishmentRequests();
                     break;
                 case 5:
                     return; // Logout
@@ -46,5 +57,10 @@ public class Administrator extends User {
                     System.out.println("Invalid choice. Please try again.");
             }
         }
+    }
+
+    @Override
+    public void toStrings() {
+        System.out.println("Staff ID: " + super.getUserID() + ", Name: " + super.getName() + ", Role: " + super.getRole() + ", Gender: " + super.getGender() + ", Age: " + age);
     }
 }

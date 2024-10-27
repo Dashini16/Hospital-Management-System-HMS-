@@ -1,10 +1,25 @@
 public class Pharmacist extends User {
-    public Pharmacist(String userID, String name, String contactInfo) {
-        super(userID, name, Role.PHARMACIST, contactInfo);
+    private int age;
+    public Pharmacist(String userID, String name, String gender,int age) {
+        super(userID, name, Role.PHARMACIST, gender);
+        this.age = age;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {   
+        this.age = age;
     }
 
     @Override
     public void displayMenu() {
         System.out.println("Displaying pharmacist menu.");
+    }
+
+    @Override
+    public void toStrings() {
+        System.out.println("Staff ID: " + super.getUserID() + ", Name: " + super.getName() + ", Role: " + super.getRole() + ", Gender: " + super.getGender() + ", Age: " + age);
     }
 }

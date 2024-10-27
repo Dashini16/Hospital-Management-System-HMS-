@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +39,7 @@ public class InitialData {
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
                 if (data.length == 6) {
-                    Patient patient = new Patient(data[0], data[1], data[5]); // Using contact info
+                    Patient patient = new Patient(data[0], data[1],LocalDate.parse(data[2]), data[3], data[4], data[5]); 
                     patients.add(patient);
                 }
             }
@@ -53,24 +56,25 @@ public class InitialData {
                     String userID = data[0];
                     String name = data[1];
                     Role role = Role.valueOf(data[2].toUpperCase()); // Convert role string to Role enum
-                    String contactInfo = ""; // Assume no contact info provided
+                    String gender = data[3];
+                    int age = Integer.parseInt(data[4]);
 
                     User user;
                     switch (role) {
-                        case PATIENT:
-                            user = new Patient(userID, name, contactInfo);
-                            patients.add((Patient) user);
-                            break;
+                        //case PATIENT:
+                            //user = new Patient(userID, name, gender, age);
+                            //patients.add((Patient) user);
+                            //break;
                         case DOCTOR:
-                            user = new Doctor(userID, name, contactInfo);
+                            user = new Doctor(userID, name, gender, age);
                             doctors.add((Doctor) user);
                             break;
                         case ADMINISTRATOR:
-                            user = new Administrator(userID, name, contactInfo);
+                            user = new Administrator(userID, name, gender, age);
                             administrators.add((Administrator) user);
                             break;
                         case PHARMACIST: // Add this case for pharmacists
-                            user = new Pharmacist(userID, name, contactInfo);
+                            user = new Pharmacist(userID, name, gender, age);
                             pharmacists.add((Pharmacist) user);
                             break;
                         default:
@@ -80,7 +84,6 @@ public class InitialData {
             }
         }
     }
-
 
     private void importMedicines(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -98,6 +101,65 @@ public class InitialData {
             }
         }
     }
+
+    // Method to append a new patient to the file
+    public void appendPatient(String filename, Patient patient) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            bw.write(patient.getUserID() + "," + patient.getName() + "," + patient.getDateOfBirth() + "," +
+                     patient.getGender() + "," + patient.getBloodType() + "," + patient.getContactInfo() + "\n");
+            patients.add(patient); // Update the list in memory
+        }
+    }
+
+    // Method to append a new staff member to the file
+    public void appendStaff(String filename, User staff) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            // Write basic information
+            bw.write(staff.getUserID() + "," + staff.getName() + "," + staff.getRole() + "," + staff.getGender());
+    
+            // Only add age if it's available (for Doctor, Administrator, and Pharmacist)
+            if (staff instanceof Doctor) {
+                bw.write("," + ((Doctor) staff).getAge());
+                doctors.add((Doctor) staff);
+            } else if (staff instanceof Administrator) {
+                bw.write("," + ((Administrator) staff).getAge());
+                administrators.add((Administrator) staff);
+            } else if (staff instanceof Pharmacist) {
+                bw.write("," + ((Pharmacist) staff).getAge());
+                pharmacists.add((Pharmacist) staff);
+            }
+            
+            bw.write("\n"); // End of line for this entry
+        }
+    }
+    
+
+    // Method to append a new medicine to the file
+    public void appendMedicine(String filename, Medicine medicine) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            bw.write(medicine.getName() + "," + medicine.getInitialStock() + "," + medicine.getLowStockLevelAlert() + "\n");
+            medicines.add(medicine); // Update the list in memory
+        }
+    }
+
+    public void rewriteStaff(String filename) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            // Write the header
+            bw.write("UserID,Name,Role,Gender,Age\n");
+            
+            // Write each staff member's details
+            for (Doctor doctor : doctors) {
+                bw.write(doctor.getUserID() + "," + doctor.getName() + "," + doctor.getRole() + "," + doctor.getGender() + "," + doctor.getAge() + "\n");
+            }
+            for (Administrator admin : administrators) {
+                bw.write(admin.getUserID() + "," + admin.getName() + "," + admin.getRole() + "," + admin.getGender() + "," + admin.getAge() + "\n");
+            }
+            for (Pharmacist pharmacist : pharmacists) {
+                bw.write(pharmacist.getUserID() + "," + pharmacist.getName() + "," + pharmacist.getRole() + "," + pharmacist.getGender() + "," + pharmacist.getAge() + "\n");
+            }
+        }
+    }
+    
     public List<Patient> getPatients() {
         return patients;
     }
