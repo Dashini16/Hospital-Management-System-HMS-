@@ -111,16 +111,23 @@ public class InventoryManager {
     private void createReplenishmentRequest(Scanner scanner) {
         System.out.print("Enter medicine name: ");
         String name = scanner.nextLine();
-
+    
         System.out.print("Enter requested stock quantity: ");
         int requestedStock = scanner.nextInt();
         scanner.nextLine(); // Consume newline
-
-        // Create and add a new replenishment request
+    
         ReplenishmentRequest request = new ReplenishmentRequest(name, requestedStock);
-        replenishmentRequests.add(request);
+        replenishmentRequests.add(request); // Add to in-memory list
         System.out.println("Replenishment request created for " + name + " with quantity " + requestedStock);
+    
+        // Save request to CSV file
+        try {
+            data.appendReplenishmentRequest("../data/Replenishment_Requests.csv", request);
+        } catch (IOException e) {
+            System.out.println("Error saving replenishment request: " + e.getMessage());
+        }
     }
+    
 
     private void updateStockInitial(Scanner scanner) {
         System.out.print("Enter medicine name to update stock: ");

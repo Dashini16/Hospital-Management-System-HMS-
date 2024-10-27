@@ -48,36 +48,41 @@ public class ReplenishmentRequestManager {
         }
     }
 
-private void approveReplenishment(Scanner scanner) {
-    System.out.print("Enter the name of the medicine to approve replenishment for: ");
-    String name = scanner.nextLine();
-
-    for (ReplenishmentRequest request : replenishmentRequests) {
-        if (request.getMedicineName().equalsIgnoreCase(name)) {
-            // Approve the request and update the stock
-            Medicine medicine = findMedicineByName(name);
-            if (medicine != null) {
-                // Update the initial stock
-                medicine.setInitialStock(medicine.getInitialStock() + request.getRequestedStock());
-                request.setStatus(RequestStatus.FULFILLED);
-                System.out.println("Replenishment approved for " + name);
-
-                // Update the Medicine_List.csv with the new stock value
-                try {
-                    data.rewriteMedicines("../data/Medicine_List.csv");
-                    System.out.println("Medicine stock updated in the file.");
-                } catch (IOException e) {
-                    System.out.println("Error updating medicine stock in the file: " + e.getMessage());
+    private void approveReplenishment(Scanner scanner) {
+        System.out.print("Enter the name of the medicine to approve replenishment for: ");
+        String name = scanner.nextLine();
+    
+        for (ReplenishmentRequest request : replenishmentRequests) {
+            if (request.getMedicineName().equalsIgnoreCase(name)) {
+                // Approve the request and update the stock
+                Medicine medicine = findMedicineByName(name);
+                if (medicine != null) {
+                    // Update the initial stock
+                    medicine.setInitialStock(medicine.getInitialStock() + request.getRequestedStock());
+                    request.setStatus(RequestStatus.FULFILLED);
+                    System.out.println("Replenishment approved for " + name);
+    
+                    // Update the Medicine_List.csv with the new stock value
+                    try {
+                        data.rewriteMedicines("../data/Medicine_List.csv");
+                        System.out.println("Medicine stock updated in the file.");
+    
+                        // Update the Replenishment_Requests.csv with the updated status
+                        data.rewriteReplenishmentRequests("../data/Replenishment_Requests.csv", replenishmentRequests);
+                        System.out.println("Replenishment requests updated in the file.");
+                    } catch (IOException e) {
+                        System.out.println("Error updating files: " + e.getMessage());
+                    }
+    
+                } else {
+                    System.out.println("Medicine not found in inventory.");
                 }
-
-            } else {
-                System.out.println("Medicine not found in inventory.");
+                return; // Exit after processing the request
             }
-            return; // Exit after processing the request
         }
+        System.out.println("No replenishment request found for " + name);
     }
-    System.out.println("No replenishment request found for " + name);
-}
+    
 
 
     private Medicine findMedicineByName(String name) {

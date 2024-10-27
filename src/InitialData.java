@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 public class InitialData {
     private List<Patient> patients;
@@ -170,7 +171,32 @@ public class InitialData {
             }
         }
     }
+
+    public void appendReplenishmentRequest(String filename, ReplenishmentRequest request) throws IOException {
+        boolean fileExists = new File(filename).exists();
     
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            // If the file doesn't exist, write a header first
+            if (!fileExists) {
+                bw.write("MedicineName,RequestedQuantity,Status\n");
+            }
+            // Append the request data
+            bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "\n");
+        }
+    }
+    
+    public void rewriteReplenishmentRequests(String filename, List<ReplenishmentRequest> requests) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            // Write the header
+            bw.write("MedicineName,RequestedQuantity,Status\n");
+    
+            // Write each replenishment request's details
+            for (ReplenishmentRequest request : requests) {
+                bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "\n");
+            }
+        }
+    }
+
     
     public List<Patient> getPatients() {
         return patients;
