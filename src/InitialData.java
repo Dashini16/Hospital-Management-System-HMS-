@@ -14,6 +14,7 @@ public class InitialData {
     private List<Administrator> administrators;
     private List<Pharmacist> pharmacists; // Add list for pharmacists
     private List<Medicine> medicines; // Add this line
+    private List<ReplenishmentRequest> replenishmentRequests; // Add this line
 
     public InitialData() {
         patients = new ArrayList<>();
@@ -21,6 +22,7 @@ public class InitialData {
         administrators = new ArrayList<>();
         pharmacists = new ArrayList<>(); // Initialize pharmacists list
         medicines = new ArrayList<>(); // Initialize the medicines list
+        replenishmentRequests = new ArrayList<>(); // Initialize the request list
     }
 
     public void importData() {
@@ -28,11 +30,28 @@ public class InitialData {
             importPatients("../data/Patient_List.csv");
             importStaff("../data/Staff_List.csv");
             importMedicines("../data/Medicine_List.csv"); // Import medicine list
+            importReplenishmentRequests("../data/Replenishment_Requests.csv");
         } catch (IOException e) {
             System.out.println("Error reading data: " + e.getMessage());
         }
     }
 
+
+    public void reloadData() {
+        // Clear existing data from memory
+        patients.clear();
+        doctors.clear();
+        administrators.clear();
+        pharmacists.clear();
+        medicines.clear();
+        replenishmentRequests.clear();
+        
+        // Reload data from files
+        importData(); 
+        System.out.println("Data reloaded successfully.");
+    }
+    
+    
     private void importPatients(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -197,6 +216,27 @@ public class InitialData {
         }
     }
 
+    private void importReplenishmentRequests(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            br.readLine(); // Skip header line
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 3) {
+                    String medicineName = data[0];
+                    int requestedQuantity = Integer.parseInt(data[1].trim());
+                    RequestStatus status = RequestStatus.valueOf(data[2].trim().toUpperCase());
+                    ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedQuantity);
+                    request.setStatus(status);
+                    replenishmentRequests.add(request);
+                }
+            }
+        }
+    }
+
+    public List<ReplenishmentRequest> getReplenishmentRequests() {
+        return replenishmentRequests;
+    }
     
     public List<Patient> getPatients() {
         return patients;

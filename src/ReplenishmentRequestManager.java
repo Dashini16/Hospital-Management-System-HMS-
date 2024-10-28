@@ -8,7 +8,7 @@ public class ReplenishmentRequestManager {
 
     public ReplenishmentRequestManager(InitialData data, List<ReplenishmentRequest> replenishmentRequests) {
         this.data = data;
-        this.replenishmentRequests = replenishmentRequests;
+        this.replenishmentRequests = data.getReplenishmentRequests();
     }
 
     public void manageRequests() {
@@ -23,11 +23,13 @@ public class ReplenishmentRequestManager {
 
             switch (choice) {
                 case 1:
+                    data.reloadData();
                     viewReplenishmentRequests();
                     break;
 
                 case 2:
                     approveReplenishment(scanner);
+                    data.reloadData();
                     break;
 
                 case 3:
