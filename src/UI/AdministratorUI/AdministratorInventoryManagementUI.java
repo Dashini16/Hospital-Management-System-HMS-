@@ -24,6 +24,60 @@ public class AdministratorInventoryManagementUI {
             System.out.println("\nChoose an action:");
             System.out.println("1. Add New Medication");
             System.out.println("2. Remove Medication");
+            System.out.println("3. Update Initial Stock");
+            System.out.println("4. Update Low Stock Level Alert");
+            System.out.println("5. Manage Replenishment Requests");
+            System.out.println("6. View Medication Inventory");
+            System.out.println("7. Go back to the menu");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) 
+            {
+                case 1:
+                    inventoryManager.addNewMedicine(scanner);
+                    break;
+
+                case 2:
+                    inventoryManager.removeMedicine(scanner);
+                    break;
+
+                case 3:
+                    inventoryManager.updateStockInitial(scanner);
+                    break;
+
+                case 4:
+                    inventoryManager.updateLowStockLevelAlert(scanner);
+                    break;
+
+                case 5:
+                    AdministratorReplenishmentRequestManagementUI requestManager = new AdministratorReplenishmentRequestManagementUI(data, replenishmentRequests);
+                    requestManager.manageRequests();
+                    break;
+
+                case 6:
+                    InventoryDisplayControl displayManager = new InventoryDisplayControl(data);
+                    displayManager.displayInventory();
+                    break;
+
+                case 7:
+                    return; // Go back to the menu
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+            
+        }
+    }
+/* 
+    public void manageInventory() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            //displayInventory();
+
+            System.out.println("\nChoose an action:");
+            System.out.println("1. Add New Medication");
+            System.out.println("2. Remove Medication");
             System.out.println("3. Request Medication");
             System.out.println("4. Update Initial Stock");
             System.out.println("5. Update Low Stock Level Alert");
@@ -33,7 +87,8 @@ public class AdministratorInventoryManagementUI {
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            switch (choice) {
+            switch (choice) 
+            {
                 case 1:
                     inventoryManager.addNewMedicine(scanner);
                     break;
@@ -60,8 +115,8 @@ public class AdministratorInventoryManagementUI {
                     break;
 
                 case 7:
-                    inventoryManager.displayInventory();
-                    break;
+                    AdministratorReplenishmentRequestManagementUI requestManager = new AdministratorReplenishmentRequestManagementUI(data, replenishmentRequests);
+                    requestManager.manageRequests();
 
                 case 8:
                     return; // Go back to the menu
@@ -69,8 +124,9 @@ public class AdministratorInventoryManagementUI {
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
+            
         }
     }
-
+*/
  
 }

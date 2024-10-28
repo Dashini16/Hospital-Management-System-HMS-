@@ -1,15 +1,15 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
 import java.util.Scanner;
 
 public class InventoryManagementControl {
     private InitialData data;
-    private List<ReplenishmentRequest> replenishmentRequests; // List to store replenishment requests
+    //private List<ReplenishmentRequest> replenishmentRequests; // List to store replenishment requests
 
     public InventoryManagementControl(InitialData data) {
         this.data = data;
-        this.replenishmentRequests = new ArrayList<>(); // Initialize the request list
+        //this.replenishmentRequests = new ArrayList<>(); // Initialize the request list
     }
 
 
@@ -50,7 +50,7 @@ public class InventoryManagementControl {
             System.out.println("Medicine not found.");
         }
     }
-    
+    /*
     protected void displayInventory() {
         System.out.println("Current Medication Inventory:");
         for (Medicine medicine : data.getMedicines()) {
@@ -77,7 +77,7 @@ public class InventoryManagementControl {
             System.out.println("Error saving replenishment request: " + e.getMessage());
         }
     }
-    
+    */
 
     protected void updateStockInitial(Scanner scanner) {
         System.out.print("Enter medicine name to update stock: ");
