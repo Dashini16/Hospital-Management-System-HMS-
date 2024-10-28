@@ -3,67 +3,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class InventoryManager {
+public class InventoryManagementControl {
     private InitialData data;
     private List<ReplenishmentRequest> replenishmentRequests; // List to store replenishment requests
 
-    public InventoryManager(InitialData data) {
+    public InventoryManagementControl(InitialData data) {
         this.data = data;
         this.replenishmentRequests = new ArrayList<>(); // Initialize the request list
     }
 
-    public void manageInventory() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            displayInventory();
 
-            System.out.println("\nChoose an action:");
-            System.out.println("1. Add New Medication");
-            System.out.println("2. Remove Medication");
-            System.out.println("3. Request Medication");
-            System.out.println("4. Update Initial Stock");
-            System.out.println("5. Update Low Stock Level Alert");
-            System.out.println("6. Manage Replenishment Requests");
-            System.out.println("7. Go back to the menu");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
-            switch (choice) {
-                case 1:
-                    addNewMedicine(scanner);
-                    break;
-
-                case 2:
-                    removeMedicine(scanner);
-                    break;
-
-                case 3:
-                    createReplenishmentRequest(scanner);
-                    break;
-
-                case 4:
-                    updateStockInitial(scanner);
-                    break;
-
-                case 5:
-                    updateLowStockLevelAlert(scanner);
-                    break;
-
-                case 6:
-                    ReplenishmentRequestManager requestManager = new ReplenishmentRequestManager(data, replenishmentRequests);
-                    requestManager.manageRequests();
-                    break;
-
-                case 7:
-                    return; // Go back to the menu
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-    }
-
-    private void addNewMedicine(Scanner scanner) {
+    protected void addNewMedicine(Scanner scanner) {
         System.out.print("Enter new medicine name: ");
         String name = scanner.nextLine();
     
@@ -83,7 +33,7 @@ public class InventoryManager {
         }
     }
     
-    private void removeMedicine(Scanner scanner) {
+    protected void removeMedicine(Scanner scanner) {
         System.out.print("Enter medicine name to remove: ");
         String name = scanner.nextLine();
     
@@ -101,14 +51,14 @@ public class InventoryManager {
         }
     }
     
-    private void displayInventory() {
+    protected void displayInventory() {
         System.out.println("Current Medication Inventory:");
         for (Medicine medicine : data.getMedicines()) {
             System.out.println("Medicine: " + medicine.getName() + ", Stock: " + medicine.getInitialStock()+ ", Low Stock Alert: " + medicine.getLowStockLevelAlert());
         }
     }
 
-    private void createReplenishmentRequest(Scanner scanner) {
+    protected void createReplenishmentRequest(Scanner scanner) {
         System.out.print("Enter medicine name: ");
         String name = scanner.nextLine();
     
@@ -129,7 +79,7 @@ public class InventoryManager {
     }
     
 
-    private void updateStockInitial(Scanner scanner) {
+    protected void updateStockInitial(Scanner scanner) {
         System.out.print("Enter medicine name to update stock: ");
         String name = scanner.nextLine();
 
@@ -151,7 +101,7 @@ public class InventoryManager {
         }
     }
 
-    private void updateLowStockLevelAlert(Scanner scanner) {
+    protected void updateLowStockLevelAlert(Scanner scanner) {
         System.out.print("Enter medicine name to update Low Stock Level Alert: ");
         String name = scanner.nextLine();
 

@@ -3,10 +3,12 @@ import java.util.Scanner;
 public class Administrator extends User {
 
     private int age;
+    private AdministratorUI ui; // Reference to the UI class
 
-    public Administrator(String userID, String name, String gender,int age) {
+    public Administrator(String userID, String name, String gender, int age) {
         super(userID, name, Role.ADMINISTRATOR, gender);
         this.age = age;
+        this.ui = new AdministratorUI(this); // Initialize UI with current Administrator instance
     }
 
     public int getAge() {
@@ -17,41 +19,8 @@ public class Administrator extends User {
         this.age = age;
     }
 
-    @Override
     public void displayMenu() {
-        // Print the administrator menu to the console
-        InitialData data = new InitialData();
-        data.importData(); // Load data
-
-        while (true) {
-            System.out.println("Administrator Menu:");
-            System.out.println("1. View and Manage Hospital Staff");
-            System.out.println("2. View Appointments Details");
-            System.out.println("3. Manage Medication Inventory");
-            System.out.println("4. Logout");
-
-            Scanner scanner = new Scanner(System.in);
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
-            switch (choice) {
-                case 1:
-                    HospitalStaffManager staffManager = new HospitalStaffManager(data);
-                    staffManager.manageStaff();
-                    break;
-                case 2:
-                    // viewAppointmentDetails();
-                    break;
-                case 3:
-                    InventoryManager inventoryManager = new InventoryManager(data);
-                    inventoryManager.manageInventory();
-                    break;
-                case 4:
-                    return; // Logout
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
+        ui.displayMenu(); // Delegate menu display to AdministratorUI
     }
 
     @Override

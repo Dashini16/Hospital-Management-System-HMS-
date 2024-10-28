@@ -1,5 +1,6 @@
 MedicineName,RequestedQuantity,Status
 PARACETAMOL,20,FULFILLED
 KOOKIWA,200,FULFILLED
-Amoxicillin,25,PENDING
+Amoxicillin,25,FULFILLED
 Ibuprofen,25,PENDING
+6,12,PENDING

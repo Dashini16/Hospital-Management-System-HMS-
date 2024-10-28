@@ -1,55 +1,13 @@
 import java.io.IOException;
 import java.util.Scanner;
 
-public class HospitalStaffManager {
+public class StaffManagementControl {
     private InitialData data;
 
-    public HospitalStaffManager(InitialData data) {
+    public StaffManagementControl(InitialData data) {
         this.data = data;
     }
-
-    public void manageStaff() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Current Hospital Staff:");
-            displayStaff(); // Call method to display staff
-
-            System.out.println("\nChoose an action:");
-            System.out.println("1. Add Doctor");
-            System.out.println("2. Add Pharmacist");
-            System.out.println("3. Add Administrator");
-            System.out.println("4. Update Staff");
-            System.out.println("5. Delete Staff");
-            System.out.println("6. Go back to the menu");
-
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
-            switch (choice) {
-                case 1:
-                    addDoctor(scanner);
-                    break;
-                case 2:
-                    addPharmacist(scanner);
-                    break;
-                case 3:
-                    addAdministrator(scanner);
-                    break;
-                case 4:
-                    updateStaff(scanner);
-                    break;
-                case 5:
-                    deleteStaff(scanner);
-                    break;
-                case 6:
-                    return; // Go back to the menu
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-    }
-
-    private void displayStaff() {
+    protected void displayStaff() {
         for (Doctor doctor : data.getDoctors()) {
             doctor.toStrings();
         }
@@ -61,7 +19,7 @@ public class HospitalStaffManager {
         }
     }
 
-    private void addDoctor(Scanner scanner) {
+    protected void addDoctor(Scanner scanner) {
         System.out.print("Enter doctor's ID: ");
         String doctorID = scanner.nextLine();
         System.out.print("Enter doctor's name: ");
@@ -80,7 +38,7 @@ public class HospitalStaffManager {
         System.out.println("Doctor added successfully: " + doctorName);
     }
 
-    private void addPharmacist(Scanner scanner) {
+    protected void addPharmacist(Scanner scanner) {
         System.out.print("Enter pharmacist's ID: ");
         String pharmacistID = scanner.nextLine();
         System.out.print("Enter pharmacist's name: ");
@@ -99,7 +57,7 @@ public class HospitalStaffManager {
         System.out.println("Pharmacist added successfully: " + pharmacistName);
     }
 
-    private void addAdministrator(Scanner scanner) {
+    protected void addAdministrator(Scanner scanner) {
         System.out.print("Enter administrator's ID: ");
         String adminID = scanner.nextLine();
         System.out.print("Enter administrator's name: ");
@@ -118,7 +76,7 @@ public class HospitalStaffManager {
         System.out.println("Administrator added successfully: " + adminName);
     }
 
-    private void updateStaff(Scanner scanner) {
+    protected void updateStaff(Scanner scanner) {
         System.out.print("Enter the ID of the staff to update: ");
         String staffID = scanner.nextLine();
 
@@ -161,7 +119,7 @@ public class HospitalStaffManager {
         System.out.println("Staff updated successfully.");
     }
 
-    private void deleteStaff(Scanner scanner) {
+    protected void deleteStaff(Scanner scanner) {
         System.out.print("Enter the ID of the staff to delete: ");
         String staffID = scanner.nextLine();
 
