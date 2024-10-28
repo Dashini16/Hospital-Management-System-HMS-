@@ -2,46 +2,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-public class ReplenishmentRequestManager {
+public class ReplenishmentRequestManagementControl {
     private List<ReplenishmentRequest> replenishmentRequests;
     private InitialData data;
 
-    public ReplenishmentRequestManager(InitialData data, List<ReplenishmentRequest> replenishmentRequests) {
+    public ReplenishmentRequestManagementControl(InitialData data, List<ReplenishmentRequest> replenishmentRequests) {
         this.data = data;
         this.replenishmentRequests = data.getReplenishmentRequests();
     }
 
-    public void manageRequests() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("\nReplenishment Request Management:");
-            System.out.println("1. View Replenishment Requests");
-            System.out.println("2. Approve Replenishment Request");
-            System.out.println("3. Go back to the Inventory Menu");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
 
-            switch (choice) {
-                case 1:
-                    data.reloadData();
-                    viewReplenishmentRequests();
-                    break;
-
-                case 2:
-                    approveReplenishment(scanner);
-                    data.reloadData();
-                    break;
-
-                case 3:
-                    return; // Go back to the inventory menu
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-    }
-
-    private void viewReplenishmentRequests() {
+    protected void viewReplenishmentRequests() {
         System.out.println("\nCurrent Replenishment Requests:");
         for (ReplenishmentRequest request : replenishmentRequests) {
             System.out.println("Medicine: " + request.getMedicineName() + 
@@ -50,7 +21,7 @@ public class ReplenishmentRequestManager {
         }
     }
 
-    private void approveReplenishment(Scanner scanner) {
+    protected void approveReplenishment(Scanner scanner) {
         System.out.print("Enter the name of the medicine to approve replenishment for: ");
         String name = scanner.nextLine();
     

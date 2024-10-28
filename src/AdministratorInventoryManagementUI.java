@@ -55,7 +55,7 @@ public class AdministratorInventoryManagementUI {
                     break;
 
                 case 6:
-                    ReplenishmentRequestManager requestManager = new ReplenishmentRequestManager(data, replenishmentRequests);
+                    AdministratorReplenishmentRequestManagementUI requestManager = new AdministratorReplenishmentRequestManagementUI(data, replenishmentRequests);
                     requestManager.manageRequests();
                     break;
 
