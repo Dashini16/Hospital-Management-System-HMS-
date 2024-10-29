@@ -10,6 +10,9 @@ import java.io.File;
 //import Users.*;
 //import Medications.*;
 
+//import Users.*;
+//import Medications.*;
+
 public class InitialData {
     private List<Patient> patients;
     private List<Doctor> doctors;
@@ -29,10 +32,10 @@ public class InitialData {
 
     public void importData() {
         try {
-            importPatients("../data/Patient_List.csv");
-            importStaff("../data/Staff_List.csv");
-            importMedicines("../data/Medicine_List.csv"); // Import medicine list
-            importReplenishmentRequests("../data/Replenishment_Requests.csv");
+            importPatients("./data/Patient_List.csv");
+            importStaff("./data/Staff_List.csv");
+            importMedicines("./data/Medicine_List.csv"); // Import medicine list
+            importReplenishmentRequests("./data/Replenishment_Requests.csv");
         } catch (IOException e) {
             System.out.println("Error reading data: " + e.getMessage());
         }

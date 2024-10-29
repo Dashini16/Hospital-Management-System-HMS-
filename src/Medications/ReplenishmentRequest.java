@@ -1,4 +1,4 @@
-class ReplenishmentRequest {
+public class ReplenishmentRequest {
     private String medicineName;
     private int requestedStock;
     private RequestStatus status;
