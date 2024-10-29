@@ -2,9 +2,11 @@ import java.util.Scanner;
 
 public class PharmacistUI {
     private Pharmacist pharmacist;
+    private InitialData data;
 
     public PharmacistUI(Pharmacist pharmacist) {
         this.pharmacist = pharmacist;
+        this.data = new InitialData();
     }
 
     public void displayMenu() {
@@ -33,10 +35,14 @@ public class PharmacistUI {
                 case 3:
                     // Add code to view medication inventory
                     System.out.println("Viewing medication inventory...");
+                    InventoryDisplayControl inventoryDisplayControl = new InventoryDisplayControl(data);
+                    inventoryDisplayControl.displayInventory();
                     break;
                 case 4:
                     // Add code to submit replenishment request
-                    System.out.println("Submitting replenishment request...");
+                    //System.out.println("Submitting replenishment request...");
+                    RequestCreateControl requestCreateControl = new RequestCreateControl(data);
+                    requestCreateControl.createReplenishmentRequest(scanner);
                     break;
                 case 5:
                     return; // Logout
