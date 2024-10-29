@@ -64,6 +64,7 @@ public class InitialData {
                 .appendOptional(DateTimeFormatter.ofPattern("d/M/yyyy"))
                 .appendOptional(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                 .appendOptional(DateTimeFormatter.ofPattern("d/MM/yyyy"))
+                .appendOptional(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 .toFormatter();
     }
     private void importPatients(String filename) throws IOException {

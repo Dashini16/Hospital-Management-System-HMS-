@@ -51,6 +51,7 @@ public class App {
                     if (authControl.authorize(userID, user.getRole().name())) {
                         // Display the appropriate menu for the user based on their role
                         user.displayMenu();
+                        //System.out.println("Test");
                         loggedIn = true; // Exit loop after successful login and menu display
                     } else {
                         System.out.println("Authorization failed. Access denied.");

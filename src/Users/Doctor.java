@@ -1,26 +1,29 @@
 public class Doctor extends User {
     private int age;
+    private DoctorUI ui; // Reference to the UI class
 
-    public Doctor(String userID, String name, String gender,int age,String password) {
-        super(userID, name, Role.DOCTOR, gender,password);
+    public Doctor(String userID, String name, String gender, int age, String password) {
+        super(userID, name, Role.DOCTOR, gender, password);
         this.age = age;
+        this.ui = new DoctorUI(this); // Initialize UI with current Doctor instance
     }
+
     public int getAge() {
         return age;
     }
 
-    public void setAge(int age) {   
+    public void setAge(int age) {
         this.age = age;
     }
+
+    // Use the DoctorUI for displaying the menu
     @Override
     public void displayMenu() {
-        System.out.println("Displaying doctor menu.");
+        ui.displayMenu(); // Delegate menu display to DoctorUI
     }
 
     @Override
     public void toStrings() {
         System.out.println("Staff ID: " + super.getUserID() + ", Name: " + super.getName() + ", Role: " + super.getRole() + ", Gender: " + super.getGender() + ", Age: " + age);
     }
-
-
 }
