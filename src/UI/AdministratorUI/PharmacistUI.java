@@ -2,14 +2,16 @@ import java.util.Scanner;
 
 public class PharmacistUI {
     private Pharmacist pharmacist;
-    private InitialData data;
+    //private InitialData data;
 
     public PharmacistUI(Pharmacist pharmacist) {
         this.pharmacist = pharmacist;
-        this.data = new InitialData();
+        //this.data = data;
     }
 
     public void displayMenu() {
+        InitialData data = new InitialData();
+        data.importData(); // Load data
         // Print the pharmacist menu to the console
         while (true) {
             System.out.println("Pharmacist Menu:");
@@ -35,8 +37,8 @@ public class PharmacistUI {
                 case 3:
                     // Add code to view medication inventory
                     System.out.println("Viewing medication inventory...");
-                    InventoryDisplayControl inventoryDisplayControl = new InventoryDisplayControl(data);
-                    inventoryDisplayControl.displayInventory();
+                    InventoryDisplayControl displayManager = new InventoryDisplayControl(data);
+                    displayManager.displayInventory();
                     break;
                 case 4:
                     // Add code to submit replenishment request
