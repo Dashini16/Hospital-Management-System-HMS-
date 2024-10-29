@@ -41,7 +41,7 @@ public class Patient extends User {
     }
 
     public void toStrings() {
-        System.out.println("Role: " + super.getRole() + ", Patient ID: " + super.getUserID() + ", Name: " + super.getName() + ", Date of Birth: " + dateOfBirth + "Gender: " + super.getGender() + ", Blood Type: " + bloodType + ", Contact Info: " + contactInfo);
+        System.out.println("Role: " + super.getRole() + ", Patient ID: " + super.getUserID() + ", Name: " + super.getName() + ", Date of Birth: " + dateOfBirth + ", Gender: " + super.getGender() + ", Blood Type: " + bloodType + ", Contact Info: " + contactInfo);
     }
 
 

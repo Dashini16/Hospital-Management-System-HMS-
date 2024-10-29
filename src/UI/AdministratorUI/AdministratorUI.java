@@ -37,6 +37,8 @@ public class AdministratorUI {
                     inventoryManager.manageInventory();
                     break;
                 case 4:
+                    AdministratorPatientManagementUI patientManager = new AdministratorPatientManagementUI(data);
+                    patientManager.managePatients();
                     break;
                 case 5:
                     return; // Logout
