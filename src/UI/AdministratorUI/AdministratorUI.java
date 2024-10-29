@@ -17,7 +17,8 @@ public class AdministratorUI {
             System.out.println("1. View and Manage Hospital Staff");
             System.out.println("2. View Appointments Details");
             System.out.println("3. Manage Medication Inventory");
-            System.out.println("4. Logout");
+            System.out.println("4. Patients Management");
+            System.out.println("5. Logout");
 
             Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
@@ -36,6 +37,8 @@ public class AdministratorUI {
                     inventoryManager.manageInventory();
                     break;
                 case 4:
+                    break;
+                case 5:
                     return; // Logout
                 default:
                     System.out.println("Invalid choice. Please try again.");

@@ -1,29 +1,22 @@
 import java.util.HashMap;
 import java.util.Map;
 //import Users.*;
+
 public class AuthorizationControl {
-    private Map<String, String> credentials; // Stores userID and password
     private Map<String, User> activeSessions; // Stores active user sessions
+    private Map<String, User> users; // Stores all loaded users for authentication
 
     public AuthorizationControl() {
-        credentials = new HashMap<>();
         activeSessions = new HashMap<>();
-    }
-
-    // Add a user credential
-    public void addCredential(String userID, String password) {
-        credentials.put(userID, password);
+        users = new HashMap<>(); // Initialize users map
     }
 
     // Log in a user
     public User login(String userID, String password) {
-        if (credentials.containsKey(userID) && credentials.get(userID).equals(password)) {
-            User user = findUserById(userID);
-            if (user != null) {
-                return user;
-            } else {
-                System.out.println("User not found: " + userID);
-            }
+        User user = users.get(userID); // Check the users map for the user
+        if (user != null && user.getPassword().equals(password)) {
+            createSession(user);
+            return user;
         }
         System.out.println("Login failed for " + userID);
         return null; // Return null if login fails
@@ -48,49 +41,20 @@ public class AuthorizationControl {
         return false;
     }
 
-    // Helper method to find a user by ID (from all loaded data)
-    private User findUserById(String userID) {
-        // Assuming there is an InitialData instance available
-        // In practice, you might pass this as a parameter to the constructor or another method
-        InitialData data = new InitialData();
-        data.importData(); // Load data (in real usage, avoid re-importing)
-        
-        for (Patient patient : data.getPatients()) {
-            if (patient.getUserID().equals(userID)) {
-                return patient;
-            }
-        }
-        for (Doctor doctor : data.getDoctors()) {
-            if (doctor.getUserID().equals(userID)) {
-                return doctor;
-            }
-        }
-        for (Administrator admin : data.getAdministrators()) {
-            if (admin.getUserID().equals(userID)) {
-                return admin;
-            }
-        }
-        for (Pharmacist pharmacist : data.getPharmacists()) {
-            if (pharmacist.getUserID().equals(userID)) {
-                return pharmacist;
-            }
-        }
-        return null; // User not found
-    }
-
-
+    // Load credentials from the staff data
     public void loadCredentialsFromStaff(InitialData initialData) {
+        for (Patient patient : initialData.getPatients()) {
+            users.put(patient.getUserID(), patient);
+        }
         for (Doctor doctor : initialData.getDoctors()) {
-            addCredential(doctor.getUserID(), "defaultPassword"); // or implement a better way to manage passwords
+            users.put(doctor.getUserID(), doctor);
         }
         for (Administrator admin : initialData.getAdministrators()) {
-            addCredential(admin.getUserID(), "defaultPassword");
+            users.put(admin.getUserID(), admin);
         }
         for (Pharmacist pharmacist : initialData.getPharmacists()) {
-            addCredential(pharmacist.getUserID(), "defaultPassword");
+            users.put(pharmacist.getUserID(), pharmacist);
         }
-        for (Patient patient : initialData.getPatients()) {
-            addCredential(patient.getUserID(), "defaultPassword");
-        }
+        System.out.println("Staff credentials loaded successfully.");
     }
 }

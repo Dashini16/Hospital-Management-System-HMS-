@@ -1,8 +1,8 @@
 public class Doctor extends User {
     private int age;
 
-    public Doctor(String userID, String name, String gender,int age) {
-        super(userID, name, Role.DOCTOR, gender);
+    public Doctor(String userID, String name, String gender,int age,String password) {
+        super(userID, name, Role.DOCTOR, gender,password);
         this.age = age;
     }
     public int getAge() {

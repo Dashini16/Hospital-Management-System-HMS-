@@ -26,7 +26,7 @@ public class InventoryManagementControl {
     
         Medicine newMedicine = new Medicine(name, initialStock, lowStockLevelAlert);
         try {
-            data.appendMedicine("../data/Medicine_List.csv", newMedicine); // Update CSV file
+            data.appendMedicine("./data/Medicine_List.csv", newMedicine); // Update CSV file
             System.out.println("Medicine added successfully.");
         } catch (IOException e) {
             System.out.println("Error adding medicine: " + e.getMessage());
@@ -41,7 +41,7 @@ public class InventoryManagementControl {
         if (medicine != null) {
             data.getMedicines().remove(medicine); // Remove from memory
             try {
-                data.rewriteMedicines("../data/Medicine_List.csv"); // Update CSV file
+                data.rewriteMedicines("./data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Medicine removed successfully.");
             } catch (IOException e) {
                 System.out.println("Error removing medicine: " + e.getMessage());
@@ -91,7 +91,7 @@ public class InventoryManagementControl {
 
             medicine.setInitialStock(newStock);
             try {
-                data.rewriteMedicines("../data/Medicine_List.csv"); // Update CSV file
+                data.rewriteMedicines("./data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Initial stock updated for " + name);
             } catch (IOException e) {
                 System.out.println("Error updating initial stock: " + e.getMessage());
@@ -113,7 +113,7 @@ public class InventoryManagementControl {
 
             medicine.setLowStockLevelAlert(lowStockLevelAlert);
             try {
-                data.rewriteMedicines("../data/Medicine_List.csv"); // Update CSV file
+                data.rewriteMedicines("./data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Low stock alert updated for " + name);
             } catch (IOException e) {
                 System.out.println("Error updating low stock level alert: " + e.getMessage());

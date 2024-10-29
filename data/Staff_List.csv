@@ -1,7 +1,8 @@
-UserID,Name,Role,Gender,Age
-D001,John Smith,DOCTOR,Male,45
-D002,Emily Clarke,DOCTOR,Female,38
-A001,Sarah Lee,ADMINISTRATOR,Female,40
-A002,Lisa,ADMINISTRATOR,Female,29
-P001,Mark Lee,PHARMACIST,Male,29
-P002,Jennie,PHARMACIST,Female,28
+UserID,Name,Role,Gender,Age,Password
+D001,John Smith,DOCTOR,Male,45,defaultPasswords
+D002,Emily Clarke,DOCTOR,Female,38,defaultPasswords
+A001,Sarah Lee,ADMINISTRATOR,Female,40,defaultPasswords
+A002,Lisa,ADMINISTRATOR,Female,29,defaultPasswords
+P001,Mark Lee,PHARMACIST,Male,29,defaultPasswords
+P002,Jennie,PHARMACIST,Female,28,defaultPasswords
+D003,Tim,DOCTOR,Male,34,iloveBooks

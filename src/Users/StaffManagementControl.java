@@ -7,6 +7,7 @@ public class StaffManagementControl {
     public StaffManagementControl(InitialData data) {
         this.data = data;
     }
+
     protected void displayStaff() {
         for (Doctor doctor : data.getDoctors()) {
             doctor.toStrings();
@@ -29,9 +30,15 @@ public class StaffManagementControl {
         System.out.print("Enter doctor's age: ");
         int doctorAge = scanner.nextInt();
 
-        Doctor newDoctor = new Doctor(doctorID, doctorName, doctorGender, doctorAge);
+        scanner.nextLine();
+        System.out.print("Enter default password:");
+        String doctorPassword = scanner.nextLine();
+
+        scanner.nextLine();
+
+        Doctor newDoctor = new Doctor(doctorID, doctorName, doctorGender, doctorAge, doctorPassword);
         try {
-            data.appendStaff("../data/Staff_List.csv", newDoctor); // Append to CSV
+            data.appendStaff("./data/Staff_List.csv", newDoctor); // Append to CSV
         } catch (IOException e) {
             System.out.println("Error saving doctor: " + e.getMessage());
         }
@@ -48,9 +55,14 @@ public class StaffManagementControl {
         System.out.print("Enter pharmacist's age: ");
         int pharmacistAge = scanner.nextInt();
 
-        Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge);
+        scanner.nextLine();
+        System.out.print("Enter default password:");
+        String pharmacistPassword = scanner.nextLine();
+        scanner.nextLine();
+
+        Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge, pharmacistPassword);
         try {
-            data.appendStaff("../data/Staff_List.csv", newPharmacist); // Append to CSV
+            data.appendStaff("./data/Staff_List.csv", newPharmacist); // Append to CSV
         } catch (IOException e) {
             System.out.println("Error saving pharmacist: " + e.getMessage());
         }
@@ -66,10 +78,14 @@ public class StaffManagementControl {
         String adminGender = scanner.nextLine();
         System.out.print("Enter administrator's age: ");
         int adminAge = scanner.nextInt();
+        System.out.print("Enter default password:");
+        String adminPassword = scanner.nextLine();
 
-        Administrator newAdmin = new Administrator(adminID, adminName, adminGender, adminAge);
+        scanner.nextLine();
+
+        Administrator newAdmin = new Administrator(adminID, adminName, adminGender, adminAge, adminPassword);
         try {
-            data.appendStaff("../data/Staff_List.csv", newAdmin); // Append to CSV
+            data.appendStaff("./data/Staff_List.csv", newAdmin); // Append to CSV
         } catch (IOException e) {
             System.out.println("Error saving administrator: " + e.getMessage());
         }
@@ -112,7 +128,7 @@ public class StaffManagementControl {
         }
 
         try {
-            data.rewriteStaff("../data/Staff_List.csv"); // Rewrite staff data to CSV
+            data.rewriteStaff("./data/Staff_List.csv"); // Rewrite staff data to CSV
         } catch (IOException e) {
             System.out.println("Error updating staff: " + e.getMessage());
         }
@@ -138,7 +154,7 @@ public class StaffManagementControl {
         }
 
         try {
-            data.rewriteStaff("../data/Staff_List.csv"); // Rewrite staff data to CSV
+            data.rewriteStaff("./data/Staff_List.csv"); // Rewrite staff data to CSV
         } catch (IOException e) {
             System.out.println("Error deleting staff: " + e.getMessage());
         }

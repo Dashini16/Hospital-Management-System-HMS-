@@ -5,8 +5,8 @@ public class Patient extends User {
     private String bloodType;
     private String contactInfo;
 
-    public Patient(String userID, String name, LocalDate dateOfBirth,String gender,String bloodType,String contactInfo) {
-        super(userID, name, Role.PATIENT, gender);
+    public Patient(String userID, String name, LocalDate dateOfBirth,String gender,String bloodType,String contactInfo,String password) {
+        super(userID, name, Role.PATIENT, gender,password);
         this.dateOfBirth = dateOfBirth;
         this.bloodType = bloodType;
         this.contactInfo = contactInfo;

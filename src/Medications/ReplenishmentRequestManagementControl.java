@@ -37,11 +37,11 @@ public class ReplenishmentRequestManagementControl {
     
                     // Update the Medicine_List.csv with the new stock value
                     try {
-                        data.rewriteMedicines("../data/Medicine_List.csv");
+                        data.rewriteMedicines("./data/Medicine_List.csv");
                         System.out.println("Medicine stock updated in the file.");
     
                         // Update the Replenishment_Requests.csv with the updated status
-                        data.rewriteReplenishmentRequests("../data/Replenishment_Requests.csv", replenishmentRequests);
+                        data.rewriteReplenishmentRequests("./data/Replenishment_Requests.csv", replenishmentRequests);
                         System.out.println("Replenishment requests updated in the file.");
                     } catch (IOException e) {
                         System.out.println("Error updating files: " + e.getMessage());

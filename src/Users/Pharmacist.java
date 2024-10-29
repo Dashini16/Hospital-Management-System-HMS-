@@ -1,7 +1,7 @@
 public class Pharmacist extends User {
     private int age;
-    public Pharmacist(String userID, String name, String gender,int age) {
-        super(userID, name, Role.PHARMACIST, gender);
+    public Pharmacist(String userID, String name, String gender,int age,String password) {
+        super(userID, name, Role.PHARMACIST, gender,password);
         this.age = age;
     }
 

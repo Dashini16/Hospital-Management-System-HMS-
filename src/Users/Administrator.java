@@ -5,8 +5,8 @@ public class Administrator extends User {
     private int age;
     private AdministratorUI ui; // Reference to the UI class
 
-    public Administrator(String userID, String name, String gender, int age) {
-        super(userID, name, Role.ADMINISTRATOR, gender);
+    public Administrator(String userID, String name, String gender, int age,String password) {
+        super(userID, name, Role.ADMINISTRATOR, gender,password);
         this.age = age;
         this.ui = new AdministratorUI(this); // Initialize UI with current Administrator instance
     }

@@ -63,8 +63,8 @@ public class InitialData {
             br.readLine(); // Skip header line
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 6) {
-                    Patient patient = new Patient(data[0], data[1],LocalDate.parse(data[2]), data[3], data[4], data[5]); 
+                if (data.length == 7) {
+                    Patient patient = new Patient(data[0], data[1],LocalDate.parse(data[2]), data[3], data[4], data[5],data[6]); 
                     patients.add(patient);
                 }
             }
@@ -77,12 +77,13 @@ public class InitialData {
             br.readLine(); // Skip header line
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 5) {
+                if (data.length == 6) {
                     String userID = data[0];
                     String name = data[1];
                     Role role = Role.valueOf(data[2].toUpperCase()); // Convert role string to Role enum
                     String gender = data[3];
                     int age = Integer.parseInt(data[4]);
+                    String password = data[5];
 
                     User user;
                     switch (role) {
@@ -91,15 +92,15 @@ public class InitialData {
                             //patients.add((Patient) user);
                             //break;
                         case DOCTOR:
-                            user = new Doctor(userID, name, gender, age);
+                            user = new Doctor(userID, name, gender, age, password);
                             doctors.add((Doctor) user);
                             break;
                         case ADMINISTRATOR:
-                            user = new Administrator(userID, name, gender, age);
+                            user = new Administrator(userID, name, gender, age, password);
                             administrators.add((Administrator) user);
                             break;
                         case PHARMACIST: // Add this case for pharmacists
-                            user = new Pharmacist(userID, name, gender, age);
+                            user = new Pharmacist(userID, name, gender, age,password);
                             pharmacists.add((Pharmacist) user);
                             break;
                         default:
@@ -131,7 +132,7 @@ public class InitialData {
     public void appendPatient(String filename, Patient patient) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
             bw.write(patient.getUserID() + "," + patient.getName() + "," + patient.getDateOfBirth() + "," +
-                     patient.getGender() + "," + patient.getBloodType() + "," + patient.getContactInfo() + "\n");
+                     patient.getGender() + "," + patient.getBloodType() + "," + patient.getContactInfo() +","+ patient.getPassword() + "\n");
             patients.add(patient); // Update the list in memory
         }
     }
@@ -153,7 +154,7 @@ public class InitialData {
                 bw.write("," + ((Pharmacist) staff).getAge());
                 pharmacists.add((Pharmacist) staff);
             }
-            
+            bw.write("," + staff.getPassword());
             bw.write("\n"); // End of line for this entry
         }
     }
@@ -170,17 +171,17 @@ public class InitialData {
     public void rewriteStaff(String filename) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             // Write the header
-            bw.write("UserID,Name,Role,Gender,Age\n");
+            bw.write("UserID,Name,Role,Gender,Age,Password\n");
             
             // Write each staff member's details
             for (Doctor doctor : doctors) {
-                bw.write(doctor.getUserID() + "," + doctor.getName() + "," + doctor.getRole() + "," + doctor.getGender() + "," + doctor.getAge() + "\n");
+                bw.write(doctor.getUserID() + "," + doctor.getName() + "," + doctor.getRole() + "," + doctor.getGender() + "," + doctor.getAge() + "," + doctor.getPassword() + "\n");
             }
             for (Administrator admin : administrators) {
-                bw.write(admin.getUserID() + "," + admin.getName() + "," + admin.getRole() + "," + admin.getGender() + "," + admin.getAge() + "\n");
+                bw.write(admin.getUserID() + "," + admin.getName() + "," + admin.getRole() + "," + admin.getGender() + "," + admin.getAge() + "," + admin.getPassword() + "\n");
             }
             for (Pharmacist pharmacist : pharmacists) {
-                bw.write(pharmacist.getUserID() + "," + pharmacist.getName() + "," + pharmacist.getRole() + "," + pharmacist.getGender() + "," + pharmacist.getAge() + "\n");
+                bw.write(pharmacist.getUserID() + "," + pharmacist.getName() + "," + pharmacist.getRole() + "," + pharmacist.getGender() + "," + pharmacist.getAge() + "," + pharmacist.getPassword() + "\n");
             }
         }
     }

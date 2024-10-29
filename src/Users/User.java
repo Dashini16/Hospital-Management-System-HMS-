@@ -3,12 +3,13 @@ public abstract class User {
     private String name;
     private Role role;
     private String gender;
-    
-    public User(String userID, String name, Role role, String gender) {
+    private String password;
+    public User(String userID, String name, Role role, String gender, String password) {
         this.userID = userID;
         this.name = name;
         this.role = role;
         this.gender = gender;
+        this.password = password;
     }
     
     public String getUserID() {
@@ -43,10 +44,19 @@ public abstract class User {
         this.gender = gender;
     }
 
-    public void changePassword(String newPassword) {
-        // Placeholder for password change logic
+    public String getPassword() {   
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
         System.out.println("Password changed.");
     }
+
+    //public void changePassword(String newPassword) {
+        // Placeholder for password change logic
+        //System.out.println("Password changed.");
+    //}
     
     public abstract void displayMenu();
     public abstract void toStrings();
