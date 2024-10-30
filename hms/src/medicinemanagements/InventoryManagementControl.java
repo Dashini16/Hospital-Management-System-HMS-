@@ -17,14 +17,47 @@ public class InventoryManagementControl {
 
     public void addNewMedicine(Scanner scanner) {
         System.out.print("Enter new medicine name: ");
-        String name = scanner.nextLine();
+        String name = scanner.nextLine().trim();
+        
+        if (name.isEmpty()) {
+            System.out.println("Error: Medicine name cannot be empty.");
+            return;
+        }
+        
+        int initialStock = 0;
+        int lowStockLevelAlert = 0;
+        
+        // Handle initial stock input with error checking
+        while (true) {
+            System.out.print("Enter initial stock: ");
+            String initialStockInput = scanner.nextLine().trim();
+            try {
+                initialStock = Integer.parseInt(initialStockInput);
+                if (initialStock < 0) {
+                    System.out.println("Error: Initial stock must be a non-negative integer.");
+                    continue;
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Please enter a valid integer for initial stock.");
+            }
+        }
     
-        System.out.print("Enter initial stock: ");
-        int initialStock = scanner.nextInt();
-    
-        System.out.print("Enter low stock level alert: ");
-        int lowStockLevelAlert = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        // Handle low stock level alert input with error checking
+        while (true) {
+            System.out.print("Enter low stock level alert: ");
+            String lowStockInput = scanner.nextLine().trim();
+            try {
+                lowStockLevelAlert = Integer.parseInt(lowStockInput);
+                if (lowStockLevelAlert < 0) {
+                    System.out.println("Error: Low stock level alert must be a non-negative integer.");
+                    continue;
+                }
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Please enter a valid integer for low stock level alert.");
+            }
+        }
     
         Medicine newMedicine = new Medicine(name, initialStock, lowStockLevelAlert);
         try {
@@ -35,9 +68,10 @@ public class InventoryManagementControl {
         }
     }
     
+    
     public void removeMedicine(Scanner scanner) {
         System.out.print("Enter medicine name to remove: ");
-        String name = scanner.nextLine();
+        String name = scanner.nextLine().trim();
     
         Medicine medicine = findMedicineByName(name);
         if (medicine != null) {
@@ -52,45 +86,31 @@ public class InventoryManagementControl {
             System.out.println("Medicine not found.");
         }
     }
-    /*
-    protected void displayInventory() {
-        System.out.println("Current Medication Inventory:");
-        for (Medicine medicine : data.getMedicines()) {
-            System.out.println("Medicine: " + medicine.getName() + ", Stock: " + medicine.getInitialStock()+ ", Low Stock Alert: " + medicine.getLowStockLevelAlert());
-        }
-    }
-
-    protected void createReplenishmentRequest(Scanner scanner) {
-        System.out.print("Enter medicine name: ");
-        String name = scanner.nextLine();
     
-        System.out.print("Enter requested stock quantity: ");
-        int requestedStock = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-    
-        ReplenishmentRequest request = new ReplenishmentRequest(name, requestedStock);
-        replenishmentRequests.add(request); // Add to in-memory list
-        System.out.println("Replenishment request created for " + name + " with quantity " + requestedStock);
-    
-        // Save request to CSV file
-        try {
-            data.appendReplenishmentRequest("../data/Replenishment_Requests.csv", request);
-        } catch (IOException e) {
-            System.out.println("Error saving replenishment request: " + e.getMessage());
-        }
-    }
-    */
-
     public void updateStockInitial(Scanner scanner) {
         System.out.print("Enter medicine name to update stock: ");
-        String name = scanner.nextLine();
-
+        String name = scanner.nextLine().trim();
+    
         Medicine medicine = findMedicineByName(name);
         if (medicine != null) {
-            System.out.print("Enter new initial stock: ");
-            int newStock = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
+            int newStock = -1;
+    
+            // Handle new stock input with error checking
+            while (true) {
+                System.out.print("Enter new initial stock: ");
+                String newStockInput = scanner.nextLine().trim();
+                try {
+                    newStock = Integer.parseInt(newStockInput);
+                    if (newStock < 0) {
+                        System.out.println("Error: Initial stock must be a non-negative integer.");
+                        continue;
+                    }
+                    break; // Break loop if valid input is provided
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Please enter a valid integer for initial stock.");
+                }
+            }
+    
             medicine.setInitialStock(newStock);
             try {
                 data.rewriteMedicines("hms\\src\\data\\Medicine_List.csv"); // Update CSV file
@@ -102,17 +122,31 @@ public class InventoryManagementControl {
             System.out.println("Medicine not found.");
         }
     }
-
+    
     public void updateLowStockLevelAlert(Scanner scanner) {
         System.out.print("Enter medicine name to update Low Stock Level Alert: ");
-        String name = scanner.nextLine();
-
+        String name = scanner.nextLine().trim();
+    
         Medicine medicine = findMedicineByName(name);
         if (medicine != null) {
-            System.out.print("Enter new Low Stock Level Alert: ");
-            int lowStockLevelAlert = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-
+            int lowStockLevelAlert = -1;
+    
+            // Handle low stock level alert input with error checking
+            while (true) {
+                System.out.print("Enter new Low Stock Level Alert: ");
+                String lowStockInput = scanner.nextLine().trim();
+                try {
+                    lowStockLevelAlert = Integer.parseInt(lowStockInput);
+                    if (lowStockLevelAlert < 0) {
+                        System.out.println("Error: Low stock level alert must be a non-negative integer.");
+                        continue;
+                    }
+                    break; // Break loop if valid input is provided
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Please enter a valid integer for low stock level alert.");
+                }
+            }
+    
             medicine.setLowStockLevelAlert(lowStockLevelAlert);
             try {
                 data.rewriteMedicines("hms\\src\\data\\Medicine_List.csv"); // Update CSV file
@@ -124,7 +158,7 @@ public class InventoryManagementControl {
             System.out.println("Medicine not found.");
         }
     }
-
+    
 
     private Medicine findMedicineByName(String name) {
         for (Medicine medicine : data.getMedicines()) {
