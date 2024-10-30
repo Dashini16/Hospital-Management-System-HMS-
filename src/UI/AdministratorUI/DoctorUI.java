@@ -8,6 +8,8 @@ public class DoctorUI {
     }
 
     public void displayMenu() {
+        InitialData data = new InitialData();
+        data.importData(); // Load data
         // Print the doctor menu to the console
         while (true) {
             System.out.println("Doctor Menu:");
@@ -52,6 +54,7 @@ public class DoctorUI {
                 case 7:
                     // Add code to record appointment outcome
                     System.out.println("Recording appointment outcome...");
+
                     break;
                 case 8:
                     return; // Logout
