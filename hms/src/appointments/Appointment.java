@@ -9,7 +9,7 @@ class Appointment {
     private String doctorID;
     private String date;
     private String time;
-    private String status;
+    private AppointmentStatus status;
     private OutcomeRecord outcomeRecord;
 
     public Appointment(String appointmentID, String patientID, String doctorID, String date, String time) {
@@ -18,7 +18,7 @@ class Appointment {
         this.doctorID = doctorID;
         this.date = date;
         this.time = time;
-        this.status = "Pending";
+        this.status = AppointmentStatus.PENDING ;
         this.outcomeRecord = new OutcomeRecord();
     }
 
@@ -26,11 +26,11 @@ class Appointment {
         return appointmentID;
     }
 
-    public String getStatus() {
+    public AppointmentStatus getStatus() {
         return status;
     }
 
-    public void updateStatus(String newStatus) {
+    public void updateStatus(AppointmentStatus newStatus) {
         this.status = newStatus;
     }
 
