@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-class MedicalRecord {
+public class MedicalRecord {
     private String patientID;
     private List<String> diagnoses;
     private List<String> treatments;
