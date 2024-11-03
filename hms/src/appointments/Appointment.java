@@ -1,7 +1,6 @@
 package appointments;
 import medicalrecords.*;
-import java.util.List;
-import java.util.ArrayList;
+import enums.AppointmentStatus;
 
 class Appointment {
     private String appointmentID;
@@ -10,7 +9,7 @@ class Appointment {
     private String date;
     private String time;
     private AppointmentStatus status;
-    private OutcomeRecord outcomeRecord;
+    private AppointmentOutcome outcomeRecord;
 
     public Appointment(String appointmentID, String patientID, String doctorID, String date, String time) {
         this.appointmentID = appointmentID;
@@ -19,7 +18,7 @@ class Appointment {
         this.date = date;
         this.time = time;
         this.status = AppointmentStatus.PENDING ;
-        this.outcomeRecord = new OutcomeRecord();
+        this.outcomeRecord = new AppointmentOutcome(appointmentID);
     }
 
     public String getAppointmentID() {
@@ -34,7 +33,7 @@ class Appointment {
         this.status = newStatus;
     }
 
-    public OutcomeRecord getOutcomeRecord() {
+    public AppointmentOutcome getOutcomeRecord() {
         return outcomeRecord;
     }
 
