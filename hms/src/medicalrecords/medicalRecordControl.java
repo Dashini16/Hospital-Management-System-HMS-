@@ -13,15 +13,9 @@ public class medicalRecordControl {
 	public void viewMedicalRecord(String patientID) {
 		MedicalRecord patientRecord = records.get(patientID);
 		
-		if(patientID != null) {
-			//print individual record such as Diagnosis & Treatment
-			System.out.printf("%s's Diagnoses: %s\n" ,patientID, patientRecord.getDiagnoses().toString());
-			System.out.printf("%s's Treatments: %s\n" ,patientID, patientRecord.getTreatments().toString());
-			
-			//print prescriptions & status in case needed
-			System.out.printf("%s's Precrescriptions: %s\n", patientID, patientRecord.getPrescriptions().toString());
-			System.out.printf("%s's Precrescription status: %s\n", patientID, patientRecord.getPrescriptionStatus().toString());
-		} 
+		if (patientRecord != null) {
+		    System.out.println(patientRecord);
+		}
 		else {
 			System.out.printf("No record found for patient ID: %s\n", patientID);
 		}

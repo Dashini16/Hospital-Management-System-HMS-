@@ -59,6 +59,6 @@ public class MedicalRecord {
 
     @Override
     public String toString() {
-        return "Medical Record for Patient ID: " + patientID + "\nDiagnoses: " + diagnoses + "\nTreatments: " + treatments + "\nPrescriptions: " + prescriptions;
+        return "Medical Record for Patient ID: " + patientID + "\nDiagnoses: " + diagnoses + "\nTreatments: " + treatments + "\nPrescriptions: " + prescriptions + "\nPrescriptionStatus" + prescriptionStatus;
     }
 }
