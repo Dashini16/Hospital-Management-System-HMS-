@@ -1,6 +1,5 @@
 package appointments;
-
-import medicinemanagements.Medicine;
+import appointments.Medicine;
 
 public class Prescription {
     public enum PrescriptionStatus{
@@ -8,12 +7,16 @@ public class Prescription {
     }
     private String medicineName;
     private PrescriptionStatus status;
-    private Medicine[] listOfMedicine;
+    private Medicine prescribedMedicine = new Medicine(medicineName, 0, 0);
 
-    public Prescription(String medicineName, PrescriptionStatus status, int noOfMedicine){
-        this.status = PrescriptionStatus.PENDING;
+    public Prescription(String medicineName, PrescriptionStatus status, Medicine pMeds){
+        this.status = status;
         this.medicineName = medicineName;
-        this.listOfMedicine = new Medicine[noOfMedicine];
+        this.prescribedMedicine = pMeds;
+    }
+
+    public void quantity(int noOfMedicine){
+        this.prescribedMedicine.reduceStock(noOfMedicine);
     }
 
     public PrescriptionStatus getStatus(){
@@ -27,17 +30,4 @@ public class Prescription {
     public String getMedicineName() {
         return medicineName;
     }
-
-    public void addMedicine(Medicine medicine) {
-        for (int i = 0; i < listOfMedicine.length; i++) {
-            if (listOfMedicine[i] == null) {
-                listOfMedicine[i] = medicine;
-                break;
-            }
-        }
-    }
-
-    
-
-    
 }

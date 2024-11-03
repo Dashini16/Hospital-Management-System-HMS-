@@ -6,7 +6,14 @@ public class Medicine {
     private int curStock;
     private int lowAlert;
 
-    Medicine(String name, int initialS, int low){
+    public Medicine(){
+        this.medicineName = "";
+        this.initialStock = -1;
+        this.curStock = initialStock;
+        this.lowAlert = 0;
+    }
+
+    public Medicine(String name, int initialS, int low){
         this.medicineName = name;
         this.initialStock = initialS;
         this.curStock = initialStock;
@@ -23,9 +30,9 @@ public class Medicine {
     public void alertLowStock(){
         System.out.println(this.medicineName + " stock is low!");
     }
-    public void reduceStock(){
+    public void reduceStock(int n){
         if (curStock > 0) {
-            curStock -= 1; // Reduce current stock
+            curStock -= n; // Reduce current stock
             if (curStock <= lowAlert) { //print alert if stock is low
                 alertLowStock();
             }

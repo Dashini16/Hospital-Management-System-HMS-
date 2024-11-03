@@ -26,6 +26,10 @@ public class AppointmentOutcome {
         }
     }
 
+    public String getID(){
+        return this.appointmentID;
+    }
+
     public void setNotes(String doctorsNotes) {
         this.notes = doctorsNotes;
     }

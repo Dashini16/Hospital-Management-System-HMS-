@@ -1,5 +1,4 @@
 package appointments;
-import medicalrecords.*;
 import enums.AppointmentStatus;
 
 class Appointment {
@@ -19,6 +18,18 @@ class Appointment {
         this.time = time;
         this.status = AppointmentStatus.PENDING ;
         this.outcomeRecord = new AppointmentOutcome(appointmentID);
+    }
+
+    public String getDate(){
+        return this.date;
+    }
+    public String getTime(){
+        return this.time;
+    }
+
+    public void updateSlot(String d, String t){
+        this.date = d;
+        this.time = t;
     }
 
     public String getAppointmentID() {
