@@ -2,10 +2,10 @@ package medicalrecords;
 
 import java.util.HashMap;
 import java.util.Map;
-import medicinemanagements.Medicine;
+import appointments.Prescription;
 
 
-public class medicalRecordControl {
+public class MedicalRecordControl {
 	
 	//Store records using patientID as the key
 	private Map<String, MedicalRecord> records = new HashMap<>();
@@ -21,14 +21,13 @@ public class medicalRecordControl {
 		}
 	}
 	
-	public void updateMedicalRecord(String patientID, String diagnoses, String treatment, Medicine prescription, String status) {
+	public void updateMedicalRecord(String patientID, Diagnosis diagnosis, Treatment treatment, Prescription prescription) {
 		MedicalRecord patientRecord = records.computeIfAbsent(patientID, MedicalRecord::new);
 		
 		//Update record
-		if(diagnoses != null) patientRecord.addDiagnosis(diagnoses);
+		if(diagnosis != null) patientRecord.addDiagnosis(diagnosis);
 		if(treatment != null) patientRecord.addTreatment(treatment);
 		if(prescription != null) patientRecord.addPrescription(prescription);
-		if(status != null) patientRecord.setPrescriptionStatus(status);
 		
 		System.out.printf("Updated record for patient ID: %s\n", patientID);
 			

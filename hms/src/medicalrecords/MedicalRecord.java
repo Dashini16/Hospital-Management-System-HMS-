@@ -1,5 +1,5 @@
 package medicalrecords;
-import medicinemanagements.Medicine;
+import appointments.Prescription;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -7,58 +7,49 @@ import java.util.ArrayList;
 
 public class MedicalRecord {
     private String patientID;
-    private List<String> diagnoses;
-    private List<String> treatments;
-    private List<Medicine> prescriptions;
-    private String prescriptionStatus;
+    private List<Diagnosis> diagnoses;
+    private List<Treatment> treatments;
+    private List<Prescription> prescriptions;
+    
 
     public MedicalRecord(String patientID) {
         this.patientID = patientID;
         this.diagnoses = new ArrayList<>();
         this.treatments = new ArrayList<>();
         this.prescriptions = new ArrayList<>();
-        this.prescriptionStatus = "Pending";
     }
 
-    public void addDiagnosis(String diagnosis) {
+    public void addDiagnosis(Diagnosis diagnosis) {
         diagnoses.add(diagnosis);
     }
 
-    public void addTreatment(String treatment) {
+    public void addTreatment(Treatment treatment) {
         treatments.add(treatment);
     }
 
-    public void addPrescription(Medicine prescription) {
+    public void addPrescription(Prescription prescription) {
         prescriptions.add(prescription);
-    }
-
-    public void setPrescriptionStatus(String status) {
-        this.prescriptionStatus = status;
-    }
-
-    public String getPrescriptionStatus() {
-        return prescriptionStatus;
     }
 
     public String getPatientID() {
         return patientID;
     }
 
-    public List<String> getDiagnoses() {
+    public List<Diagnosis> getDiagnoses() {
         return diagnoses;
     }   
 
-    public List<String> getTreatments() {
+    public List<Treatment> getTreatments() {
         return treatments;
     }
 
-    public List<Medicine> getPrescriptions() {
+    public List<Prescription> getPrescriptions() {
         return prescriptions;
     }   
 
 
     @Override
     public String toString() {
-        return "Medical Record for Patient ID: " + patientID + "\nDiagnoses: " + diagnoses + "\nTreatments: " + treatments + "\nPrescriptions: " + prescriptions + "\nPrescriptionStatus" + prescriptionStatus;
+        return "Medical Record for Patient ID: " + patientID + "\nDiagnoses: " + diagnoses + "\nTreatments: " + treatments + "\nPrescriptions: " + prescriptions;
     }
 }
