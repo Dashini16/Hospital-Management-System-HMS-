@@ -8,19 +8,20 @@ public class AppointmentOutcome {
 
     public AppointmentOutcome(String ID){
         this.appointmentID = ID;
-        this.prescribedMedication = new Prescription[10]; // Assuming a max of 10 prescriptions
         this.index = -1; // Start with no prescriptions
     }
     
+    // Add the first prescription
     public void giveNewPrescription(int n, Prescription newMeds) {
         this.prescribedMedication = new Prescription[n];
-        this.prescribedMedication[0] = newMeds; // Add the first prescription
+        this.prescribedMedication[0] = newMeds;
         this.index = 0; // Start index
     }
 
+    // Add new prescription (not first prescription)
     public void addPrescription (Prescription newMeds){
         if (index < prescribedMedication.length - 1) {
-            prescribedMedication[++index] = newMeds; // Add new prescription
+            prescribedMedication[++index] = newMeds;
         } else {
             System.out.println("No more prescriptions can be added.");
         }
