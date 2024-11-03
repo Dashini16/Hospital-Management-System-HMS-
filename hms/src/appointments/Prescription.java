@@ -7,7 +7,7 @@ public class Prescription {
     }
     private String medicineName;
     private PrescriptionStatus status;
-    private Medicine prescribedMedicine = new Medicine(medicineName, 0, 0);
+    private Medicine prescribedMedicine;
 
     public Prescription(String medicineName, PrescriptionStatus status, Medicine pMeds){
         this.status = status;
