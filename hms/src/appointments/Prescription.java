@@ -1,5 +1,5 @@
 package appointments;
-import appointments.Medicine;
+import medicinemanagements.Medicine;
 
 public class Prescription {
     public enum PrescriptionStatus{
