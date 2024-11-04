@@ -242,6 +242,13 @@ public class InitialData {
         }
     }
 
+    // APPOINTMENT LIST
+    // import appointments from Appointments_List.csv
+    // append Appointment (Schedule An Appoinment)
+    // rewrite Appointment (reschedule)
+    // delete Appointment (Cancel Appointment)
+    // rewrite Appointment (any changes for Appointment Outcome)
+
     private void importReplenishmentRequests(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -298,6 +305,6 @@ public class InitialData {
     public List<Medicine> getMedicines() {  // Add this method
         return medicines;
     }
-
+    // public List<Appointment> getAppointments() // RICHELLE
     
 }

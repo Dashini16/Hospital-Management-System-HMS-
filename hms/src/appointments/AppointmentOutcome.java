@@ -3,12 +3,14 @@ package appointments;
 public class AppointmentOutcome {
     private String appointmentID;
     private String notes;
+    private String serviceType;
     private Prescription[] prescribedMedication;
     private int index;
 
     public AppointmentOutcome(String ID){
         this.appointmentID = ID;
         this.index = -1; // Start with no prescriptions
+        
     }
     
     // Add the first prescription
@@ -27,6 +29,14 @@ public class AppointmentOutcome {
         }
     }
 
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public String getServiceType() {
+        return this.serviceType;
+    }
+
     public String getID(){
         return this.appointmentID;
     }
@@ -38,6 +48,4 @@ public class AppointmentOutcome {
     public String getNotes() {
         return this.notes;
     }
-
-
 }
