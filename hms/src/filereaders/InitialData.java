@@ -2,7 +2,7 @@ package filereaders;
 
 import users.*;
 import medicinemanagements.*;
-import users.Users;
+import appointments.*;
 
 import enums.*;
 
@@ -32,6 +32,7 @@ public class InitialData {
     private List<Pharmacist> pharmacists; // Add list for pharmacists
     private List<Medicine> medicines; // Add this line
     private List<ReplenishmentRequest> replenishmentRequests; // Add this line
+    private List<Appointment> appointments;
 
     public InitialData() {
         patients = new ArrayList<>();
@@ -40,6 +41,7 @@ public class InitialData {
         pharmacists = new ArrayList<>(); // Initialize pharmacists list
         medicines = new ArrayList<>(); // Initialize the medicines list
         replenishmentRequests = new ArrayList<>(); // Initialize the request list
+        appointments = new ArrayList<>();
     }
 
     public void importData() {
@@ -48,6 +50,7 @@ public class InitialData {
             importStaff("hms\\src\\data\\Staff_List.csv");
             importMedicines("hms\\src\\data\\Medicine_List.csv"); // Import medicine list
             importReplenishmentRequests("hms\\src\\data\\Replenishment_Requests.csv");
+            importAppointments("hms\\src\\data\\Appointments_List.csv");
         } catch (IOException e) {
             System.out.println("Error reading data: " + e.getMessage());
         }
@@ -242,13 +245,6 @@ public class InitialData {
         }
     }
 
-    // APPOINTMENT LIST
-    // import appointments from Appointments_List.csv
-    // append Appointment (Schedule An Appoinment)
-    // rewrite Appointment (reschedule)
-    // delete Appointment (Cancel Appointment)
-    // rewrite Appointment (any changes for Appointment Outcome)
-
     private void importReplenishmentRequests(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -281,6 +277,27 @@ public class InitialData {
         }
     }
 
+    // APPOINTMENT LIST
+    // import appointments from Appointments_List.csv
+    private void importAppointments(String filename) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+            br.readLine(); // Skip header line
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 3) {
+                    Appointment newappt = new Appointment(data[0], data[1], data[2], data[3], data[4]);
+                    appointments.add(newappt); // Add to appointments list
+                }
+            }
+        }
+    }
+
+    // append Appointment (Schedule An Appoinment)
+    // rewrite Appointment (reschedule)
+    // delete Appointment (Cancel Appointment)
+    // rewrite Appointment (any changes for Appointment Outcome)
+
 
     public List<ReplenishmentRequest> getReplenishmentRequests() {
         return replenishmentRequests;
@@ -305,6 +322,9 @@ public class InitialData {
     public List<Medicine> getMedicines() {  // Add this method
         return medicines;
     }
-    // public List<Appointment> getAppointments() // RICHELLE
+    
+    public List<Appointment> getAppointments(){ 
+        return appointments;
+    }
     
 }

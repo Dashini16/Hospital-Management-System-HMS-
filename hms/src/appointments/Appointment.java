@@ -1,7 +1,7 @@
 package appointments;
 import enums.AppointmentStatus;
 
-class Appointment {
+public class Appointment {
     private String appointmentID;
     private String patientID;
     private String doctorID;

@@ -27,7 +27,7 @@ public class AppointmentControl {
         this.currentUser = user;
         this.data = data;
 
-        //this.listOfAppointments = data.getAppointments();
+        this.listOfAppointments = data.getAppointments();
     }
 
     public void scheduleAppointment(String doctorid, String date, String time){
