@@ -293,7 +293,79 @@ public class InitialData {
         }
     }
 
+    private Appointment getAppointmentInfo(String line) {
+        String[] data = line.split(",", 7); // Limit split to 7 to include outcome record as a single part
+        if (data.length < 7) {
+            System.out.println("Invalid line format: " + line);
+            return null;
+        }
+    
+        String AppointmentID = data[0];
+        String PatientID = data[1];
+        String DoctorID = data[2];
+        String date = data[3];
+        String time = data[4];
+        String ApptStatus = data[5];
+    
+        AppointmentStatus appointmentStatus;
+        try {
+            // Convert the string to the enum type AppointmentStatus
+            appointmentStatus = AppointmentStatus.valueOf(ApptStatus.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid appointment status: " + ApptStatus);
+            return null; 
+        }
+        
+        // Create the appointment object
+        Appointment appointment = new Appointment(AppointmentID, PatientID, DoctorID, date, time);
+        appointment.updateStatus(appointmentStatus);
+        return appointment;
+    }
+
+    public Appointment findAppointment(String filename, String appointmentID) throws IOException {
+        File file = new File(filename);
+        List<String> lines = new ArrayList<>();
+        Appointment existingAppointment = null;
+
+        if (file.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    lines.add(line);
+                    // Check if this line contains the specified Appointment ID
+                    if (line.startsWith(appointmentID + ",")) {
+                        existingAppointment = getAppointmentInfo(line);
+                        break; 
+                    }
+                }
+            }
+        }
+        return existingAppointment; // Return the found appointment
+    }
+
+    //Method to change date format
+    // private String formatDate(String dateString) {
+    //     DateTimeFormatter formatter = createDateFormatter();
+    //     LocalDate date = LocalDate.parse(dateString, formatter);
+    //     return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    // }
+
     // append Appointment (Schedule An Appoinment)
+    public void appendAppointments(String filename, Appointment appointment) throws IOException {
+        boolean fileExists = new File(filename).exists();
+    
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            // If the file doesn't exist, write a header first
+            if (!fileExists) {
+                bw.write("AppointmentID,PatientID,DoctorID,Date,Time,Status,Outcome Record\n");
+            }
+            //String apptDate = formatDate(appointment.getDate());
+            // Append the appointment data
+            bw.write(appointment.getAppointmentID() + "," + appointment.getPatientID() + "," +
+                     appointment.getDoctorID() + "," + appointment.getDate() + "," +
+                     appointment.getTime() + "," + appointment.getStatus() +","+appointment.getOutcomeRecord()+ "\n");
+        }
+    }
     
     // rewrite Appointment (reschedule)
     // delete Appointment (Cancel Appointment)

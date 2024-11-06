@@ -32,6 +32,14 @@ public class Appointment {
         this.time = t;
     }
 
+    public String getPatientID(){
+        return this.patientID;
+    }
+
+    public String getDoctorID(){
+        return this.doctorID;
+    }
+
     public String getAppointmentID() {
         return appointmentID;
     }
