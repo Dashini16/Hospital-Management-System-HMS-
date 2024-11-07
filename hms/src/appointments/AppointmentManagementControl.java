@@ -7,6 +7,7 @@ import filereaders.InitialDataStaff;
 import medicalrecords.OutcomeRecord;
 import medicalrecords.Prescription;
 import medicinemanagements.Medicine;
+import usermanagement.EmailService;
 import users.Doctor;
 import users.Patient;
 
@@ -318,7 +319,7 @@ public Patient findPatientByID(String id) {
         // FIND IF APPOINTMENT EXISTS
         Appointment existingAppointment = null;
         try {
-            existingAppointment = initialDataAppointments.findAppointment("hms\\src\\data\\Appointments_List.csv", appointmentID);
+            existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -373,7 +374,7 @@ public Patient findPatientByID(String id) {
     
         // WRITE APPOINTMENT TO FILE
         try {
-            initialDataAppointments.writeData("hms\\src\\data\\Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -419,7 +420,7 @@ public void cancelAppointment() {
     // FIND IF APPOINTMENT EXISTS        
     Appointment existingAppointment = null;
     try {
-        existingAppointment = initialDataAppointments.findAppointment("hms\\src\\data\\Appointments_List.csv", appointmentID);
+        existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
     } catch (IOException e) {
         e.printStackTrace();
     }
@@ -441,7 +442,7 @@ public void cancelAppointment() {
 
     // WRITE UPDATED APPOINTMENT TO FILE
     try {
-        initialDataAppointments.writeData("hms\\src\\data\\Appointments_List.csv", existingAppointment);
+        initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
         System.out.println("Appointment canceled successfully.");
     } catch (IOException e) {    
         e.printStackTrace();
@@ -459,7 +460,7 @@ public void cancelAppointment() {
         // FIND IF APPOINTMENT EXISTS
         Appointment existingAppointment = null;
         try {        
-            existingAppointment = initialDataAppointments.findAppointment("hms\\src\\data\\Appointments_List.csv", appointmentID);
+            existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -491,7 +492,7 @@ public void cancelAppointment() {
 
         // WRITE UPDATED APPOINTMENT TO FILE
         try {
-            initialDataAppointments.writeData("hms\\src\\data\\Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
             System.out.println("Appointment status updated successfully."); 
             initialDataAppointments.reloadData();
         } catch (IOException e) {
@@ -571,7 +572,7 @@ public void cancelAppointment() {
     
         // Write appointment data to file
         try {
-            initialDataAppointments.writeAppointmentToFilewithdefaultOutcome("hms\\src\\data\\Appointments_List.csv", appointment);
+            initialDataAppointments.writeAppointmentToFilewithdefaultOutcome("hms/src/data/Appointments_List.csv", appointment);
             System.out.println("Appointment scheduled successfully for " + patientUserID + " with Doctor " + doctor.getUserID() +
                                " on " + selectedDate + " at " + selectedTime);
         } catch (IOException e) {
@@ -704,7 +705,7 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
         // FIND IF APPOINTMENT EXISTS
         Appointment existingAppointment = null;
         try {
-            existingAppointment =  initialDataAppointments.findAppointment("hms\\src\\data\\Appointments_List.csv", appointmentID);
+            existingAppointment =  initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -768,11 +769,11 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
     
         // WRITE UPDATED APPOINTMENT TO FILE
         try {
-            initialDataAppointments.writeData("hms\\src\\data\\Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
             System.out.println("Prescription status updated successfully.");
             
             // WRITE UPDATED MEDICINE LIST TO FILE
-            initialDataMedicine.rewriteMedicines("hms\\src\\data\\Medicine_List.csv");
+            initialDataMedicine.rewriteMedicines("hms/src/data/Medicine_List.csv");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -813,7 +814,7 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
         
         try {
             // Read the existing appointment
-            Appointment existingAppointment = initialDataAppointments.findAppointment("hms\\src\\data\\Appointments_List.csv", appointmentID);
+            Appointment existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
     
             // If appointment not found, notify the user and exit
             if (existingAppointment == null) {
@@ -871,21 +872,16 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
             existingAppointment.updateStatus(AppointmentStatus.COMPLETED);
     
             // Write the updated appointment back to the file
-            initialDataAppointments.writeData("hms\\src\\data\\Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
             System.out.println("Outcome record updated successfully.");
     
             initialDataAppointments.reloadData();
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.err.println("Error while updating the appointment: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.err.println("Invalid number format: " + e.getMessage());
         }
     }
-    
-
-
-
-
 
 
 
