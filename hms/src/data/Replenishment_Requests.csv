@@ -1,0 +1,4 @@
+MedicineName,RequestedQuantity,Status
+Amoxicillin,200,PENDING
+KOOKIWA,100,FULFILLED
+KOOKIWA,4,PENDING
