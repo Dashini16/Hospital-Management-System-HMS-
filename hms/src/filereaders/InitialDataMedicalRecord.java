@@ -29,7 +29,7 @@ public class InitialDataMedicalRecord implements ListInterface<MedicalRecord>,Da
 
 
 
-            importDatafromFile("hms\\src\\data\\Medical_Records.csv");
+            importDatafromFile("hms/src/data/Medical_Records.csv");
 
 
 

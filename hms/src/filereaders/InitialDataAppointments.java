@@ -35,7 +35,7 @@ public class InitialDataAppointments implements ListInterface<Appointment>,Appoi
     @Override
     public void importData() {
         try {
-            importDatafromFile("hms\\src\\data\\Appointments_List.csv");
+            importDatafromFile("hms/src/data/Appointments_List.csv");
 
 
 

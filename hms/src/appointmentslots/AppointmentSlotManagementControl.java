@@ -448,7 +448,7 @@ public void setDoctorAvailability() {
 
     // Save to CSV after adding
     try {
-        initialDataAppointmentSlots.saveAppointmentSlots("hms\\src\\data\\Appointment_Slots.csv");
+        initialDataAppointmentSlots.saveAppointmentSlots("hms/src/data/Appointment_Slots.csv");
         System.out.println("Appointment slot saved successfully.");
     } catch (IOException e) {
         System.out.println("Error saving appointment slots: " + e.getMessage());

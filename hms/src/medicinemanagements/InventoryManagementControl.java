@@ -74,7 +74,7 @@ public class InventoryManagementControl {
     
         // Attempt to add new medicine to the CSV file
         try {
-            medicineData.appendData("hms\\src\\data\\Medicine_List.csv", newMedicine); // Update CSV file
+            medicineData.appendData("hms/src/data/Medicine_List.csv", newMedicine); // Update CSV file
             System.out.println("Medicine added successfully.");
         } catch (IOException e) {
             System.out.println("Error adding medicine: " + e.getMessage());
@@ -116,7 +116,7 @@ public class InventoryManagementControl {
         if (medicine != null) {
             medicineData.getLists().remove(medicine); // Remove from memory
             try {
-                medicineData.rewriteMedicines("hms\\src\\data\\Medicine_List.csv"); // Update CSV file
+                medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Medicine removed successfully.");
             } catch (IOException e) {
                 System.out.println("Error removing medicine: " + e.getMessage());
@@ -149,7 +149,7 @@ public class InventoryManagementControl {
     
             medicine.setInitialStock(newStock);
             try {
-                medicineData.rewriteMedicines("hms\\src\\data\\Medicine_List.csv"); // Update CSV file
+                medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Initial stock updated for " + medicine.getName());
             } catch (IOException e) {
                 System.out.println("Error updating initial stock: " + e.getMessage());
@@ -182,7 +182,7 @@ public class InventoryManagementControl {
     
             medicine.setLowStockLevelAlert(lowStockLevelAlert);
             try {
-                medicineData.rewriteMedicines("hms\\src\\data\\Medicine_List.csv"); // Update CSV file
+                medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv"); // Update CSV file
                 System.out.println("Low stock alert updated for " + medicine.getName());
             } catch (IOException e) {
                 System.out.println("Error updating low stock level alert: " + e.getMessage());

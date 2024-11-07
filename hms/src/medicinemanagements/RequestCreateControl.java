@@ -61,7 +61,7 @@ public class RequestCreateControl {
     
         // Save request to CSV file
         try {
-            dataReplenishmentRequest.appendData("hms\\src\\data\\Replenishment_Requests.csv", request);
+            dataReplenishmentRequest.appendData("hms/src/data/Replenishment_Requests.csv", request);
             System.out.println("Replenishment request saved successfully.");
         } catch (IOException e) {
             System.out.println("Error saving replenishment request: " + e.getMessage());

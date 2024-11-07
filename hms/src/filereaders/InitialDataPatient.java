@@ -29,7 +29,7 @@ public class InitialDataPatient implements  DataImporter, DataExporterAppend<Pat
     public void importData() {
         try {
 
-            importDatafromFile("hms\\src\\data\\Patient_List.csv");
+            importDatafromFile("hms/src/data/Patient_List.csv");
 
         } catch (IOException e) {
             System.out.println("Error reading data: " + e.getMessage());

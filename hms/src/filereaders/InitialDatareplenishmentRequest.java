@@ -30,7 +30,7 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
         try {
 
 
-            importDatafromFile("hms\\src\\data\\Replenishment_Requests.csv");
+            importDatafromFile("hms/src/data/Replenishment_Requests.csv");
 
         } catch (IOException e) {
             System.out.println("Error reading data: " + e.getMessage());

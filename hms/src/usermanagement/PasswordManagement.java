@@ -57,9 +57,9 @@ public class PasswordManagement {
         try {
             // Save changes based on user type
             if (user instanceof Patient) {
-                patientData.rewritePatients("hms\\src\\data\\Patient_List.csv");
+                patientData.rewritePatients("hms/src/data/Patient_List.csv");
             } else {
-                data.rewriteStaff("hms\\src\\data\\Staff_List.csv");
+                data.rewriteStaff("hms/src/data/Staff_List.csv");
             }
             System.out.println("Password changed successfully.");
         } catch (IOException e) {

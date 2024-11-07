@@ -21,7 +21,7 @@ public class InitialDataMedicine implements DataImporter, DataExporterAppend<Med
     @Override
     public void importData() {
         try {
-            importDatafromFile("hms\\src\\data\\Medicine_List.csv"); // Import medicine list
+            importDatafromFile("hms/src/data/Medicine_List.csv"); // Import medicine list
 
 
         } catch (IOException e) {

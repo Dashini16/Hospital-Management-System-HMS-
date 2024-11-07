@@ -27,7 +27,7 @@ public class InitialDataStaff implements DataImporter, DataExporterAppend<Users>
     public void importData() {
         try {
 
-            importDatafromFile("hms\\src\\data\\Staff_List.csv");
+            importDatafromFile("hms/src/data/Staff_List.csv");
 
 
         } catch (IOException e) {

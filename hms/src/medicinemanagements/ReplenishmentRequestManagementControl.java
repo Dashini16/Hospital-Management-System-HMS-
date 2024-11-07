@@ -64,8 +64,8 @@ public class ReplenishmentRequestManagementControl {
     
                     // Save changes to CSV files
                     try {
-                        medicineData.rewriteMedicines("hms\\src\\data\\Medicine_List.csv");
-                        replenishmentRequestData.rewriteReplenishmentRequests("hms\\src\\data\\Replenishment_Requests.csv", replenishmentRequests);
+                        medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv");
+                        replenishmentRequestData.rewriteReplenishmentRequests("hms/src/data/Replenishment_Requests.csv", replenishmentRequests);
                         System.out.println("Updates saved to file.");
                     } catch (IOException e) {
                         System.out.println("Error updating files: " + e.getMessage());

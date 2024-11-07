@@ -86,7 +86,7 @@ public class PatientManagementControl {
     
         Patient newPatient = new Patient(patientID, patientName, dateOfBirth, patientGender, patientBloodType, patientContactInfo, patientPassword);
         try {
-            data.appendData("hms\\src\\data\\Patient_List.csv", newPatient); // Append to CSV
+            data.appendData("hms/src/data/Patient_List.csv", newPatient); // Append to CSV
             System.out.println("Patient added successfully: " + patientName);
         } catch (IOException e) {
             System.out.println("Error saving patient: " + e.getMessage());
@@ -136,7 +136,7 @@ public class PatientManagementControl {
         }
     
         try {
-            data.rewritePatients("hms\\src\\data\\Patient_List.csv"); // Rewrite patient data to CSV
+            data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
             System.out.println("Patient updated successfully.");
         } catch (IOException e) {
             System.out.println("Error updating patient: " + e.getMessage());
@@ -160,7 +160,7 @@ public class PatientManagementControl {
         }
     
         try {
-            data.rewritePatients("hms\\src\\data\\Patient_List.csv"); // Rewrite patient data to CSV
+            data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
             System.out.println("Patient deleted successfully.");
         } catch (IOException e) {
             System.out.println("Error deleting patient: " + e.getMessage());

@@ -89,7 +89,7 @@ public class MedicalManagement {
     
         // Save the medical record to the CSV file
         try {
-            medicalData.appendData("hms\\src\\data\\Medical_Records.csv", record);
+            medicalData.appendData("hms/src/data/Medical_Records.csv", record);
             System.out.println("Medical Record created and saved successfully.");
         } catch (IOException e) {
             System.out.println("Error saving Medical Record: " + e.getMessage());
@@ -187,7 +187,7 @@ public void setDoctorAvailability() {
 
     // Save to CSV after adding
     try {
-        appointmentSlotsData.saveAppointmentSlots("hms\\src\\data\\Appointment_Slots.csv");
+        appointmentSlotsData.saveAppointmentSlots("hms/src/data/Appointment_Slots.csv");
         System.out.println("Appointment slot saved successfully.");
     } catch (IOException e) {
         System.out.println("Error saving appointment slots: " + e.getMessage());
@@ -299,7 +299,7 @@ public void updateMedicalRecord() {
     try {
         // Get all medical records and overwrite the file
         List<MedicalRecord> allMedicalRecords = medicalData.getLists();
-        medicalData.writeData("hms\\src\\data\\Medical_Records.csv", allMedicalRecords);
+        medicalData.writeData("hms/src/data/Medical_Records.csv", allMedicalRecords);
         System.out.println("Medical Record updated and saved successfully.");
     } catch (IOException e) {
         System.out.println("Error saving Medical Record: " + e.getMessage());

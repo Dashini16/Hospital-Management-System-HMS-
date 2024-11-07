@@ -97,7 +97,7 @@ public class StaffManagementControl {
     
             Doctor newDoctor = new Doctor(doctorID, doctorName, doctorGender, doctorAge, doctorPassword);
             try {
-                data.appendData("hms\\src\\data\\Staff_List.csv", newDoctor);
+                data.appendData("hms/src/data/Staff_List.csv", newDoctor);
                 System.out.println("Doctor added successfully: " + doctorName);
             } catch (IOException e) {
                 System.out.println("Error saving doctor: " + e.getMessage());
@@ -173,7 +173,7 @@ public class StaffManagementControl {
     
             Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge, pharmacistPassword);
             try {
-                data.appendData("hms\\src\\data\\Staff_List.csv", newPharmacist);
+                data.appendData("hms/src/data/Staff_List.csv", newPharmacist);
                 System.out.println("Pharmacist added successfully: " + pharmacistName);
             } catch (IOException e) {
                 System.out.println("Error saving pharmacist: " + e.getMessage());
@@ -249,7 +249,7 @@ public class StaffManagementControl {
     
             Administrator newAdmin = new Administrator(adminID, adminName, adminGender, adminAge, adminPassword);
             try {
-                data.appendData("hms\\src\\data\\Staff_List.csv", newAdmin);
+                data.appendData("hms/src/data/Staff_List.csv", newAdmin);
                 System.out.println("Administrator added successfully: " + adminName);
             } catch (IOException e) {
                 System.out.println("Error saving administrator: " + e.getMessage());
@@ -324,7 +324,7 @@ public class StaffManagementControl {
         }
     
         try {
-            data.rewriteStaff("hms\\src\\data\\Staff_List.csv"); // Rewrite staff data to CSV
+            data.rewriteStaff("hms/src/data/Staff_List.csv"); // Rewrite staff data to CSV
             System.out.println("Staff updated successfully.");
         } catch (IOException e) {
             System.out.println("Error updating staff: " + e.getMessage());
@@ -371,7 +371,7 @@ public class StaffManagementControl {
         // Check if the staff was successfully removed
         if (removed) {
             try {
-                data.rewriteStaff("hms\\src\\data\\Staff_List.csv"); // Rewrite staff data to CSV
+                data.rewriteStaff("hms/src/data/Staff_List.csv"); // Rewrite staff data to CSV
                 System.out.println("Staff deleted successfully: " + staff.getName());
             } catch (IOException e) {
                 System.out.println("Error deleting staff: " + e.getMessage());

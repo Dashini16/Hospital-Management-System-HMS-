@@ -35,7 +35,7 @@ public class InitialDataAppointmentSlots implements ListInterface<AppointmentSlo
         try {
 
 
-            importDatafromFile("hms\\src\\data\\Appointment_Slots.csv");
+            importDatafromFile("hms/src/data/Appointment_Slots.csv");
 
 
         } catch (IOException e) {
