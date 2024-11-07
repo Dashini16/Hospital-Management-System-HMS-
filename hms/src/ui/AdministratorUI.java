@@ -8,7 +8,9 @@ import java.util.Scanner;
 
 
 import authorization.*;
+import databackups.DatabaseBackUp;
 import filereaders.*;
+import javafx.scene.chart.PieChart.Data;
 import usermanagement.*;
 
 
@@ -40,7 +42,8 @@ public class AdministratorUI {
             System.out.println("3. Manage Medication Inventory");
             System.out.println("4. Patients Management");
             System.out.println("5. Change Password");
-            System.out.println("6. Logout");
+            System.out.println("6. Backup Database");
+            System.out.println("7. Logout");
             System.out.println("===================================");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -85,6 +88,13 @@ public class AdministratorUI {
                     passwordManagement.changePassword(scanner);
                     break;
                 case 6:
+                    System.out.println("\n==================================="); 
+                    System.out.println("Backup Database");
+                    System.out.println("===================================\n"); // Add a border for the login section
+                    DatabaseBackUp.backupDatabase();
+                    System.out.println("Backup Successful");
+                    break;
+                case 7:
                     System.out.println("Logging Out...");
                     return; // Logout
                 default:
