@@ -197,7 +197,7 @@ public void setDoctorAvailability() {
 
     public void viewMedicalRecords() {
         //InitialDataStaff initialDataStaff = new InitialDataStaff();
-        medicalData.importData();
+       // medicalData.importData();
 
         // Access and print medical records
         List<MedicalRecord> records = medicalData.getLists();
