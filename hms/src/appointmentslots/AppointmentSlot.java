@@ -1,6 +1,7 @@
 package appointmentslots;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,12 +10,12 @@ import enums.WorkingDay;
 
 public class AppointmentSlot {
     private String doctorID;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private List<WorkingDay> workingDays; // List of working days
     //private static List<AppointmentSlot> appointmentSlots = new ArrayList<>(); // Static list to hold all appointment slots
 
-    public AppointmentSlot(String doctorID, LocalDateTime startTime, LocalDateTime endTime, List<WorkingDay> workingDays) {
+    public AppointmentSlot(String doctorID, LocalTime startTime, LocalTime endTime, List<WorkingDay> workingDays) {
         this.doctorID = doctorID;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -25,11 +26,11 @@ public class AppointmentSlot {
         return doctorID;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 

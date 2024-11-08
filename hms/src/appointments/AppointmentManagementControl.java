@@ -411,84 +411,6 @@ public class AppointmentManagementControl
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void rescheduleAppointment() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter Appointment ID to reschedule: ");
@@ -583,152 +505,6 @@ public class AppointmentManagementControl
         return timeChoice;
     }
     
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -839,8 +615,8 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
 
     // Generate available times based on the doctor's working hours for the specific date
     for (AppointmentSlot slot : slots) {
-        LocalTime currentTime = slot.getStartTime().toLocalTime();
-        LocalTime endTime = slot.getEndTime().toLocalTime();
+        LocalTime currentTime = slot.getStartTime();
+        LocalTime endTime = slot.getEndTime();
 
         while (currentTime.isBefore(endTime)) {
             // Only add the time if it's not booked
@@ -903,7 +679,7 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
     
         // Check each slot to see if the desired time falls within the available hours
         for (AppointmentSlot slot : slots) {
-            if (time.isAfter(slot.getStartTime().toLocalTime()) && time.isBefore(slot.getEndTime().toLocalTime())) {
+            if (time.isAfter(slot.getStartTime()) && time.isBefore(slot.getEndTime())) {
                 // Check each appointment to see if it's already booked for the specified date and time
                 for (Appointment appointment : initialDataAppointments.getLists()) {
                     if (appointment.getDoctorID().equals(doctorID) &&

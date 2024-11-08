@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,8 +92,8 @@ public void importDatafromFile(String filename) throws IOException {
                 String doctorID = data[0].trim();
                 
                 // Parse start and end times
-                LocalDateTime startTime = LocalDateTime.parse(data[1].trim());
-                LocalDateTime endTime = LocalDateTime.parse(data[2].trim());
+                LocalTime startTime = LocalTime.parse(data[1].trim());
+                LocalTime endTime = LocalTime.parse(data[2].trim());
 
                 // Parse working days
                 String[] workingDaysArray = data[3].trim().split(";");
