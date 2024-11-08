@@ -142,55 +142,135 @@ public class AppointmentManagementControl {
         }
     }
 
+    // public void cancelAppointment() {
+    //     // PROMPT USER FOR APPOINTMENT ID
+    //     initialDataAppointments.reloadData();
+    //     Scanner scanner = new Scanner(System.in);
+    //     System.out.print("Enter Appointment ID to cancel: ");
+    //     String appointmentID = scanner.nextLine();
+
+    //     // FIND IF APPOINTMENT EXISTS
+    //     Appointment existingAppointment = null;
+    //     try {
+    //         existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv",
+    //                 appointmentID);
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+
+    //     if (existingAppointment == null) {
+    //         System.out.println("Appointment ID not found.");
+    //         return;
+    //     }
+
+    //     // GET CURRENT LOGGED IN PATIENT ID
+    //     String currentPatientID = AuthorizationControl.getCurrentUserId(); 
+
+    //     // Assuming AuthorizationControl is managing the current user's session
+    //     // CHECK IF THE LOGGED-IN PATIENT IS THE SAME AS THE APPOINTMENT'S PATIENT
+    //     if (!existingAppointment.getPatientID().equals(currentPatientID)) {
+    //         System.out.println("You are not authorized to cancel this appointment. This is not your appointment.");
+    //         return;
+    //     }
+
+    //     // CHECK STATUS BEFORE CANCELLING
+    //     if (existingAppointment.getStatus() != AppointmentStatus.PENDING
+    //             && existingAppointment.getStatus() != AppointmentStatus.ACCEPTED) {
+    //         System.out.println("Cannot cancel appointment. Only pending or accepted appointments can be canceled.");
+    //         return;
+    //     }
+
+    //     // CANCEL APPOINTMENT
+    //     existingAppointment.updateStatus(AppointmentStatus.CANCELLED);
+
+    //     // WRITE UPDATED APPOINTMENT TO FILE
+    //     try {
+    //         initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
+    //         System.out.println("Appointment canceled successfully.");
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
     public void cancelAppointment() {
-        // PROMPT USER FOR APPOINTMENT ID
         initialDataAppointments.reloadData();
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Appointment ID to cancel: ");
-        String appointmentID = scanner.nextLine();
-
-        // FIND IF APPOINTMENT EXISTS
-        Appointment existingAppointment = null;
+        String currentPatientID = AuthorizationControl.getCurrentUserId();
+        LocalDate today = LocalDate.now();
+    
+        // Filter appointments for the current user
+        List<Appointment> cancelableAppointments = initialDataAppointments.getLists().stream()
+                .filter(appointment -> appointment.getPatientID().equals(currentPatientID)
+                        && ((appointment.getStatus() == AppointmentStatus.PENDING)
+                            || (appointment.getStatus() == AppointmentStatus.ACCEPTED
+                                && LocalDate.parse(appointment.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                        .isAfter(today.plusDays(3)))))
+                .collect(Collectors.toList());
+    
+        if (cancelableAppointments.isEmpty()) {
+            System.out.println("No appointments are eligible for cancellation.");
+            return;
+        }
+    
+        // Display eligible appointments for cancellation
+        System.out.println("Appointments eligible for cancellation:");
+        System.out.println("==============================================================");
+        for (int i = 0; i < cancelableAppointments.size(); i++) {
+            Appointment appointment = cancelableAppointments.get(i);
+    
+            // Find the doctor's name directly within the loop
+            String doctorName = initialDataStaff.getDoctors().stream()
+                    .filter(doc -> doc.getUserID().equals(appointment.getDoctorID()))
+                    .map(Doctor::getName)
+                    .findFirst()
+                    .orElse("Unknown Doctor");
+    
+            System.out.printf("Option %d:\n", (i + 1));
+            System.out.printf("   Appointment ID: %s\n", appointment.getAppointmentID());
+            System.out.printf("   Date          : %s\n", appointment.getDate());
+            System.out.printf("   Time          : %s\n", appointment.getTime());
+            System.out.printf("   Doctor        : %s (ID: %s)\n", doctorName, appointment.getDoctorID());
+            System.out.printf("   Status        : %s\n", appointment.getStatus());
+            System.out.println("--------------------------------------------------------------");
+        }
+    
+        // Prompt user to select an appointment to cancel by entering the option number
+        int appointmentIndex = -1;
+        while (appointmentIndex < 0 || appointmentIndex >= cancelableAppointments.size()) {
+            System.out.print("Enter the number of the appointment to cancel: ");
+            try {
+                appointmentIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (appointmentIndex < 0 || appointmentIndex >= cancelableAppointments.size()) {
+                    System.out.println("Invalid choice. Please select a valid number from the list.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        }
+    
+        // Get the selected appointment for cancellation
+        Appointment selectedAppointment = cancelableAppointments.get(appointmentIndex);
+    
+        // Confirm the cancellation
+        System.out.print("Are you sure you want to cancel this appointment? (yes/no): ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+        if (!confirmation.equals("yes")) {
+            System.out.println("Cancellation aborted.");
+            return;
+        }
+    
+        // Cancel the appointment by updating its status to CANCELLED
+        selectedAppointment.updateStatus(AppointmentStatus.CANCELLED);
+    
+        // Write updated appointment to file
         try {
-            existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv",
-                    appointmentID);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (existingAppointment == null) {
-            System.out.println("Appointment ID not found.");
-            return;
-        }
-
-        // GET CURRENT LOGGED IN PATIENT ID
-        String currentPatientID = AuthorizationControl.getCurrentUserId(); // Assuming AuthorizationControl is managing
-                                                                           // the current user's session
-
-        // CHECK IF THE LOGGED-IN PATIENT IS THE SAME AS THE APPOINTMENT'S PATIENT
-        if (!existingAppointment.getPatientID().equals(currentPatientID)) {
-            System.out.println("You are not authorized to cancel this appointment. This is not your appointment.");
-            return;
-        }
-
-        // CHECK STATUS BEFORE CANCELLING
-        if (existingAppointment.getStatus() != AppointmentStatus.PENDING
-                && existingAppointment.getStatus() != AppointmentStatus.ACCEPTED) {
-            System.out.println("Cannot cancel appointment. Only pending or accepted appointments can be canceled.");
-            return;
-        }
-
-        // CANCEL APPOINTMENT
-        existingAppointment.updateStatus(AppointmentStatus.CANCELLED);
-
-        // WRITE UPDATED APPOINTMENT TO FILE
-        try {
-            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", selectedAppointment);
             System.out.println("Appointment canceled successfully.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
     // UPDATE APPOINTMENT STATUS
     public void acceptOrDeclineAppointment() {
@@ -414,112 +494,122 @@ public class AppointmentManagementControl {
     }
 
     // public void rescheduleAppointment() {
-    //     Scanner scanner = new Scanner(System.in);
-    //     String currentUserID = AuthorizationControl.getCurrentUserId();
+    // Scanner scanner = new Scanner(System.in);
+    // String currentUserID = AuthorizationControl.getCurrentUserId();
 
-    //     // Retrieve all ACCEPTED appointments for the current user
-    //     List<Appointment> userAcceptedAppointments = initialDataAppointments.getLists().stream()
-    //             .filter(appointment -> appointment.getPatientID().equals(currentUserID)
-    //                     && appointment.getStatus() == AppointmentStatus.ACCEPTED)
-    //             .collect(Collectors.toList());
+    // // Retrieve all ACCEPTED appointments for the current user
+    // List<Appointment> userAcceptedAppointments =
+    // initialDataAppointments.getLists().stream()
+    // .filter(appointment -> appointment.getPatientID().equals(currentUserID)
+    // && appointment.getStatus() == AppointmentStatus.ACCEPTED)
+    // .collect(Collectors.toList());
 
-    //     if (userAcceptedAppointments.isEmpty()) {
-    //         System.out.println("No accepted appointments available for rescheduling.");
-    //         return;
-    //     }
+    // if (userAcceptedAppointments.isEmpty()) {
+    // System.out.println("No accepted appointments available for rescheduling.");
+    // return;
+    // }
 
-    //     // Display available appointments for rescheduling with Doctor's name
-    //     System.out.println("Select an appointment to reschedule:");
-    //     System.out.println("==============================================================");
+    // // Display available appointments for rescheduling with Doctor's name
+    // System.out.println("Select an appointment to reschedule:");
+    // System.out.println("==============================================================");
 
-    //     for (int i = 0; i < userAcceptedAppointments.size(); i++) {
-    //         Appointment appointment = userAcceptedAppointments.get(i);
-    //         String doctorID = appointment.getDoctorID();
+    // for (int i = 0; i < userAcceptedAppointments.size(); i++) {
+    // Appointment appointment = userAcceptedAppointments.get(i);
+    // String doctorID = appointment.getDoctorID();
 
-    //         // Find the doctor's name directly within the loop
-    //         String doctorName = initialDataStaff.getDoctors().stream()
-    //                 .filter(doc -> doc.getUserID().equals(doctorID))
-    //                 .map(Doctor::getName)
-    //                 .findFirst()
-    //                 .orElse("Unknown Doctor");
+    // // Find the doctor's name directly within the loop
+    // String doctorName = initialDataStaff.getDoctors().stream()
+    // .filter(doc -> doc.getUserID().equals(doctorID))
+    // .map(Doctor::getName)
+    // .findFirst()
+    // .orElse("Unknown Doctor");
 
-    //         // Display appointment details with cleaner formatting
-    //         System.out.printf("Option %d:\n", (i + 1));
-    //         System.out.printf("   Appointment ID: %s\n", appointment.getAppointmentID());
-    //         System.out.printf("   Date          : %s\n", appointment.getDate());
-    //         System.out.printf("   Time          : %s\n", appointment.getTime());
-    //         System.out.printf("   Doctor        : %s (ID: %s)\n", doctorName, doctorID);
-    //         System.out.println("--------------------------------------------------------------");
-    //     }
+    // // Display appointment details with cleaner formatting
+    // System.out.printf("Option %d:\n", (i + 1));
+    // System.out.printf(" Appointment ID: %s\n", appointment.getAppointmentID());
+    // System.out.printf(" Date : %s\n", appointment.getDate());
+    // System.out.printf(" Time : %s\n", appointment.getTime());
+    // System.out.printf(" Doctor : %s (ID: %s)\n", doctorName, doctorID);
+    // System.out.println("--------------------------------------------------------------");
+    // }
 
-    //     // Prompt user to select an appointment
-    //     int appointmentIndex = -1;
-    //     while (appointmentIndex < 0 || appointmentIndex >= userAcceptedAppointments.size()) {
-    //         System.out.print("Enter the number of the appointment to reschedule: ");
-    //         try {
-    //             appointmentIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
-    //             if (appointmentIndex < 0 || appointmentIndex >= userAcceptedAppointments.size()) {
-    //                 System.out.println("Invalid choice. Please select a valid number from the list.");
-    //             }
-    //         } catch (NumberFormatException e) {
-    //             System.out.println("Invalid input. Please enter a number.");
-    //         }
-    //     }
+    // // Prompt user to select an appointment
+    // int appointmentIndex = -1;
+    // while (appointmentIndex < 0 || appointmentIndex >=
+    // userAcceptedAppointments.size()) {
+    // System.out.print("Enter the number of the appointment to reschedule: ");
+    // try {
+    // appointmentIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+    // if (appointmentIndex < 0 || appointmentIndex >=
+    // userAcceptedAppointments.size()) {
+    // System.out.println("Invalid choice. Please select a valid number from the
+    // list.");
+    // }
+    // } catch (NumberFormatException e) {
+    // System.out.println("Invalid input. Please enter a number.");
+    // }
+    // }
 
-    //     // Proceed with the rest of the rescheduling process as before
-    //     Appointment existingAppointment = userAcceptedAppointments.get(appointmentIndex);
-    //     String doctorID = existingAppointment.getDoctorID();
+    // // Proceed with the rest of the rescheduling process as before
+    // Appointment existingAppointment =
+    // userAcceptedAppointments.get(appointmentIndex);
+    // String doctorID = existingAppointment.getDoctorID();
 
-    //     // Get the next 14 days the doctor is available
-    //     List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
-    //     if (availableDates.isEmpty()) {
-    //         System.out.println("Doctor is not available in the next 14 days.");
-    //         return;
-    //     }
+    // // Get the next 14 days the doctor is available
+    // List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
+    // if (availableDates.isEmpty()) {
+    // System.out.println("Doctor is not available in the next 14 days.");
+    // return;
+    // }
 
-    //     // Display available dates for rescheduling
-    //     System.out.println("Available dates for rescheduling:");
-    //     for (int i = 0; i < availableDates.size(); i++) {
-    //         System.out
-    //                 .println((i + 1) + ". " + availableDates.get(i).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-    //     }
+    // // Display available dates for rescheduling
+    // System.out.println("Available dates for rescheduling:");
+    // for (int i = 0; i < availableDates.size(); i++) {
+    // System.out
+    // .println((i + 1) + ". " +
+    // availableDates.get(i).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    // }
 
-    //     // Prompt user to select a date
-    //     int dateChoice = promptForDateChoice(scanner, availableDates);
-    //     if (dateChoice == -1) {
-    //         System.out.println("Invalid choice. Exiting.");
-    //         return;
-    //     }
-    //     LocalDate selectedDate = availableDates.get(dateChoice - 1);
+    // // Prompt user to select a date
+    // int dateChoice = promptForDateChoice(scanner, availableDates);
+    // if (dateChoice == -1) {
+    // System.out.println("Invalid choice. Exiting.");
+    // return;
+    // }
+    // LocalDate selectedDate = availableDates.get(dateChoice - 1);
 
-    //     // Show available times for the selected date
-    //     List<LocalTime> availableTimes = printAvailableTimes(doctorID, selectedDate);
+    // // Show available times for the selected date
+    // List<LocalTime> availableTimes = printAvailableTimes(doctorID, selectedDate);
 
-    //     // Prompt user to select a time
-    //     int timeChoice = promptForTimeChoice(scanner, availableTimes);
-    //     if (timeChoice == -1) {
-    //         System.out.println("Invalid choice. Exiting.");
-    //         return;
-    //     }
-    //     LocalTime selectedTime = availableTimes.get(timeChoice - 1);
+    // // Prompt user to select a time
+    // int timeChoice = promptForTimeChoice(scanner, availableTimes);
+    // if (timeChoice == -1) {
+    // System.out.println("Invalid choice. Exiting.");
+    // return;
+    // }
+    // LocalTime selectedTime = availableTimes.get(timeChoice - 1);
 
-    //     // Format the date and time
-    //     String formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    //     String formattedTime = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+    // // Format the date and time
+    // String formattedDate =
+    // selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    // String formattedTime =
+    // selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"));
 
-    //     // Update appointment date and time
-    //     existingAppointment.setDate(formattedDate);
-    //     existingAppointment.setTime(formattedTime);
+    // // Update appointment date and time
+    // existingAppointment.setDate(formattedDate);
+    // existingAppointment.setTime(formattedTime);
 
-    //     // Write updated appointment to file
-    //     try {
-    //         initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
+    // // Write updated appointment to file
+    // try {
+    // initialDataAppointments.writeData("hms/src/data/Appointments_List.csv",
+    // existingAppointment);
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
 
-    //     System.out.println("Appointment rescheduled successfully to " + formattedDate + " at " + formattedTime);
-    //     initialDataAppointments.reloadData();
+    // System.out.println("Appointment rescheduled successfully to " + formattedDate
+    // + " at " + formattedTime);
+    // initialDataAppointments.reloadData();
 
     // }
 
