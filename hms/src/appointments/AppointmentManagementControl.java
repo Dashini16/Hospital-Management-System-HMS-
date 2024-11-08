@@ -142,55 +142,6 @@ public class AppointmentManagementControl {
         }
     }
 
-    // public void cancelAppointment() {
-    //     // PROMPT USER FOR APPOINTMENT ID
-    //     initialDataAppointments.reloadData();
-    //     Scanner scanner = new Scanner(System.in);
-    //     System.out.print("Enter Appointment ID to cancel: ");
-    //     String appointmentID = scanner.nextLine();
-
-    //     // FIND IF APPOINTMENT EXISTS
-    //     Appointment existingAppointment = null;
-    //     try {
-    //         existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv",
-    //                 appointmentID);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-
-    //     if (existingAppointment == null) {
-    //         System.out.println("Appointment ID not found.");
-    //         return;
-    //     }
-
-    //     // GET CURRENT LOGGED IN PATIENT ID
-    //     String currentPatientID = AuthorizationControl.getCurrentUserId(); 
-
-    //     // Assuming AuthorizationControl is managing the current user's session
-    //     // CHECK IF THE LOGGED-IN PATIENT IS THE SAME AS THE APPOINTMENT'S PATIENT
-    //     if (!existingAppointment.getPatientID().equals(currentPatientID)) {
-    //         System.out.println("You are not authorized to cancel this appointment. This is not your appointment.");
-    //         return;
-    //     }
-
-    //     // CHECK STATUS BEFORE CANCELLING
-    //     if (existingAppointment.getStatus() != AppointmentStatus.PENDING
-    //             && existingAppointment.getStatus() != AppointmentStatus.ACCEPTED) {
-    //         System.out.println("Cannot cancel appointment. Only pending or accepted appointments can be canceled.");
-    //         return;
-    //     }
-
-    //     // CANCEL APPOINTMENT
-    //     existingAppointment.updateStatus(AppointmentStatus.CANCELLED);
-
-    //     // WRITE UPDATED APPOINTMENT TO FILE
-    //     try {
-    //         initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
-    //         System.out.println("Appointment canceled successfully.");
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
 
     public void cancelAppointment() {
         initialDataAppointments.reloadData();
