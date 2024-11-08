@@ -413,6 +413,116 @@ public class AppointmentManagementControl {
         }
     }
 
+    // public void rescheduleAppointment() {
+    //     Scanner scanner = new Scanner(System.in);
+    //     String currentUserID = AuthorizationControl.getCurrentUserId();
+
+    //     // Retrieve all ACCEPTED appointments for the current user
+    //     List<Appointment> userAcceptedAppointments = initialDataAppointments.getLists().stream()
+    //             .filter(appointment -> appointment.getPatientID().equals(currentUserID)
+    //                     && appointment.getStatus() == AppointmentStatus.ACCEPTED)
+    //             .collect(Collectors.toList());
+
+    //     if (userAcceptedAppointments.isEmpty()) {
+    //         System.out.println("No accepted appointments available for rescheduling.");
+    //         return;
+    //     }
+
+    //     // Display available appointments for rescheduling with Doctor's name
+    //     System.out.println("Select an appointment to reschedule:");
+    //     System.out.println("==============================================================");
+
+    //     for (int i = 0; i < userAcceptedAppointments.size(); i++) {
+    //         Appointment appointment = userAcceptedAppointments.get(i);
+    //         String doctorID = appointment.getDoctorID();
+
+    //         // Find the doctor's name directly within the loop
+    //         String doctorName = initialDataStaff.getDoctors().stream()
+    //                 .filter(doc -> doc.getUserID().equals(doctorID))
+    //                 .map(Doctor::getName)
+    //                 .findFirst()
+    //                 .orElse("Unknown Doctor");
+
+    //         // Display appointment details with cleaner formatting
+    //         System.out.printf("Option %d:\n", (i + 1));
+    //         System.out.printf("   Appointment ID: %s\n", appointment.getAppointmentID());
+    //         System.out.printf("   Date          : %s\n", appointment.getDate());
+    //         System.out.printf("   Time          : %s\n", appointment.getTime());
+    //         System.out.printf("   Doctor        : %s (ID: %s)\n", doctorName, doctorID);
+    //         System.out.println("--------------------------------------------------------------");
+    //     }
+
+    //     // Prompt user to select an appointment
+    //     int appointmentIndex = -1;
+    //     while (appointmentIndex < 0 || appointmentIndex >= userAcceptedAppointments.size()) {
+    //         System.out.print("Enter the number of the appointment to reschedule: ");
+    //         try {
+    //             appointmentIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+    //             if (appointmentIndex < 0 || appointmentIndex >= userAcceptedAppointments.size()) {
+    //                 System.out.println("Invalid choice. Please select a valid number from the list.");
+    //             }
+    //         } catch (NumberFormatException e) {
+    //             System.out.println("Invalid input. Please enter a number.");
+    //         }
+    //     }
+
+    //     // Proceed with the rest of the rescheduling process as before
+    //     Appointment existingAppointment = userAcceptedAppointments.get(appointmentIndex);
+    //     String doctorID = existingAppointment.getDoctorID();
+
+    //     // Get the next 14 days the doctor is available
+    //     List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
+    //     if (availableDates.isEmpty()) {
+    //         System.out.println("Doctor is not available in the next 14 days.");
+    //         return;
+    //     }
+
+    //     // Display available dates for rescheduling
+    //     System.out.println("Available dates for rescheduling:");
+    //     for (int i = 0; i < availableDates.size(); i++) {
+    //         System.out
+    //                 .println((i + 1) + ". " + availableDates.get(i).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    //     }
+
+    //     // Prompt user to select a date
+    //     int dateChoice = promptForDateChoice(scanner, availableDates);
+    //     if (dateChoice == -1) {
+    //         System.out.println("Invalid choice. Exiting.");
+    //         return;
+    //     }
+    //     LocalDate selectedDate = availableDates.get(dateChoice - 1);
+
+    //     // Show available times for the selected date
+    //     List<LocalTime> availableTimes = printAvailableTimes(doctorID, selectedDate);
+
+    //     // Prompt user to select a time
+    //     int timeChoice = promptForTimeChoice(scanner, availableTimes);
+    //     if (timeChoice == -1) {
+    //         System.out.println("Invalid choice. Exiting.");
+    //         return;
+    //     }
+    //     LocalTime selectedTime = availableTimes.get(timeChoice - 1);
+
+    //     // Format the date and time
+    //     String formattedDate = selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    //     String formattedTime = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+    //     // Update appointment date and time
+    //     existingAppointment.setDate(formattedDate);
+    //     existingAppointment.setTime(formattedTime);
+
+    //     // Write updated appointment to file
+    //     try {
+    //         initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+
+    //     System.out.println("Appointment rescheduled successfully to " + formattedDate + " at " + formattedTime);
+    //     initialDataAppointments.reloadData();
+
+    // }
+
     public void rescheduleAppointment() {
         Scanner scanner = new Scanner(System.in);
         String currentUserID = AuthorizationControl.getCurrentUserId();
@@ -510,6 +620,7 @@ public class AppointmentManagementControl {
         // Update appointment date and time
         existingAppointment.setDate(formattedDate);
         existingAppointment.setTime(formattedTime);
+        existingAppointment.updateStatus(AppointmentStatus.PENDING);
 
         // Write updated appointment to file
         try {
