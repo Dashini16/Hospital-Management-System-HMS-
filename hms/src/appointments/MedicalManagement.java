@@ -2,6 +2,7 @@ package appointments;
 
 import filereaders.InitialDataAppointmentSlots;
 import filereaders.InitialDataMedicalRecord;
+import lookups.UserLookup;
 import medicalrecords.MedicalRecord;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -44,7 +45,10 @@ public class MedicalManagement {
         }
         System.out.println("Patient ID: " + patientID);
         // Check if a medical record already exists for the patient
-        MedicalRecord existingRecord = findPatientById(patientID);
+        //MedicalRecord existingRecord = findPatientById(patientID);
+        UserLookup userLookup = new UserLookup();
+        final String findPatient = patientID;
+        MedicalRecord existingRecord = userLookup.findByID(findPatient, medicalData.getLists(), rec -> rec.getPatientID().equals(findPatient));
         if (existingRecord != null) {
             System.out.println("Error: A medical record already exists for patient ID " + patientID + ". You cannot add another record.");
             return; // Exit the method if a record already exists
@@ -230,7 +234,7 @@ public void setDoctorAvailability() {
 
 
 public void updateMedicalRecord() {
-    medicalData.importData();
+    //medicalData.importData();
 
     // Prompt user for patient ID with validation
     Scanner scanner = new Scanner(System.in);
@@ -247,7 +251,11 @@ public void updateMedicalRecord() {
     }
 
     // Find the medical record by ID
-    MedicalRecord medicalRecord = findPatientById(patientID);
+    //MedicalRecord medicalRecord = findPatientById(patientID);
+
+    UserLookup userLookup = new UserLookup();
+    final String findPatient = patientID;
+    MedicalRecord medicalRecord = userLookup.findByID(findPatient, medicalData.getLists(), rec -> rec.getPatientID().equals(findPatient));
     if (medicalRecord == null) {
         System.out.println("Medical Record not found for Patient ID: " + patientID);
         return;
@@ -309,7 +317,7 @@ public void updateMedicalRecord() {
 
 
 
-
+/* 
     private MedicalRecord findPatientById(String id) {
         for (MedicalRecord medicalRecord : medicalData.getLists()) {
             //System.out.println("Patient ID: " + medicalRecord);
@@ -319,5 +327,5 @@ public void updateMedicalRecord() {
             }
         }
         return null; // Not found
-    }
+    }*/
 }

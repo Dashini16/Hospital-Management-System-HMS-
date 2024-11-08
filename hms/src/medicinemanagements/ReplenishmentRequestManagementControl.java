@@ -7,6 +7,7 @@ import enums.RequestStatus;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataStaff;
 import filereaders.InitialDatareplenishmentRequest;
+import lookups.UserLookup;
 
 import java.util.Scanner;
 
@@ -53,7 +54,9 @@ public class ReplenishmentRequestManagementControl {
                     continue; // Prompt again for input
                 }
     
-                Medicine medicine = findMedicineByName(request.getMedicineName());
+                //Medicine medicine = findMedicineByName(request.getMedicineName());
+                UserLookup userLookup = new UserLookup();
+                Medicine medicine = userLookup.findByID(request.getMedicineName(), medicineData.getLists(), med -> med.getName().equalsIgnoreCase(request.getMedicineName()));
     
                 if (medicine != null) {
                     // Update stock and set request status to fulfilled
@@ -101,7 +104,7 @@ public class ReplenishmentRequestManagementControl {
         }
     }
     
-    
+    /*
     private Medicine findMedicineByName(String name) {
         for (Medicine medicine : medicineData.getLists()) {
             if (medicine.getName().equalsIgnoreCase(name)) {
@@ -109,5 +112,5 @@ public class ReplenishmentRequestManagementControl {
             }
         }
         return null; // Not found
-    }
+    }*/
 }

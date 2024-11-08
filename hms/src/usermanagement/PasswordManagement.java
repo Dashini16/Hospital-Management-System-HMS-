@@ -3,6 +3,8 @@ package usermanagement;
 
 import authorization.*;
 import filereaders.*;
+import lookups.UserLookup;
+import medicinemanagements.Medicine;
 import users.*;
 import java.io.IOException;
 import java.util.Scanner;

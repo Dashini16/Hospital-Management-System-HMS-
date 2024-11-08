@@ -3,6 +3,7 @@ package medicinemanagements;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataStaff;
 import filereaders.InitialDatareplenishmentRequest;
+import lookups.UserLookup;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +30,10 @@ public class RequestCreateControl {
         String name = scanner.nextLine().trim(); // Trim whitespace from input
     
         // Check if the medicine exists
-        Medicine existingMedicine = findMedicineByName(name);
+        //Medicine existingMedicine = findMedicineByName(name);
+        UserLookup userLookup = new UserLookup();
+        Medicine existingMedicine = userLookup.findByID(name, data.getLists(), med -> med.getName().equalsIgnoreCase(name));
+    
         if (existingMedicine == null) {
             System.out.println("Medicine not found. Please enter a valid medicine name.");
             return; // Exit the method if medicine does not exist

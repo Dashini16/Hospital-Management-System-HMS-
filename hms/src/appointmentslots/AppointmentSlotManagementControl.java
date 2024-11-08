@@ -8,7 +8,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +23,7 @@ import enums.WorkingDay;
 import filereaders.InitialDataAppointmentSlots;
 import filereaders.InitialDataAppointments;
 import filereaders.InitialDataStaff;
+import lookups.UserLookup;
 import users.Doctor;
 
 public class AppointmentSlotManagementControl {
@@ -78,7 +78,9 @@ public class AppointmentSlotManagementControl {
         String doctorID = scanner.nextLine().trim();
     
         // Validate if the doctor exists
-        Doctor doctor = findDoctorByID(doctorID);
+        //Doctor doctor = findDoctorByID(doctorID);
+        UserLookup userLookup = new UserLookup();
+        Doctor doctor = userLookup.findByID(doctorID, initialData.getDoctors(), doc -> doc.getUserID().equals(doctorID));
         if (doctor == null) {
             System.out.println("Doctor ID not found. Please try again.");
             return;
@@ -169,7 +171,7 @@ private void printforpatientAvailableTimes(String doctorID, LocalDate date) {
 
 
 
-
+/* 
 
     public Doctor findDoctorByID(String id) {
         for (Doctor doctor : initialData.getDoctors()) {
@@ -179,7 +181,7 @@ private void printforpatientAvailableTimes(String doctorID, LocalDate date) {
         }
         return null;
     }
-
+*/
 
 
     public void viewPersonalSchedule() {
@@ -190,7 +192,9 @@ private void printforpatientAvailableTimes(String doctorID, LocalDate date) {
         String doctorID = AuthorizationControl.getCurrentUserId();
     
         // Validate if the doctor exists
-        Doctor doctor = findDoctorByID(doctorID);
+        //Doctor doctor = findDoctorByID(doctorID);
+        UserLookup userLookup = new UserLookup();
+        Doctor doctor = userLookup.findByID(doctorID, initialData.getDoctors(), doc -> doc.getUserID().equals(doctorID));
         if (doctor == null) {
             System.out.println("Doctor ID not found. Please try again.");
             return;

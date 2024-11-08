@@ -4,30 +4,22 @@ import filereaders.InitialDataAppointments;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataPatient;
 import filereaders.InitialDataStaff;
+import lookups.UserLookup;
 import medicalrecords.OutcomeRecord;
 import medicalrecords.Prescription;
 import medicinemanagements.Medicine;
 import users.Doctor;
-import users.Patient;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import appointmentslots.AppointmentSlot;
@@ -59,83 +51,8 @@ public class AppointmentManagementControl
     }
 
     
-    // Method to check if the doctor is available at the specified date and time
-    private boolean isDoctorAvailable(String doctorID, LocalDate date, LocalTime time) {
-        LocalDateTime requestedDateTime = LocalDateTime.of(date, time);
-        boolean isAvailable = false;
-    
-        for (AppointmentSlot slot : initialDataAppointmentSlots.getLists()) {
-            // Log details of the current appointment slot being checked
-            System.out.println("Slot: " + slot.displayData());
-            if (slot.getDoctorID().equals(doctorID)) {
-                // Print the start and end dates of the current slot
-                System.out.println("Doctor ID: " + slot.getDoctorID());
-                System.out.println("Start Date: " + slot.getStartTime().toLocalDate());
-                System.out.println("End Date: " + slot.getEndTime().toLocalDate());
-    
-                // Check if the requested date is within the appointment slot date range
-                if (!requestedDateTime.toLocalDate().isBefore(slot.getStartTime().toLocalDate()) &&
-                    !requestedDateTime.toLocalDate().isAfter(slot.getEndTime().toLocalDate())) {
-    
-                    System.out.println("Checking day of week...");
-    
-                    // Get the day of the week for the requested appointment
-                    DayOfWeek appointmentDay = requestedDateTime.getDayOfWeek();
-                    
-                    // Directly access the working days from the slot
-                    List<WorkingDay> workingDays = slot.getWorkingDays();
-    
-                    System.out.println("Requested Day: " + appointmentDay);
-                    System.out.println("Working Days: " + workingDays);
-    
-                    // Check if the appointment day corresponds to any working day
-                    if (workingDays.stream().anyMatch(day -> day.name().equalsIgnoreCase(appointmentDay.name()))) {
-                        // Check if the requested time is within the start and end time
-                        if ((requestedDateTime.isEqual(slot.getStartTime()) || requestedDateTime.isEqual(slot.getEndTime())) ||
-                            (requestedDateTime.isAfter(slot.getStartTime()) && requestedDateTime.isBefore(slot.getEndTime()))) {
-                            System.out.println("Doctor is available for the requested appointment.");
-                            for(Appointment appointment : initialDataAppointments.getLists()) {
-                                if(appointment.getStatus() != AppointmentStatus.ACCEPTED ) {
-                                    //System.out.println("ALLL GOOOODDDDD");
-                                    isAvailable = true; // Set availability to true
-                                }
-                            }
-                            //isAvailable = true; // Set availability to true
-                            break; // Exit loop if found available
-                        }
-                    } else {
-                        System.out.println("The appointment day does not match the doctor's working days.");
-                    }
-                }
-            }
-        }
-        return isAvailable; // Return availability status
-    }
-    
-    
 
-
-
-
-// FIND DOCTOR BY ID
-public Doctor findDoctorByID(String id) {
-    for (Doctor doctor : initialDataStaff.getDoctors()) {
-        if (doctor.getUserID().equals(id)) {
-            return doctor;
-        }
-    }
-    return null;
-}
-
-
-public Patient findPatientByID(String id) {
-    for (Patient patient : initialDataPatient.getLists()) {
-        if (patient.getUserID().equals(id)) {
-            return patient;
-        }
-    }
-    return null;
-}
+    
 
     public void viewonlyallAppointments() {
         // Add code to view appointment records
@@ -502,14 +419,16 @@ public void cancelAppointment() {
 
     public void scheduleAppointment() {
         Scanner scanner = new Scanner(System.in);
-    
+
+        UserLookup userLookup = new UserLookup();
         // Get the patient ID
         String patientUserID = AuthorizationControl.getCurrentUserId();
     
         // Prompt for doctor ID and validate existence
         System.out.print("Enter Doctor ID: ");
         String doctorID = scanner.nextLine();
-        Doctor doctor = findDoctorByID(doctorID);
+        //Doctor doctor = findDoctorByID(doctorID);
+        Doctor doctor = userLookup.findByID(doctorID, initialDataStaff.getDoctors(), doc -> doc.getUserID().equals(doctorID));
     
         if (doctor == null) {
             System.out.println("Error: Doctor not found.");

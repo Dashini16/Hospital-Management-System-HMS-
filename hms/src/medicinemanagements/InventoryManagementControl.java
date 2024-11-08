@@ -3,6 +3,8 @@ import java.io.IOException;
 
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataStaff;
+import lookups.UserLookup;
+
 //import java.util.ArrayList;
 //import java.util.List;
 import java.util.Scanner;
@@ -29,7 +31,9 @@ public class InventoryManagementControl {
         }
         
         // Check if the medicine already exists
-        if (findMedicineByName(name) != null) {
+        UserLookup userLookup = new UserLookup();
+        Medicine medicine = userLookup.findByID(name, medicineData.getLists(), med -> med.getName().equalsIgnoreCase(name));
+        if (medicine != null) {
             System.out.println("Error: Medicine with the name '" + name + "' already exists.");
             return;
         }
@@ -192,7 +196,7 @@ public class InventoryManagementControl {
         }
     }
     
-    
+    /* 
     private Medicine findMedicineByName(String name) {
         for (Medicine medicine : medicineData.getLists()) {
             if (medicine.getName().equalsIgnoreCase(name)) {
@@ -200,5 +204,5 @@ public class InventoryManagementControl {
             }
         }
         return null; // Not found
-    }
+    }*/
 }

@@ -1,6 +1,8 @@
 package usermanagement;
 
 import filereaders.*;
+import lookups.UserLookup;
+import medicinemanagements.Medicine;
 import users.*;
 
 import java.io.IOException;
@@ -98,7 +100,9 @@ public class PatientManagementControl {
         //String patientID = scanner.nextLine().trim();
         String patientID = AuthorizationControl.getCurrentUserId();
     
-        Patient patient = findPatientById(patientID);
+        //Patient patient = findPatientById(patientID);
+        UserLookup userLookup = new UserLookup();
+        Patient patient = userLookup.findByID(patientID, data.getLists(), med -> med.getUserID().equalsIgnoreCase(patientID));
         if (patient == null) {
             System.out.println("Error: Patient not found.");
             return;
@@ -147,7 +151,9 @@ public class PatientManagementControl {
         System.out.print("Enter the ID of the patient to delete: ");
         String patientID = scanner.nextLine().trim();
     
-        Patient patient = findPatientById(patientID);
+        //Patient patient = findPatientById(patientID);
+        UserLookup userLookup = new UserLookup();
+        Patient patient = userLookup.findByID(patientID, data.getLists(), med -> med.getUserID().equalsIgnoreCase(patientID));
         if (patient == null) {
             System.out.println("Error: Patient not found.");
             return;
@@ -167,7 +173,7 @@ public class PatientManagementControl {
         }
     }
     
-
+/* 
     // Helper method to find a patient by ID
     private Patient findPatientById(String id) {
         for (Patient patient : data.getLists()) {
@@ -176,5 +182,5 @@ public class PatientManagementControl {
             }
         }
         return null; // Not found
-    }
+    }*/
 }
