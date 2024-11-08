@@ -433,9 +433,9 @@ public class AppointmentManagementControl
         String doctorID = existingAppointment.getDoctorID();
     
         // GET THE NEXT 7 DAYS THE DOCTOR IS AVAILABLE
-        List<LocalDate> availableDates = getDoctorAvailabilityNext7Days(doctorID);
+        List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
         if (availableDates.isEmpty()) {
-            System.out.println("Doctor is not available in the next 7 days.");
+            System.out.println("Doctor is not available in the next 14 days.");
             return;
         }
     
@@ -506,70 +506,114 @@ public class AppointmentManagementControl
     }
     
 
-
-
     public void scheduleAppointment() {
         Scanner scanner = new Scanner(System.in);
-
-        UserLookup userLookup = new UserLookup();
-        // Get the patient ID
         String patientUserID = AuthorizationControl.getCurrentUserId();
     
-        // Prompt for doctor ID and validate existence
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = scanner.nextLine();
-        //Doctor doctor = findDoctorByID(doctorID);
-        Doctor doctor = userLookup.findByID(doctorID, initialDataStaff.getDoctors(), doc -> doc.getUserID().equals(doctorID));
+        // Retrieve available doctor IDs with slots in the next 14 days
+        Set<String> doctorIDsWithSlots = initialDataAppointmentSlots.getLists().stream()
+                .map(AppointmentSlot::getDoctorID)
+                .collect(Collectors.toSet());
     
-        if (doctor == null) {
-            System.out.println("Error: Doctor not found.");
+        // Filter doctors with available slots
+        List<Doctor> availableDoctors = initialDataStaff.getDoctors().stream()
+                .filter(doc -> doctorIDsWithSlots.contains(doc.getUserID()))
+                .collect(Collectors.toList());
+    
+        if (availableDoctors.isEmpty()) {
+            System.out.println("No doctors with available slots in the next 14 days.");
             return;
         }
     
-        // Display available dates within the next 7 days
-        List<LocalDate> availableDates = getDoctorAvailabilityNext7Days(doctorID);
+        // Display doctors to the user
+        System.out.println("Select a doctor by entering the corresponding number:");
+        for (int i = 0; i < availableDoctors.size(); i++) {
+            System.out.println((i + 1) + ". " + availableDoctors.get(i).getName());
+        }
+    
+        int doctorIndex = -1;
+        while (doctorIndex < 0 || doctorIndex >= availableDoctors.size()) {
+            System.out.print("Enter your choice: ");
+            try {
+                doctorIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (doctorIndex < 0 || doctorIndex >= availableDoctors.size()) {
+                    System.out.println("Invalid choice. Please select a valid number from the list.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        }
+    
+        Doctor selectedDoctor = availableDoctors.get(doctorIndex);
+        String doctorID = selectedDoctor.getUserID();
+    
+        // Use getDoctorAvailabilityNext14Days to get available dates
+        List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
         if (availableDates.isEmpty()) {
-            System.out.println("Doctor not available in the next 7 days.");
+            System.out.println("Doctor not available in the next 14 days.");
             return;
         }
     
+        // Display available dates
         System.out.println("Available dates:");
         for (int i = 0; i < availableDates.size(); i++) {
             System.out.println((i + 1) + ". " + availableDates.get(i).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
     
-        // Ask the user to select a date
+        // User selects a date
         System.out.print("Choose a date by entering the corresponding number: ");
         int dateChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
         if (dateChoice < 1 || dateChoice > availableDates.size()) {
             System.out.println("Invalid choice. Exiting.");
             return;
         }
         LocalDate selectedDate = availableDates.get(dateChoice - 1);
     
-        // Show available times for the selected date
-        List<LocalTime> availableTimes = printAvailableTimes(doctorID, selectedDate);
+        // Generate available times for the selected date at 30-minute intervals
+        List<LocalTime> availableTimes = initialDataAppointmentSlots.getLists().stream()
+                .filter(slot -> slot.getDoctorID().equals(doctorID) &&
+                                slot.getWorkingDays().stream().anyMatch(day -> day.name().equalsIgnoreCase(selectedDate.getDayOfWeek().name())))
+                .flatMap(slot -> {
+                    List<LocalTime> times = new ArrayList<>();
+                    LocalTime currentTime = slot.getStartTime();
+                    while (currentTime.isBefore(slot.getEndTime())) {
+                        // Only include times that are not pending or accepted
+                        if (isTimeAvailable(doctorID, selectedDate, currentTime)) {
+                            times.add(currentTime);
+                        }
+                        currentTime = currentTime.plusMinutes(30); // Increment by 30 minutes
+                    }
+                    return times.stream();
+                })
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     
-        // Ask the user to select a time
+        if (availableTimes.isEmpty()) {
+            System.out.println("No available times for the selected date.");
+            return;
+        }
+    
+        // Display available times
+        System.out.println("Available times:");
+        for (int i = 0; i < availableTimes.size(); i++) {
+            System.out.println((i + 1) + ". " + availableTimes.get(i));
+        }
+    
+        // User selects a time
         System.out.print("Choose a time by entering the corresponding number: ");
         int timeChoice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
         if (timeChoice < 1 || timeChoice > availableTimes.size()) {
             System.out.println("Invalid choice. Exiting.");
             return;
         }
-        LocalTime selectedTime = availableTimes.get(timeChoice - 1); // Get the selected time
-    
-        // Confirm the selected time is available
-        if (!isTimeAvailable(doctorID, selectedDate, selectedTime)) {
-            System.out.println("Error: Selected time is not available. Please try again.");
-            return;
-        }
+        LocalTime selectedTime = availableTimes.get(timeChoice - 1);
     
         // Generate a new appointment ID and create the appointment
         String appointmentID = generateAppointmentID();
-        Appointment appointment = new Appointment(appointmentID, patientUserID, doctor.getUserID(), selectedDate.toString(), selectedTime.toString());
+        Appointment appointment = new Appointment(appointmentID, patientUserID, doctorID, selectedDate.toString(), selectedTime.toString());
     
         // Set default outcome record and prescription
         OutcomeRecord outcomeRecord = new OutcomeRecord("00/00/0000", "-", "-");
@@ -582,7 +626,7 @@ public class AppointmentManagementControl
         // Write appointment data to file
         try {
             initialDataAppointments.writeAppointmentToFilewithdefaultOutcome("hms/src/data/Appointments_List.csv", appointment);
-            System.out.println("Appointment scheduled successfully for " + patientUserID + " with Doctor " + doctor.getUserID() +
+            System.out.println("Appointment scheduled successfully for " + patientUserID + " with Doctor " + selectedDoctor.getName() +
                                " on " + selectedDate + " at " + selectedTime);
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
@@ -590,6 +634,7 @@ public class AppointmentManagementControl
     
         initialDataAppointments.reloadData();
     }
+        
     
 
 // Method to print available times for a specific date
@@ -640,12 +685,12 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
 }
 
 
-    // Method to get the next 7 days when the doctor is available
-    private List<LocalDate> getDoctorAvailabilityNext7Days(String doctorID) {
+    // Method to get the next 14 days when the doctor is available
+    private List<LocalDate> getDoctorAvailabilityNext14Days(String doctorID) {
         List<LocalDate> availableDates = new ArrayList<>();
         LocalDate today = LocalDate.now();
     
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 14; i++) {
             LocalDate date = today.plusDays(i);
             DayOfWeek dayOfWeek = date.getDayOfWeek();
     
@@ -670,28 +715,25 @@ private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {
         return false;
     }
     
-    // Method to confirm selected time availability
     private boolean isTimeAvailable(String doctorID, LocalDate date, LocalTime time) {
         // Get all slots for the specified doctor
         List<AppointmentSlot> slots = initialDataAppointmentSlots.getLists().stream()
                 .filter(slot -> slot.getDoctorID().equals(doctorID))
                 .collect(Collectors.toList());
     
-        // Check each slot to see if the desired time falls within the available hours
+        // Check each slot to see if the desired time falls within the available hours (inclusive)
         for (AppointmentSlot slot : slots) {
-            if (time.isAfter(slot.getStartTime()) && time.isBefore(slot.getEndTime())) {
+            if (!time.isBefore(slot.getStartTime()) && !time.isAfter(slot.getEndTime())) { // Inclusive check
                 // Check each appointment to see if it's already booked for the specified date and time
                 for (Appointment appointment : initialDataAppointments.getLists()) {
                     if (appointment.getDoctorID().equals(doctorID) &&
                         LocalDate.parse(appointment.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")).isEqual(date) &&
                         LocalTime.parse(appointment.getTime()).equals(time)) {
     
-                        // Check if the appointment status is PENDING or CANCELLED, making it available
+                        // Only ignore the slot if the status is CANCELLED
                         AppointmentStatus status = appointment.getStatus();
-                        if (status == AppointmentStatus.PENDING || status == AppointmentStatus.CANCELLED) {
-                            continue; // Ignore this appointment, making the time available
-                        } else {
-                            return false; // Time is unavailable if status is not PENDING or CANCELLED
+                        if (status != AppointmentStatus.CANCELLED) {
+                            return false; // Time is unavailable if status is not CANCELLED
                         }
                     }
                 }

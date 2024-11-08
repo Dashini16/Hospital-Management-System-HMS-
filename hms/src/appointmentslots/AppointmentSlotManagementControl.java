@@ -349,66 +349,6 @@ public class AppointmentSlotManagementControl {
         }
     }
 
-    // private boolean isDoctorAvailable(String doctorID, LocalDate date) {
-    // boolean isAvailable = true; // Assume the doctor is available unless proven
-    // otherwise
-
-    // // Get the working slots of the doctor
-    // for (AppointmentSlot slot : initialDataAppointmentSlots.getLists()) {
-    // if (slot.getDoctorID().equals(doctorID)) {
-    // // Log the details of the current appointment slot being checked
-    // // System.out.println("Checking availability for slot: " +
-    // slot.displayData());
-
-    // // Check if the requested date is within the appointment slot date range
-    // if (date.isEqual(slot.getStartTime().toLocalDate()) ||
-    // date.isEqual(slot.getEndTime().toLocalDate())) {
-    // // Get the day of the week for the requested appointment
-    // DayOfWeek appointmentDay = date.getDayOfWeek();
-
-    // // Directly access the working days from the slot
-    // List<WorkingDay> workingDays = slot.getWorkingDays();
-    // // System.out.println("Requested Day: " + appointmentDay);
-    // // System.out.println("Working Days: " + workingDays);
-
-    // // Check if the appointment day corresponds to any working day
-    // if (workingDays.stream().anyMatch(day ->
-    // day.name().equalsIgnoreCase(appointmentDay.name()))) {
-    // // Check for existing appointments on that date
-    // for (Appointment appointment : initialDataAppointments.getLists()) {
-    // LocalDate appointmentDate;
-
-    // // Assuming the getDate() method returns a String; convert to LocalDate
-    // try {
-    // appointmentDate = LocalDate.parse(appointment.getDate(),
-    // DateTimeFormatter.ofPattern("dd/MM/yyyy")); // Adjust the pattern as needed
-    // } catch (DateTimeParseException e) {
-    // System.out.println("Error parsing appointment date: " +
-    // appointment.getDate());
-    // continue; // Skip this appointment if there's a parsing error
-    // }
-
-    // if (appointment.getDoctorID().equals(doctorID) &&
-    // appointmentDate.isEqual(date) &&
-    // appointment.getStatus() != AppointmentStatus.CANCELLED) {
-    // isAvailable = false; // Found an existing appointment, set availability to
-    // false
-    // // System.out.println("Doctor has an existing appointment on this date.");
-    // break; // Exit loop if found an existing appointment
-    // }
-    // }
-    // } else {
-    // // System.out.println("The appointment day does not match the doctor's
-    // working
-    // // days.");
-    // isAvailable = false; // Not a working day, set availability to false
-    // }
-    // }
-    // }
-    // }
-    // return isAvailable; // Return availability status
-    // }
-
     private boolean isDoctorAvailable(String doctorID, LocalDate date) {
         boolean isAvailable = true; // Assume the doctor is available unless proven otherwise
 
