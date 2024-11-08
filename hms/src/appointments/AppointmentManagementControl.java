@@ -7,7 +7,6 @@ import filereaders.InitialDataStaff;
 import medicalrecords.OutcomeRecord;
 import medicalrecords.Prescription;
 import medicinemanagements.Medicine;
-import usermanagement.EmailService;
 import users.Doctor;
 import users.Patient;
 
