@@ -27,7 +27,7 @@ import lookups.UserLookup;
 import users.Doctor;
 
 public class AppointmentSlotManagementControl {
-        private InitialDataStaff initialData; // Assuming you have an instance of InitialData
+        private InitialDataStaff initialData;
         private InitialDataAppointmentSlots initialDataAppointmentSlots;
         private InitialDataAppointments initialDataAppointments;
 
@@ -40,8 +40,6 @@ public class AppointmentSlotManagementControl {
         initialDataAppointments.reloadData();
         
     }
-
-
      //VIEW APPOINTMENT SLOT
      public void viewAppointmentSlots() {
         // Import data only once when the menu option is chosen
@@ -67,7 +65,6 @@ public class AppointmentSlotManagementControl {
             System.out.println("No appointment slots available for Doctor ID: " + doctorID);
         }
     }
-    
 
     public void viewAvailableTimeSlots() {
         initialData.importData();
@@ -102,6 +99,29 @@ public class AppointmentSlotManagementControl {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
   // Method to print available times for a specific doctor and date
@@ -166,22 +186,6 @@ private void printforpatientAvailableTimes(String doctorID, LocalDate date) {
 
 
 }  
-
-
-
-
-
-/* 
-
-    public Doctor findDoctorByID(String id) {
-        for (Doctor doctor : initialData.getDoctors()) {
-            if (doctor.getUserID().equals(id)) {
-                return doctor;
-            }
-        }
-        return null;
-    }
-*/
 
 
     public void viewPersonalSchedule() {

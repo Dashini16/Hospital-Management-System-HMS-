@@ -103,14 +103,5 @@ public class ReplenishmentRequestManagementControl {
             }
         }
     }
-    
-    /*
-    private Medicine findMedicineByName(String name) {
-        for (Medicine medicine : medicineData.getLists()) {
-            if (medicine.getName().equalsIgnoreCase(name)) {
-                return medicine;
-            }
-        }
-        return null; // Not found
-    }*/
+
 }

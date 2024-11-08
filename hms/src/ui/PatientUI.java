@@ -128,7 +128,7 @@ public class PatientUI {
                     System.out.println("View Scheduled Appointments");
                     System.out.println("===================================\n"); // Add a border for the login section
                     AppointmentManagementControl appointmentManagementControl4 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
-                    appointmentManagementControl4.viewAppointmentsPatient();
+                    appointmentManagementControl4.viewAppointments(false);
                     break;
                 case 8:
                     // Code to view past appointment outcome records
@@ -136,7 +136,7 @@ public class PatientUI {
                     System.out.println("View Past Appointment Outcome Records");
                     System.out.println("===================================\n"); // Add a border for the login section
                     AppointmentManagementControl appointmentManagementControl5 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
-                    appointmentManagementControl5.viewPastOutcomeRecords();
+                    appointmentManagementControl5.viewOutcomeRecords(true);
                     break;
             
                 case 9:

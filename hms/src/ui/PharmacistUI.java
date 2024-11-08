@@ -64,7 +64,7 @@ public class PharmacistUI {
                     System.out.println("View Appointment Outcome Record");
                     System.out.println("===================================\n"); 
                     AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(dataMedicine, dataPatient, data,dataAppointments, dataAppointmentSlots);
-                    appointmentManagementControl.viewOutcomeRecords();
+                    appointmentManagementControl.viewOutcomeRecords(false);
                     break;
                 case 2:
                     // Add code to update prescription status

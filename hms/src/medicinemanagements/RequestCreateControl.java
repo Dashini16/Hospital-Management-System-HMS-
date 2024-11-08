@@ -71,14 +71,5 @@ public class RequestCreateControl {
             System.out.println("Error saving replenishment request: " + e.getMessage());
         }
     }
-    
-    private Medicine findMedicineByName(String name) {
-        for (Medicine medicine : data.getLists()) {
-            if (medicine.getName().equalsIgnoreCase(name)) {
-                return medicine;
-            }
-        }
-        return null; // Not found
-    }
  
 }

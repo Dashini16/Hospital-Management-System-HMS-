@@ -18,8 +18,8 @@ public class PasswordManagement {
         this.data = data;
         this.patientData = patientData;
 
-        data.reloadData();
-        patientData.reloadData();
+        //data.reloadData();
+        //patientData.reloadData();
         
     }
 
