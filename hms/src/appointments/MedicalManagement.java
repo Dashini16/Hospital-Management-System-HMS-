@@ -2,9 +2,13 @@ package appointments;
 
 import filereaders.InitialDataAppointmentSlots;
 import filereaders.InitialDataMedicalRecord;
+import filereaders.InitialDataPatient;
 import lookups.UserLookup;
 import medicalrecords.MedicalRecord;
+import users.Patient;
+
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -20,10 +24,17 @@ public class MedicalManagement {
     //private InitialDataStaff initialData;
     private InitialDataMedicalRecord medicalData;
     private InitialDataAppointmentSlots appointmentSlotsData;
+    private InitialDataPatient patientData; //import patient data
+    
     public MedicalManagement() {
        // initialData = new InitialDataStaff(); // Initialize InitialData instance
         medicalData = new InitialDataMedicalRecord();
         medicalData.reloadData();
+
+        //
+        patientData = new InitialDataPatient();
+        patientData.reloadData();
+        //
     }
  
     public void createMedicalRecord() {
@@ -100,10 +111,6 @@ public class MedicalManagement {
         }
     }
     
-
-
-
-
 
 
 
@@ -206,10 +213,58 @@ public void setDoctorAvailability() {
         // Access and print medical records
         List<MedicalRecord> records = medicalData.getLists();
         for (MedicalRecord record : records) {
+            // Display only if te record matches the current userID
             if(record.getPatientID().equals(AuthorizationControl.getCurrentUserId())) {
-                System.out.println("Patient ID: " + record.getPatientID());
-                System.out.println("Diagnoses: " + record.getDiagnoses());
-                System.out.println("Treatments: " + record.getTreatments());
+                
+                // Retrieve the corresponding patient details
+                Patient matchingPatient = null;
+                for(Patient patient : patientData.getLists()){ //access the list of patients
+                    if(patient.getUserID().equals(record.getPatientID())){
+                        matchingPatient = patient;
+                        break; //exit the loop once the patient is found
+                    }
+                }
+
+                // if the patient record is found
+                if(matchingPatient != null){
+
+                    // Extract all the detail from the patient object
+                    String name = matchingPatient.getName();
+                    LocalDate dob = matchingPatient.getDateOfBirth();
+                    String gender = matchingPatient.getGender();
+                    String contactInfo = matchingPatient.getContactInfo();
+
+                    // display all the medical record
+                    System.out.println("### Medical Record View for Patient ID: " + record.getPatientID());
+
+                    // display patient personal info
+                    System.out.println("\nName: " + name);
+                    System.out.println("Date of Birth: " + dob);
+                    System.out.println("Gender: " + gender);
+                    System.out.println("Contact Info: " + contactInfo);
+
+                    //display diagnoses
+                    System.out.println("\n**Diagnoses:**");
+                    int diagnosisCount = 1;
+                    for(String diagnosis : record.getDiagnoses()){
+                        if(!diagnosis.isEmpty()){
+                            System.out.println(diagnosisCount++ + ". " + diagnosis.trim());
+                        }
+                    }
+
+                    //diaply treatments
+                    System.out.println("\n**Treatments:**");
+                    int treatmentCount = 1;
+                    for(String treatment : record.getTreatments()){
+                        if(!treatment.isEmpty()){
+                            System.out.println(treatmentCount++ + ". " + treatment.trim());
+                        }
+                    }
+                }
+                
+
+                System.out.println("\n");
+             
             }
             //System.out.println("Prescriptions: " + record.getPrescriptions().toString());
         }
