@@ -96,49 +96,88 @@ public class PatientManagementControl {
     }
     
     public void updatePatient(Scanner scanner) {
-        //System.out.print("Enter the ID of the patient to update: ");
-        //String patientID = scanner.nextLine().trim();
+        // get the current login user ID
         String patientID = AuthorizationControl.getCurrentUserId();
-    
-        //Patient patient = findPatientById(patientID);
+        
+        // find the patient using the UserLookup utility
         UserLookup userLookup = new UserLookup();
         Patient patient = userLookup.findByID(patientID, data.getLists(), med -> med.getUserID().equalsIgnoreCase(patientID));
         if (patient == null) {
             System.out.println("Error: Patient not found.");
             return;
         }
-    
-        System.out.print("Enter new name (leave blank for no change): ");
-        String newName = scanner.nextLine().trim();
-    
-        LocalDate newDateOfBirth = null;
-        while (newDateOfBirth == null) {
-            System.out.print("Enter new date of birth (leave blank for no change, or enter YYYY-MM-DD): ");
-            String newDateOfBirthInput = scanner.nextLine().trim();
-            if (newDateOfBirthInput.isEmpty()) {
-                break; // Leave date of birth unchanged
+
+        // display the menu for the user to choose which action they want to perform
+        boolean updating = true;
+        while(updating) { // keep looping until the user exit this menu
+            // display the menu
+            System.out.println("\nSelect the field you want to update:");
+            System.out.println("1. Update Name");
+            System.out.println("2. Update Date of Birth");
+            System.out.println("3. Update Contact Info");
+            System.out.println("4. Exit");
+
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().trim(); //ask for user input
+
+            switch(choice) {
+                // update name
+                case "1":
+                    System.out.print("Enter new name (leave blank for no change): ");
+                    String newName = scanner.nextLine().trim();
+                    if (!newName.isEmpty()) {
+                        patient.setName(newName);
+                        System.out.println("Name updated successfully");
+                    }else {
+                        System.out.println("Name not changed");
+                    }
+                    break;
+
+                // update dob
+                case "2":
+                LocalDate newDateOfBirth = null;
+                while (newDateOfBirth == null) {
+                    System.out.print("Enter new date of birth (leave blank for no change, or enter YYYY-MM-DD): ");
+                    String newDateOfBirthInput = scanner.nextLine().trim();
+                    if (newDateOfBirthInput.isEmpty()) {
+                        break; // Leave date of birth unchanged
+                    }
+                    try {
+                        newDateOfBirth = LocalDate.parse(newDateOfBirthInput);
+                        patient.setDateOfBirth(newDateOfBirth);
+                        System.out.println("Date of birth updated successfully.");
+                    } catch (Exception e) {
+                        System.out.println("Error: Please enter a valid date in the format YYYY-MM-DD.");
+                    }
+                }
+                break;
+
+                // update contact info
+                case "3":
+                    System.out.print("Enter new contact info (leave blank for no change): ");
+                    String newContactInfo = scanner.nextLine().trim();
+                    if (!newContactInfo.isEmpty()) {
+                        patient.setContactInfo(newContactInfo);
+                        System.out.println("Contact info updated successfully.");
+                    } else {
+                        System.out.println("Contact info not changed.");
+                    }
+                    break;
+
+                // exit the program
+                case "4":
+                    updating = false; // to stop the while loop
+                    System.out.println("Exiting update info menu....");
+                    break;
+                
+                // default case
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
+                    break;
             }
-            try {
-                newDateOfBirth = LocalDate.parse(newDateOfBirthInput);
-            } catch (Exception e) {
-                System.out.println("Error: Please enter a valid date in the format YYYY-MM-DD.");
-            }
         }
-    
-        System.out.print("Enter new contact info (leave blank for no change): ");
-        String newContactInfo = scanner.nextLine().trim();
-    
-        // Update fields if new values provided
-        if (!newName.isEmpty()) {
-            patient.setName(newName);
-        }
-        if (newDateOfBirth != null) {
-            patient.setDateOfBirth(newDateOfBirth);
-        }
-        if (!newContactInfo.isEmpty()) {
-            patient.setContactInfo(newContactInfo);
-        }
-    
+        
+        // save the changes to the csv
         try {
             data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
             System.out.println("Patient updated successfully.");
