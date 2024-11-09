@@ -331,11 +331,57 @@ public class AppointmentManagementControl {
         }
     }
 
+
     public void updatePrescriptionStatus() {
         Scanner scanner = new Scanner(System.in);
     
         // Display only outcome records with pending prescriptions
-        viewOutcomeRecords(true);
+        System.out.println("===== Outcome Records with Pending Prescriptions =====\n");
+        List<Appointment> eligibleAppointments = initialDataAppointments.getLists().stream()
+                .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED
+                        && app.getOutcomeRecord() != null
+                        && app.getOutcomeRecord().getPrescriptions().stream()
+                            .anyMatch(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING))
+                .sorted((a1, a2) -> {
+                    LocalDate date1 = LocalDate.parse(a1.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    LocalDate date2 = LocalDate.parse(a2.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    return date1.compareTo(date2); // Sort by appointment date
+                })
+                .collect(Collectors.toList());
+    
+        // Display each eligible appointment with a consistent index
+        for (int i = 0; i < eligibleAppointments.size(); i++) {
+            Appointment appointment = eligibleAppointments.get(i);
+            OutcomeRecord outcomeRecord = appointment.getOutcomeRecord();
+    
+            System.out.printf("========== Outcome Record #%d ==========%n", i + 1);
+            System.out.printf("Appointment ID       : %s%n", appointment.getAppointmentID());
+            System.out.printf("Patient ID           : %s%n", appointment.getPatientID());
+            System.out.printf("Doctor ID            : %s%n", appointment.getDoctorID());
+            System.out.printf("Appointment Date     : %s%n", appointment.getDate());
+            System.out.printf("Service Type         : %s%n", outcomeRecord.getServiceType());
+            System.out.printf("Consultation Notes   : %s%n", outcomeRecord.getConsultationNotes());
+    
+            System.out.println("\nPending Prescriptions:");
+            System.out.println("----------------------------------------------------");
+            System.out.printf("%-20s %-10s %-10s%n", "Medication Name", "Quantity", "Status");
+            System.out.println("----------------------------------------------------");
+    
+            for (Prescription prescription : outcomeRecord.getPrescriptions()) {
+                if (prescription.getStatus() == PrescriptionStatus.PENDING) {
+                    System.out.printf("%-20s %-10d %-10s%n",
+                            prescription.getMedicationName(),
+                            prescription.getQuantity(),
+                            prescription.getStatus());
+                }
+            }
+            System.out.println("====================================================\n");
+        }
+    
+        if (eligibleAppointments.isEmpty()) {
+            System.out.println("No completed appointments with pending prescriptions found.");
+            return;
+        }
     
         System.out.print("\nEnter the number of the outcome record to update (or type 'exit' to cancel): ");
         String input = scanner.nextLine().trim();
@@ -347,22 +393,16 @@ public class AppointmentManagementControl {
         int appointmentIndex;
         try {
             appointmentIndex = Integer.parseInt(input) - 1;
-            List<Appointment> eligibleAppointments = initialDataAppointments.getLists().stream()
-                    .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED
-                            && app.getOutcomeRecord() != null
-                            && app.getOutcomeRecord().getPrescriptions().stream()
-                                .anyMatch(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING))
-                    .collect(Collectors.toList());
-    
             if (appointmentIndex < 0 || appointmentIndex >= eligibleAppointments.size()) {
                 System.out.println("Invalid selection. Please try again.");
                 return;
             }
     
+            // Access the correct appointment from eligibleAppointments
             Appointment selectedAppointment = eligibleAppointments.get(appointmentIndex);
             List<Prescription> prescriptions = selectedAppointment.getOutcomeRecord().getPrescriptions();
     
-            // Loop for dispensing prescriptions
+            // Loop for dispensing or rejecting prescriptions
             while (true) {
                 List<Prescription> pendingPrescriptions = prescriptions.stream()
                         .filter(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING)
@@ -383,7 +423,7 @@ public class AppointmentManagementControl {
                                       prescription.getStatus());
                 }
     
-                System.out.print("\nEnter the number of the prescription to dispense (or type 'exit' to finish): ");
+                System.out.print("\nEnter the number of the prescription to dispense or reject (or type 'exit' to finish): ");
                 String prescriptionInput = scanner.nextLine().trim();
                 if (prescriptionInput.equalsIgnoreCase("exit")) {
                     System.out.println("Exiting dispensing process for this appointment.");
@@ -405,28 +445,39 @@ public class AppointmentManagementControl {
                 Prescription selectedPrescription = pendingPrescriptions.get(prescriptionIndex);
                 String medicineName = selectedPrescription.getMedicationName();
     
-                // Check stock availability
-                Medicine selectedMedicine = initialDataMedicine.getLists().stream()
-                        .filter(medicine -> medicine.getName().equals(medicineName))
-                        .findFirst()
-                        .orElse(null);
+                // Ask to dispense or reject the prescription
+                System.out.print("Do you want to (1) dispense or (2) reject this prescription? Enter 1 or 2: ");
+                String actionChoice = scanner.nextLine().trim();
     
-                if (selectedMedicine == null) {
-                    System.out.println("Medicine not found in inventory.");
+                if (actionChoice.equals("2")) { // Reject the prescription
+                    selectedPrescription.updateStatus(PrescriptionStatus.REJECTED);
+                    System.out.println("Prescription for " + medicineName + " has been rejected.");
+                } else if (actionChoice.equals("1")) { // Dispense the prescription
+                    Medicine selectedMedicine = initialDataMedicine.getLists().stream()
+                            .filter(medicine -> medicine.getName().equals(medicineName))
+                            .findFirst()
+                            .orElse(null);
+    
+                    if (selectedMedicine == null) {
+                        System.out.println("Medicine not found in inventory.");
+                        continue;
+                    }
+    
+                    // Check if stock is sufficient
+                    if (selectedMedicine.getInitialStock() < selectedPrescription.getQuantity()) {
+                        System.out.println("Insufficient stock for " + medicineName
+                                           + ". Current stock: " + selectedMedicine.getInitialStock());
+                        continue;
+                    }
+    
+                    // Update stock and prescription status
+                    selectedMedicine.setInitialStock(selectedMedicine.getInitialStock() - selectedPrescription.getQuantity());
+                    selectedPrescription.updateStatus(PrescriptionStatus.DISPENSED);
+                    System.out.println("Dispensed " + selectedPrescription.getQuantity() + " units of " + medicineName);
+                } else {
+                    System.out.println("Invalid choice. Please enter 1 to dispense or 2 to reject.");
                     continue;
                 }
-    
-                // Check if stock is sufficient
-                if (selectedMedicine.getInitialStock() < selectedPrescription.getQuantity()) {
-                    System.out.println("Insufficient stock for " + medicineName 
-                                       + ". Current stock: " + selectedMedicine.getInitialStock());
-                    continue;
-                }
-    
-                // Update stock and prescription status
-                selectedMedicine.setInitialStock(selectedMedicine.getInitialStock() - selectedPrescription.getQuantity());
-                selectedPrescription.updateStatus(PrescriptionStatus.DISPENSED);
-                System.out.println("Dispensed " + selectedPrescription.getQuantity() + " units of " + medicineName);
     
                 // Save updates to files
                 try {
@@ -443,6 +494,7 @@ public class AppointmentManagementControl {
             System.out.println("Invalid input. Please enter a valid number.");
         }
     }
+    
     
 
     
