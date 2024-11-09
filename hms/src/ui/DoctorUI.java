@@ -62,9 +62,8 @@ public class DoctorUI {
             System.out.println("5. Accept or Decline Appointment Requests");
             System.out.println("6. View Upcoming Appointments");
             System.out.println("7. Record Appointment Outcome");
-            System.out.println("8. View Appointment Outcome Records");
-            System.out.println("9. Change Password");
-            System.out.println("10. Logout");
+            System.out.println("8. Change Password");
+            System.out.println("9. Logout");
             System.out.println("===================================");
 
             Scanner scanner = new Scanner(System.in);
@@ -128,16 +127,15 @@ public class DoctorUI {
                     appointmentManagementControls.outcomeRecordUpdate();
 
                     break;
+                // case 8:
+                //     // Add code to view appointment outcome records
+                //     System.out.println("\n==================================="); 
+                //     System.out.println("Viewing past appointment outcome records");
+                //     System.out.println("===================================\n"); // Add a border for the login section
+                //     AppointmentManagementControl appointmentManagementControl3 = new AppointmentManagementControl(medicineData,data,dataAppointments);
+                //     appointmentManagementControl3.viewOutcomeRecords(false);
+                //     break;
                 case 8:
-                    // Add code to view appointment outcome records
-                    System.out.println("\n==================================="); 
-                    System.out.println("Viewing past appointment outcome records");
-                    System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl3 = new AppointmentManagementControl(medicineData,data,dataAppointments);
-                    appointmentManagementControl3.viewOutcomeRecords(false);
-                    break;
-                
-                case 9:
                     // Add code to change password
                     System.out.println("\n==================================="); 
                     System.out.println("Changing password");
@@ -146,7 +144,7 @@ public class DoctorUI {
                     //staffManagementControl.changeStaffPassword(scanner);
                     passwordManagement.changePassword(scanner);
                     break;
-                case 10:
+                case 9:
                     System.out.println("Logging Out...");
                     return; // Logout
                 default:
