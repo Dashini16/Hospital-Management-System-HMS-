@@ -77,7 +77,8 @@ public class DoctorUI {
                     System.out.println("View Patient Medical Records");
                     System.out.println("===================================\n"); // Add a border for the login section
                     MedicalManagement medicalManagement = new MedicalManagement();
-                    medicalManagement.viewallMedicalRecords();
+                    medicalManagement.viewOwnPatientMedicalRecords();
+
                     break;
                 case 2:
                     System.out.println("\n==================================="); 

@@ -1,6 +1,7 @@
 package appointments;
 
 import filereaders.InitialDataAppointmentSlots;
+import filereaders.InitialDataAppointments;
 import filereaders.InitialDataMedicalRecord;
 import filereaders.InitialDataPatient;
 import lookups.UserLookup;
@@ -14,11 +15,15 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import appointmentslots.AppointmentSlot;
 import authorization.AuthorizationControl;
 import enums.WorkingDay;
+import enums.AppointmentStatus;
 
 public class MedicalManagement {
 
@@ -26,6 +31,7 @@ public class MedicalManagement {
     private InitialDataMedicalRecord medicalData;
     private InitialDataAppointmentSlots appointmentSlotsData;
     private InitialDataPatient patientData; // import patient data
+    private InitialDataAppointments appointmentData;
 
     public MedicalManagement() {
         // initialData = new InitialDataStaff(); // Initialize InitialData instance
@@ -35,6 +41,9 @@ public class MedicalManagement {
         //
         patientData = new InitialDataPatient();
         patientData.reloadData();
+
+        appointmentData = new InitialDataAppointments();
+        appointmentData.reloadData();
         //
     }
 
@@ -281,6 +290,93 @@ public class MedicalManagement {
         }
     }
 
+    // new function to view only own patient's medical records
+    public void viewOwnPatientMedicalRecords() {
+        // Ensure data is loaded once for each relevant data source
+        if (medicalData.getLists().isEmpty()) {
+            medicalData.importData();
+        }
+        if (appointmentData.getLists().isEmpty()) {
+            appointmentData.importData();
+        }
+    
+        // Identify the current doctor
+        String doctorID = AuthorizationControl.getCurrentUserId();
+    
+        // Step 1: Retrieve the list of unique patient IDs with past appointments (ACCEPTED or COMPLETED) with this doctor
+        List<String> patientIDs = appointmentData.getLists().stream()
+            .filter(appointment -> appointment.getDoctorID().equals(doctorID) &&
+                                   (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
+                                    appointment.getStatus() == AppointmentStatus.COMPLETED))
+            .map(Appointment::getPatientID)
+            .distinct()
+            .collect(Collectors.toList());
+    
+        if (patientIDs.isEmpty()) {
+            System.out.println("No patients with completed or accepted appointments found.");
+            return;
+        }
+    
+        // Step 2: Group the medical records by patient ID without duplicating records
+        Map<String, List<MedicalRecord>> groupedRecords = medicalData.getLists().stream()
+            .filter(record -> patientIDs.contains(record.getPatientID()))
+            .distinct() // Ensure unique records
+            .collect(Collectors.groupingBy(MedicalRecord::getPatientID));
+    
+        if (groupedRecords.isEmpty()) {
+            System.out.println("No medical records found for your patients.");
+            return;
+        }
+    
+        // Step 3: Display the medical records grouped by patient
+        System.out.println("Viewing Medical Records for Your Patients:");
+        System.out.println("===========================================");
+    
+        // Step 4: Print each patient’s records only once
+        for (String patientID : groupedRecords.keySet()) {
+            // Retrieve the patient's basic information
+            Patient patient = patientData.getLists().stream()
+                .filter(p -> p.getUserID().equals(patientID))
+                .findFirst()
+                .orElse(null);
+    
+            if (patient != null) {
+                // Display patient header
+                System.out.println("------ Patient ID: " + patient.getUserID() + " ------");
+                System.out.println("Name           : " + patient.getName());
+                System.out.println("Date of Birth  : " + patient.getDateOfBirth());
+                System.out.println("Gender         : " + patient.getGender());
+                System.out.println("Contact Info   : " + patient.getContactInfo());
+    
+                // Get and display the medical records for this patient
+                List<MedicalRecord> records = groupedRecords.get(patientID);
+                System.out.println("\nMedical Records:");
+                for (int i = 0; i < records.size(); i++) {
+                    MedicalRecord record = records.get(i);
+                    System.out.println("Record " + (i + 1) + ":");
+    
+                    System.out.println("  **Diagnoses:**");
+                    for (int j = 0; j < record.getDiagnoses().size(); j++) {
+                        System.out.println("    " + (j + 1) + ". " + record.getDiagnoses().get(j));
+                    }
+    
+                    System.out.println("  **Treatments:**");
+                    for (int k = 0; k < record.getTreatments().size(); k++) {
+                        System.out.println("    " + (k + 1) + ". " + record.getTreatments().get(k));
+                    }
+                    System.out.println("-----------------------------------------------------");
+                }
+            } else {
+                System.out.println("Patient information not found for ID: " + patientID);
+            }
+            System.out.println("=====================================================");
+        }
+    }
+    
+
+    
+
+    // view everyone patients medical record
     public void viewallMedicalRecords() {
         // InitialDataStaff initialData = new InitialDataStaff();
         medicalData.importData();
