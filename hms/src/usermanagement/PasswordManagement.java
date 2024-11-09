@@ -50,12 +50,13 @@ public class PasswordManagement {
             return;
         }
 
-        if(user.getPassword().equals(newPassword)) {
+        String newHashedPassword = PasswordUtils.hashPassword(newPassword);
+        if(user.getPassword().equals(newHashedPassword)) {
             System.out.println("New password cannot be the same as the current password.");
             return;
         }
-        // Set and save the new password
-        user.setPassword(newPassword);
+    
+        user.setPassword(newHashedPassword);
         try {
             // Save changes based on user type
             if (user instanceof Patient) {

@@ -3,6 +3,8 @@ package authorization;
 import users.*;
 import filereaders.InitialDataPatient;
 import filereaders.InitialDataStaff;
+import usermanagement.PasswordUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 //import Users.*;
@@ -22,8 +24,9 @@ public class AuthorizationControl {
         System.out.println("Attempting login for user: " + userID);
         Users user = users.get(userID); // Check the users map for the user
         if (user != null) {
+            String hashedInputPassword = PasswordUtils.hashPassword(password);
             //System.out.println("User found: " + user.getName());
-            if (user.getPassword().equals(password)) {
+            if (user.getPassword().equals(hashedInputPassword)) {
                 createSession(user);
                 //currentUserId = user.getUserID();
                 //System.out.println("Login successful for user: " + currentUserId);

@@ -84,7 +84,7 @@ public class PatientManagementControl {
         System.out.print("Enter patient's contact information: ");
         String patientContactInfo = scanner.nextLine().trim();
     
-        String patientPassword = "defaultPasswords";
+        String patientPassword = PasswordUtils.hashPassword("defaultPasswords");
     
         Patient newPatient = new Patient(patientID, patientName, dateOfBirth, patientGender, patientBloodType, patientContactInfo, patientPassword);
         try {

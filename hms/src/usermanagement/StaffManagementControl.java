@@ -93,7 +93,7 @@ public class StaffManagementControl {
                 }
             }
     
-            String doctorPassword = "defaultPasswords"; // Set default password
+            String doctorPassword = PasswordUtils.hashPassword("defaultPasswords");
     
             Doctor newDoctor = new Doctor(doctorID, doctorName, doctorGender, doctorAge, doctorPassword);
             try {
@@ -169,7 +169,7 @@ public class StaffManagementControl {
                 }
             }
     
-            String pharmacistPassword = "defaultPasswords"; // Set default password
+            String pharmacistPassword = PasswordUtils.hashPassword("defaultPasswords"); // Set default password
     
             Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge, pharmacistPassword);
             try {
@@ -245,7 +245,7 @@ public class StaffManagementControl {
                 }
             }
     
-            String adminPassword = "defaultPasswords"; // Set default password
+            String adminPassword = PasswordUtils.hashPassword("defaultPasswords"); // Set default password
     
             Administrator newAdmin = new Administrator(adminID, adminName, adminGender, adminAge, adminPassword);
             try {
