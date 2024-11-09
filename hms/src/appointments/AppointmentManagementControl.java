@@ -11,6 +11,8 @@ import medicinemanagements.Medicine;
 import users.Doctor;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -21,7 +23,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-
 import authorization.AuthorizationControl;
 import enums.AppointmentStatus;
 import enums.PrescriptionStatus;
@@ -31,7 +32,8 @@ public class AppointmentManagementControl {
     private InitialDataStaff initialDataStaff;
     private InitialDataMedicine initialDataMedicine;
 
-    public AppointmentManagementControl(InitialDataMedicine initialDataMedicine,InitialDataStaff initialDataStaff, InitialDataAppointments initialDataAppointments) {
+    public AppointmentManagementControl(InitialDataMedicine initialDataMedicine, InitialDataStaff initialDataStaff,
+            InitialDataAppointments initialDataAppointments) {
         this.initialDataAppointments = initialDataAppointments; // Link with InitialData class to access data
         this.initialDataStaff = initialDataStaff;
         this.initialDataMedicine = initialDataMedicine;
@@ -107,27 +109,29 @@ public class AppointmentManagementControl {
     public void viewOutcomeRecords(boolean showPendingPrescriptionsOnly) {
         initialDataAppointments.reloadData();
         int recordCount = 1;
-    
-        // Sort appointments by appointment date in ascending order (furthest in the past first)
+
+        // Sort appointments by appointment date in ascending order (furthest in the
+        // past first)
         List<Appointment> sortedAppointments = initialDataAppointments.getLists().stream()
-                .filter(appointment -> appointment.getStatus() == AppointmentStatus.COMPLETED && appointment.getOutcomeRecord() != null)
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.COMPLETED
+                        && appointment.getOutcomeRecord() != null)
                 .sorted((a1, a2) -> {
                     LocalDate date1 = LocalDate.parse(a1.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                     LocalDate date2 = LocalDate.parse(a2.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                     return date1.compareTo(date2); // Sort in ascending order by appointment date (oldest to newest)
                 })
                 .collect(Collectors.toList());
-    
+
         System.out.println("===== Outcome Records with Pending Prescriptions =====\n");
-    
+
         for (Appointment appointment : sortedAppointments) {
             OutcomeRecord outcomeRecord = appointment.getOutcomeRecord();
-    
+
             // Check for prescriptions with "PENDING" status
             List<Prescription> pendingPrescriptions = outcomeRecord.getPrescriptions().stream()
                     .filter(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING)
                     .collect(Collectors.toList());
-    
+
             if (!pendingPrescriptions.isEmpty()) {
                 System.out.printf("========== Outcome Record #%d ==========%n", recordCount++);
                 System.out.printf("Appointment ID       : %s%n", appointment.getAppointmentID());
@@ -136,12 +140,12 @@ public class AppointmentManagementControl {
                 System.out.printf("Appointment Date     : %s%n", appointment.getDate());
                 System.out.printf("Service Type         : %s%n", outcomeRecord.getServiceType());
                 System.out.printf("Consultation Notes   : %s%n", outcomeRecord.getConsultationNotes());
-    
+
                 System.out.println("\nPending Prescriptions:");
                 System.out.println("----------------------------------------------------");
                 System.out.printf("%-20s %-10s %-10s%n", "Medication Name", "Quantity", "Status");
                 System.out.println("----------------------------------------------------");
-    
+
                 for (Prescription prescription : pendingPrescriptions) {
                     System.out.printf("%-20s %-10d %-10s%n",
                             prescription.getMedicationName(),
@@ -151,47 +155,46 @@ public class AppointmentManagementControl {
                 System.out.println("====================================================\n");
             }
         }
-    
+
         if (recordCount == 1) {
             System.out.println("No completed appointments with pending prescriptions found.");
         }
     }
-    
-    
 
     public void cancelAppointment() {
         initialDataAppointments.reloadData();
         Scanner scanner = new Scanner(System.in);
         String currentPatientID = AuthorizationControl.getCurrentUserId();
         LocalDate today = LocalDate.now();
-    
+
         // Filter appointments for the current user
         List<Appointment> cancelableAppointments = initialDataAppointments.getLists().stream()
                 .filter(appointment -> appointment.getPatientID().equals(currentPatientID)
                         && ((appointment.getStatus() == AppointmentStatus.PENDING)
-                            || (appointment.getStatus() == AppointmentStatus.ACCEPTED
-                                && LocalDate.parse(appointment.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                                        .isAfter(today.plusDays(3)))))
+                                || (appointment.getStatus() == AppointmentStatus.ACCEPTED
+                                        && LocalDate
+                                                .parse(appointment.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                                .isAfter(today.plusDays(3)))))
                 .collect(Collectors.toList());
-    
+
         if (cancelableAppointments.isEmpty()) {
             System.out.println("No appointments are eligible for cancellation.");
             return;
         }
-    
+
         // Display eligible appointments for cancellation
         System.out.println("Appointments eligible for cancellation:");
         System.out.println("==============================================================");
         for (int i = 0; i < cancelableAppointments.size(); i++) {
             Appointment appointment = cancelableAppointments.get(i);
-    
+
             // Find the doctor's name directly within the loop
             String doctorName = initialDataStaff.getDoctors().stream()
                     .filter(doc -> doc.getUserID().equals(appointment.getDoctorID()))
                     .map(Doctor::getName)
                     .findFirst()
                     .orElse("Unknown Doctor");
-    
+
             System.out.printf("Option %d:\n", (i + 1));
             System.out.printf("   Appointment ID: %s\n", appointment.getAppointmentID());
             System.out.printf("   Date          : %s\n", appointment.getDate());
@@ -200,7 +203,7 @@ public class AppointmentManagementControl {
             System.out.printf("   Status        : %s\n", appointment.getStatus());
             System.out.println("--------------------------------------------------------------");
         }
-    
+
         // Prompt user to select an appointment to cancel by entering the option number
         int appointmentIndex = -1;
         while (appointmentIndex < 0 || appointmentIndex >= cancelableAppointments.size()) {
@@ -214,10 +217,10 @@ public class AppointmentManagementControl {
                 System.out.println("Invalid input. Please enter a number.");
             }
         }
-    
+
         // Get the selected appointment for cancellation
         Appointment selectedAppointment = cancelableAppointments.get(appointmentIndex);
-    
+
         // Confirm the cancellation
         System.out.print("Are you sure you want to cancel this appointment? (yes/no): ");
         String confirmation = scanner.nextLine().trim().toLowerCase();
@@ -225,10 +228,10 @@ public class AppointmentManagementControl {
             System.out.println("Cancellation aborted.");
             return;
         }
-    
+
         // Cancel the appointment by updating its status to CANCELLED
         selectedAppointment.updateStatus(AppointmentStatus.CANCELLED);
-    
+
         // Write updated appointment to file
         try {
             initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", selectedAppointment);
@@ -237,26 +240,26 @@ public class AppointmentManagementControl {
             e.printStackTrace();
         }
     }
-    
+
     // UPDATE APPOINTMENT STATUS
     public void acceptOrDeclineAppointment() {
         // Ensure data is loaded
         initialDataAppointments.reloadData();
-        
+
         // Get the current doctor ID
         String doctorID = AuthorizationControl.getCurrentUserId();
-    
+
         // Retrieve all pending appointments for this doctor
         List<Appointment> pendingAppointments = initialDataAppointments.getLists().stream()
                 .filter(app -> app.getDoctorID().equals(doctorID) && app.getStatus() == AppointmentStatus.PENDING)
                 .collect(Collectors.toList());
-    
+
         // Check if there are no pending appointments
         if (pendingAppointments.isEmpty()) {
             System.out.println("You have no pending appointments to update.");
             return;
         }
-    
+
         // Display the list of pending appointments with a neater format
         System.out.println("Pending Appointments:");
         System.out.println("============================================");
@@ -269,18 +272,18 @@ public class AppointmentManagementControl {
             System.out.println("   Time           : " + appointment.getTime());
             System.out.println("============================================");
         }
-    
+
         // Prompt the doctor to select an appointment or exit
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the number of the appointment to update status (or type 'exit' to cancel): ");
         String input = scanner.nextLine().trim();
-    
+
         // Exit if the doctor chooses to cancel
         if (input.equalsIgnoreCase("exit")) {
             System.out.println("Exiting update process.");
             return;
         }
-    
+
         int appointmentIndex;
         try {
             appointmentIndex = Integer.parseInt(input) - 1;
@@ -292,10 +295,10 @@ public class AppointmentManagementControl {
             System.out.println("Invalid input. Please enter a number.");
             return;
         }
-    
+
         // Retrieve the selected appointment
         Appointment selectedAppointment = pendingAppointments.get(appointmentIndex);
-    
+
         // Display options to update status with an exit option
         System.out.println("\nSelect an action:");
         System.out.println("1. ACCEPT APPOINTMENT");
@@ -304,7 +307,7 @@ public class AppointmentManagementControl {
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
-    
+
         // Handle the chosen action or exit
         if (choice == 1) {
             selectedAppointment.updateStatus(AppointmentStatus.ACCEPTED);
@@ -317,7 +320,7 @@ public class AppointmentManagementControl {
             System.out.println("Invalid choice.");
             return;
         }
-    
+
         // Write the updated appointment status to the file
         try {
             initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", selectedAppointment);
@@ -327,8 +330,6 @@ public class AppointmentManagementControl {
             e.printStackTrace();
         }
     }
-    
-    
 
     public void updatePrescriptionStatus() {
         // PROMPT USER FOR APPOINTMENT ID
@@ -418,17 +419,17 @@ public class AppointmentManagementControl {
         // Reload data if necessary
         initialDataMedicine.reloadData();
     }
-    
+
     public void outcomeRecordUpdate() {
         Scanner scanner = new Scanner(System.in);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    
+
         System.out.println("== Outcome Record Update ==");
         System.out.println("Would you like to update:");
         System.out.println("1. New Appointment (Accepted)");
         System.out.println("2. Old Appointment (Completed)");
         System.out.print("Enter your choice (1 or 2): ");
-    
+
         int choice;
         try {
             choice = Integer.parseInt(scanner.nextLine().trim());
@@ -440,28 +441,46 @@ public class AppointmentManagementControl {
             System.out.println("Invalid input. Please enter 1 or 2.");
             return;
         }
-    
+
         Appointment existingAppointment = null;
         try {
             List<Appointment> availableAppointments;
-    
+
+            // Get the current date and time
+            LocalDateTime now = LocalDateTime.now();
+
             if (choice == 1) {
                 availableAppointments = initialDataAppointments.getLists().stream()
                         .filter(app -> app.getStatus() == AppointmentStatus.ACCEPTED)
+                        .filter(app -> {
+                            LocalDate appointmentDate = LocalDate.parse(app.getDate(), dateFormatter);
+                            LocalTime appointmentTime = LocalTime.parse(app.getTime(),
+                                    DateTimeFormatter.ofPattern("HH:mm"));
+                            LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+                            return appointmentDateTime.isBefore(now); // Only include past appointments
+                        })
                         .collect(Collectors.toList());
             } else {
                 availableAppointments = initialDataAppointments.getLists().stream()
                         .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED)
+                        .filter(app -> {
+                            LocalDate appointmentDate = LocalDate.parse(app.getDate(), dateFormatter);
+                            LocalTime appointmentTime = LocalTime.parse(app.getTime(),
+                                    DateTimeFormatter.ofPattern("HH:mm"));
+                            LocalDateTime appointmentDateTime = LocalDateTime.of(appointmentDate, appointmentTime);
+                            return appointmentDateTime.isBefore(now); // Only include past appointments
+                        })
                         .collect(Collectors.toList());
             }
-    
+
             if (availableAppointments.isEmpty()) {
-                System.out.println("\nNo appointments found with the selected status.\n");
+                System.out.println("\nNo past appointments found with the selected status.\n");
                 return;
             }
-    
+
             System.out.println("\n== Select an Appointment to Update ==");
-            System.out.printf("%-5s %-20s %-15s %-15s %-15s%n", "No.", "Appointment ID", "Patient ID", "Date", "Status");
+            System.out.printf("%-5s %-20s %-15s %-15s %-15s%n", "No.", "Appointment ID", "Patient ID", "Date",
+                    "Status");
             for (int i = 0; i < availableAppointments.size(); i++) {
                 Appointment appointment = availableAppointments.get(i);
                 System.out.printf("%-5d %-20s %-15s %-15s %-15s%n",
@@ -471,14 +490,14 @@ public class AppointmentManagementControl {
                         appointment.getDate(),
                         appointment.getStatus());
             }
-    
+
             System.out.print("\nEnter the number of the appointment to update (or type 'exit' to cancel): ");
             String input = scanner.nextLine().trim();
             if (input.equalsIgnoreCase("exit")) {
                 System.out.println("Exiting update process.");
                 return;
             }
-    
+
             int appointmentIndex;
             try {
                 appointmentIndex = Integer.parseInt(input) - 1;
@@ -490,9 +509,9 @@ public class AppointmentManagementControl {
                 System.out.println("Invalid input. Please enter a valid number.");
                 return;
             }
-    
+
             existingAppointment = availableAppointments.get(appointmentIndex);
-    
+
             OutcomeRecord outcomeRecord = existingAppointment.getOutcomeRecord();
             if (existingAppointment.getStatus() == AppointmentStatus.COMPLETED && outcomeRecord != null) {
                 System.out.println("\n== Existing Outcome Record ==");
@@ -506,15 +525,16 @@ public class AppointmentManagementControl {
                 }
                 System.out.println("Prescriptions cannot be modified for completed appointments.");
             }
-    
+
             System.out.println("\n== Update Details (Press Enter to keep current value) ==");
-    
+
             // Date input loop
             String dateOfAppointment;
             while (true) {
                 System.out.print("Enter the new date of appointment (dd/MM/yyyy): ");
                 dateOfAppointment = scanner.nextLine().trim();
-                if (dateOfAppointment.isEmpty()) break; // Keep current date if empty
+                if (dateOfAppointment.isEmpty())
+                    break; // Keep current date if empty
                 try {
                     LocalDate.parse(dateOfAppointment, dateFormatter);
                     break; // Exit loop if date is valid
@@ -525,19 +545,19 @@ public class AppointmentManagementControl {
             if (!dateOfAppointment.isEmpty()) {
                 existingAppointment.getOutcomeRecord().setDateOfAppointment(dateOfAppointment);
             }
-    
+
             System.out.print("Enter the new service type: ");
             String serviceType = scanner.nextLine().trim();
             if (!serviceType.isEmpty()) {
                 existingAppointment.getOutcomeRecord().setServiceType(serviceType);
             }
-    
+
             System.out.print("Enter updated consultation notes: ");
             String consultationNotes = scanner.nextLine().trim();
             if (!consultationNotes.isEmpty()) {
                 existingAppointment.getOutcomeRecord().setConsultationNotes(consultationNotes);
             }
-    
+
             // Prescription entry loop for accepted appointments
             if (existingAppointment.getStatus() == AppointmentStatus.ACCEPTED) {
                 int numPrescriptions;
@@ -550,14 +570,14 @@ public class AppointmentManagementControl {
                         System.out.println("Invalid input for number of prescriptions. Please enter a valid number.");
                     }
                 }
-    
+
                 List<Prescription> prescriptions = new ArrayList<>();
                 List<Medicine> medicines = initialDataMedicine.getLists();
                 System.out.println("\n== Available Medicines ==");
                 for (int i = 0; i < medicines.size(); i++) {
                     System.out.printf("%d. %s%n", i + 1, medicines.get(i).getName());
                 }
-    
+
                 for (int i = 0; i < numPrescriptions; i++) {
                     int medicineIndex;
                     while (true) {
@@ -573,7 +593,7 @@ public class AppointmentManagementControl {
                             System.out.println("Invalid input. Please enter a valid number.");
                         }
                     }
-    
+
                     String medicationName = medicines.get(medicineIndex).getName();
                     int quantity;
                     while (true) {
@@ -589,12 +609,12 @@ public class AppointmentManagementControl {
                             System.out.println("Invalid quantity. Please enter a valid number.");
                         }
                     }
-    
+
                     Prescription prescription = new Prescription(medicationName, quantity);
                     prescription.updateStatus(PrescriptionStatus.PENDING);
                     prescriptions.add(prescription);
                 }
-    
+
                 if (outcomeRecord == null) {
                     outcomeRecord = new OutcomeRecord(dateOfAppointment, serviceType, consultationNotes);
                     existingAppointment.setOutcomeRecord(outcomeRecord);
@@ -603,21 +623,19 @@ public class AppointmentManagementControl {
                 }
                 prescriptions.forEach(outcomeRecord::addPrescription);
             }
-    
+
             if (existingAppointment.getStatus() == AppointmentStatus.ACCEPTED) {
                 existingAppointment.updateStatus(AppointmentStatus.COMPLETED);
             }
-    
+
             initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
             System.out.println("\nOutcome record updated successfully.");
-    
+
             initialDataAppointments.reloadData();
-    
+
         } catch (IOException e) {
             System.err.println("Error while updating the appointment: " + e.getMessage());
         }
     }
-    
-    
 
 }
