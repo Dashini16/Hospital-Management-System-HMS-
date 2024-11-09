@@ -332,94 +332,120 @@ public class AppointmentManagementControl {
     }
 
     public void updatePrescriptionStatus() {
-        // PROMPT USER FOR APPOINTMENT ID
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Appointment ID to update prescription status: ");
-        String appointmentID = scanner.nextLine();
-
-        // FIND IF APPOINTMENT EXISTS
-        Appointment existingAppointment = null;
+    
+        // Display only outcome records with pending prescriptions
+        viewOutcomeRecords(true);
+    
+        System.out.print("\nEnter the number of the outcome record to update (or type 'exit' to cancel): ");
+        String input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("exit")) {
+            System.out.println("Exiting update process.");
+            return;
+        }
+    
+        int appointmentIndex;
         try {
-            existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv",
-                    appointmentID);
-        } catch (IOException e) {
-            e.printStackTrace();
+            appointmentIndex = Integer.parseInt(input) - 1;
+            List<Appointment> eligibleAppointments = initialDataAppointments.getLists().stream()
+                    .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED
+                            && app.getOutcomeRecord() != null
+                            && app.getOutcomeRecord().getPrescriptions().stream()
+                                .anyMatch(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING))
+                    .collect(Collectors.toList());
+    
+            if (appointmentIndex < 0 || appointmentIndex >= eligibleAppointments.size()) {
+                System.out.println("Invalid selection. Please try again.");
+                return;
+            }
+    
+            Appointment selectedAppointment = eligibleAppointments.get(appointmentIndex);
+            List<Prescription> prescriptions = selectedAppointment.getOutcomeRecord().getPrescriptions();
+    
+            // Loop for dispensing prescriptions
+            while (true) {
+                List<Prescription> pendingPrescriptions = prescriptions.stream()
+                        .filter(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING)
+                        .collect(Collectors.toList());
+    
+                if (pendingPrescriptions.isEmpty()) {
+                    System.out.println("No more pending prescriptions for this appointment.");
+                    break;
+                }
+    
+                System.out.println("\nPending Prescriptions:");
+                for (int i = 0; i < pendingPrescriptions.size(); i++) {
+                    Prescription prescription = pendingPrescriptions.get(i);
+                    System.out.printf("%d. Medication: %s, Quantity: %d, Status: %s%n",
+                                      i + 1,
+                                      prescription.getMedicationName(),
+                                      prescription.getQuantity(),
+                                      prescription.getStatus());
+                }
+    
+                System.out.print("\nEnter the number of the prescription to dispense (or type 'exit' to finish): ");
+                String prescriptionInput = scanner.nextLine().trim();
+                if (prescriptionInput.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting dispensing process for this appointment.");
+                    break;
+                }
+    
+                int prescriptionIndex;
+                try {
+                    prescriptionIndex = Integer.parseInt(prescriptionInput) - 1;
+                    if (prescriptionIndex < 0 || prescriptionIndex >= pendingPrescriptions.size()) {
+                        System.out.println("Invalid selection. Please try again.");
+                        continue;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    continue;
+                }
+    
+                Prescription selectedPrescription = pendingPrescriptions.get(prescriptionIndex);
+                String medicineName = selectedPrescription.getMedicationName();
+    
+                // Check stock availability
+                Medicine selectedMedicine = initialDataMedicine.getLists().stream()
+                        .filter(medicine -> medicine.getName().equals(medicineName))
+                        .findFirst()
+                        .orElse(null);
+    
+                if (selectedMedicine == null) {
+                    System.out.println("Medicine not found in inventory.");
+                    continue;
+                }
+    
+                // Check if stock is sufficient
+                if (selectedMedicine.getInitialStock() < selectedPrescription.getQuantity()) {
+                    System.out.println("Insufficient stock for " + medicineName 
+                                       + ". Current stock: " + selectedMedicine.getInitialStock());
+                    continue;
+                }
+    
+                // Update stock and prescription status
+                selectedMedicine.setInitialStock(selectedMedicine.getInitialStock() - selectedPrescription.getQuantity());
+                selectedPrescription.updateStatus(PrescriptionStatus.DISPENSED);
+                System.out.println("Dispensed " + selectedPrescription.getQuantity() + " units of " + medicineName);
+    
+                // Save updates to files
+                try {
+                    initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", selectedAppointment);
+                    initialDataMedicine.rewriteMedicines("hms/src/data/Medicine_List.csv");
+                    System.out.println("Prescription status and inventory updated successfully.");
+                } catch (IOException e) {
+                    System.out.println("Error saving updates: " + e.getMessage());
+                }
+    
+                initialDataMedicine.reloadData();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
         }
-
-        if (existingAppointment == null) {
-            System.out.println("Appointment ID not found.");
-            return;
-        }
-
-        // DISPLAY PRESCRIPTIONS
-        List<Prescription> prescriptions = existingAppointment.getOutcomeRecord().getPrescriptions();
-        if (prescriptions.isEmpty()) {
-            System.out.println("No prescriptions found for this appointment.");
-            return;
-        }
-
-        System.out.println("Select a prescription to update its status:");
-        for (int i = 0; i < prescriptions.size(); i++) {
-            System.out.println((i + 1) + ". " + prescriptions.get(i).getMedicationName() + " - Current Status: "
-                    + prescriptions.get(i).getStatus());
-        }
-
-        // PROMPT USER FOR PRESCRIPTION SELECTION
-        System.out.print("Enter the number of the prescription to update: ");
-        int prescriptionIndex = scanner.nextInt() - 1; // Adjust for zero-based index
-        scanner.nextLine(); // Consume the newline character
-
-        if (prescriptionIndex < 0 || prescriptionIndex >= prescriptions.size()) {
-            System.out.println("Invalid selection.");
-            return;
-        }
-
-        // GET SELECTED PRESCRIPTION
-        Prescription selectedPrescription = prescriptions.get(prescriptionIndex);
-        String medicineName = selectedPrescription.getMedicationName();
-
-        // CHECK INITIAL STOCK FROM initialData
-        Medicine selectedMedicine = initialDataMedicine.getLists().stream()
-                .filter(medicine -> medicine.getName().equals(medicineName))
-                .findFirst()
-                .orElse(null);
-
-        if (selectedMedicine == null) {
-            System.out.println("Medicine not found.");
-            return;
-        }
-
-        // Check stock levels
-        if (selectedMedicine.getInitialStock() < selectedMedicine.getLowStockLevelAlert()) {
-            System.out.println("Cannot update the prescription status. Low stock level for " + medicineName
-                    + ". Current stock: " + selectedMedicine.getInitialStock());
-
-            // Ensure the prescription status remains PENDING
-            selectedPrescription.updateStatus(PrescriptionStatus.PENDING);
-            return; // Return if stock is low
-        }
-
-        // SUBTRACT 1 FROM INITIAL STOCK
-        selectedMedicine.setInitialStock(selectedMedicine.getInitialStock() - 1);
-
-        // UPDATE PRESCRIPTION STATUS TO ACCEPTED
-        selectedPrescription.updateStatus(PrescriptionStatus.ACCEPTED);
-
-        // WRITE UPDATED APPOINTMENT TO FILE
-        try {
-            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
-            System.out.println("Prescription status updated successfully.");
-
-            // WRITE UPDATED MEDICINE LIST TO FILE
-            initialDataMedicine.rewriteMedicines("hms/src/data/Medicine_List.csv");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Reload data if necessary
-        initialDataMedicine.reloadData();
     }
+    
 
+    
     public void outcomeRecordUpdate() {
         Scanner scanner = new Scanner(System.in);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
