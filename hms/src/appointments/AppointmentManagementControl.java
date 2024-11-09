@@ -204,57 +204,97 @@ public class AppointmentManagementControl {
         }
     }
     
-
     // UPDATE APPOINTMENT STATUS
     public void acceptOrDeclineAppointment() {
-        // PROMPT USER FOR APPOINTMENT ID
+        // Ensure data is loaded
+        initialDataAppointments.reloadData();
+        
+        // Get the current doctor ID
+        String doctorID = AuthorizationControl.getCurrentUserId();
+    
+        // Retrieve all pending appointments for this doctor
+        List<Appointment> pendingAppointments = initialDataAppointments.getLists().stream()
+                .filter(app -> app.getDoctorID().equals(doctorID) && app.getStatus() == AppointmentStatus.PENDING)
+                .collect(Collectors.toList());
+    
+        // Check if there are no pending appointments
+        if (pendingAppointments.isEmpty()) {
+            System.out.println("You have no pending appointments to update.");
+            return;
+        }
+    
+        // Display the list of pending appointments with a neater format
+        System.out.println("Pending Appointments:");
+        System.out.println("============================================");
+        for (int i = 0; i < pendingAppointments.size(); i++) {
+            Appointment appointment = pendingAppointments.get(i);
+            System.out.printf("%d. Appointment Details:\n", i + 1);
+            System.out.println("   Appointment ID : " + appointment.getAppointmentID());
+            System.out.println("   Patient ID     : " + appointment.getPatientID());
+            System.out.println("   Date           : " + appointment.getDate());
+            System.out.println("   Time           : " + appointment.getTime());
+            System.out.println("============================================");
+        }
+    
+        // Prompt the doctor to select an appointment or exit
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Appointment ID to update status: ");
-        String appointmentID = scanner.nextLine();
-
-        // FIND IF APPOINTMENT EXISTS
-        Appointment existingAppointment = null;
+        System.out.print("Enter the number of the appointment to update status (or type 'exit' to cancel): ");
+        String input = scanner.nextLine().trim();
+    
+        // Exit if the doctor chooses to cancel
+        if (input.equalsIgnoreCase("exit")) {
+            System.out.println("Exiting update process.");
+            return;
+        }
+    
+        int appointmentIndex;
         try {
-            existingAppointment = initialDataAppointments.findAppointment("hms/src/data/Appointments_List.csv",
-                    appointmentID);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (existingAppointment == null) {
-            System.out.println("Appointment ID not found.");
+            appointmentIndex = Integer.parseInt(input) - 1;
+            if (appointmentIndex < 0 || appointmentIndex >= pendingAppointments.size()) {
+                System.out.println("Invalid selection. Please try again.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
             return;
         }
-        // CHECK IF STATUS IS PENDING
-        if (existingAppointment.getStatus() != AppointmentStatus.PENDING) {
-            System.out.println("Appointment cannot be updated as it is not in a PENDING state.");
-            return;
-        }
-        // DISPLAY APPOINTMENT DETAILS
+    
+        // Retrieve the selected appointment
+        Appointment selectedAppointment = pendingAppointments.get(appointmentIndex);
+    
+        // Display options to update status with an exit option
+        System.out.println("\nSelect an action:");
         System.out.println("1. ACCEPT APPOINTMENT");
         System.out.println("2. CANCEL APPOINTMENT");
+        System.out.println("3. EXIT WITHOUT UPDATING");
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume the newline character
-
+    
+        // Handle the chosen action or exit
         if (choice == 1) {
-            existingAppointment.updateStatus(AppointmentStatus.ACCEPTED);
+            selectedAppointment.updateStatus(AppointmentStatus.ACCEPTED);
         } else if (choice == 2) {
-            existingAppointment.updateStatus(AppointmentStatus.CANCELLED);
+            selectedAppointment.updateStatus(AppointmentStatus.CANCELLED);
+        } else if (choice == 3) {
+            System.out.println("Exiting without updating appointment status.");
+            return;
         } else {
             System.out.println("Invalid choice.");
             return;
         }
-
-        // WRITE UPDATED APPOINTMENT TO FILE
+    
+        // Write the updated appointment status to the file
         try {
-            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
+            initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", selectedAppointment);
             System.out.println("Appointment status updated successfully.");
             initialDataAppointments.reloadData();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
+    
 
     public void updatePrescriptionStatus() {
         // PROMPT USER FOR APPOINTMENT ID
