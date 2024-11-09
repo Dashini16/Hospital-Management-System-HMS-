@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -305,23 +306,22 @@ public class MedicalManagement {
     
         // Step 1: Retrieve the list of unique patient IDs with past appointments (ACCEPTED or COMPLETED) with this doctor
         List<String> patientIDs = appointmentData.getLists().stream()
-            .filter(appointment -> appointment.getDoctorID().equals(doctorID) &&
-                                   (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
-                                    appointment.getStatus() == AppointmentStatus.COMPLETED))
-            .map(Appointment::getPatientID)
-            .distinct()
-            .collect(Collectors.toList());
+                .filter(appointment -> appointment.getDoctorID().equals(doctorID) &&
+                                       (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
+                                        appointment.getStatus() == AppointmentStatus.COMPLETED))
+                .map(Appointment::getPatientID)
+                .distinct()
+                .collect(Collectors.toList());
     
         if (patientIDs.isEmpty()) {
             System.out.println("No patients with completed or accepted appointments found.");
             return;
         }
     
-        // Step 2: Group the medical records by patient ID without duplicating records
+        // Step 2: Group the medical records by patient ID, ensuring unique records
         Map<String, List<MedicalRecord>> groupedRecords = medicalData.getLists().stream()
-            .filter(record -> patientIDs.contains(record.getPatientID()))
-            .distinct() // Ensure unique records
-            .collect(Collectors.groupingBy(MedicalRecord::getPatientID));
+                .filter(record -> patientIDs.contains(record.getPatientID()))
+                .collect(Collectors.groupingBy(MedicalRecord::getPatientID));
     
         if (groupedRecords.isEmpty()) {
             System.out.println("No medical records found for your patients.");
@@ -332,13 +332,13 @@ public class MedicalManagement {
         System.out.println("Viewing Medical Records for Your Patients:");
         System.out.println("===========================================");
     
-        // Step 4: Print each patient’s records only once
+        // Step 4: Iterate over each patient’s records and display them in a clear format
         for (String patientID : groupedRecords.keySet()) {
             // Retrieve the patient's basic information
             Patient patient = patientData.getLists().stream()
-                .filter(p -> p.getUserID().equals(patientID))
-                .findFirst()
-                .orElse(null);
+                    .filter(p -> p.getUserID().equals(patientID))
+                    .findFirst()
+                    .orElse(null);
     
             if (patient != null) {
                 // Display patient header
@@ -348,32 +348,40 @@ public class MedicalManagement {
                 System.out.println("Gender         : " + patient.getGender());
                 System.out.println("Contact Info   : " + patient.getContactInfo());
     
-                // Get and display the medical records for this patient
+                // Display the medical records for this patient
                 List<MedicalRecord> records = groupedRecords.get(patientID);
                 System.out.println("\nMedical Records:");
                 for (int i = 0; i < records.size(); i++) {
                     MedicalRecord record = records.get(i);
                     System.out.println("Record " + (i + 1) + ":");
     
+                    // Display Diagnoses
                     System.out.println("  **Diagnoses:**");
-                    for (int j = 0; j < record.getDiagnoses().size(); j++) {
-                        System.out.println("    " + (j + 1) + ". " + record.getDiagnoses().get(j));
+                    if (record.getDiagnoses().isEmpty()) {
+                        System.out.println("    No diagnoses recorded.");
+                    } else {
+                        for (int j = 0; j < record.getDiagnoses().size(); j++) {
+                            System.out.println("    " + (j + 1) + ". " + record.getDiagnoses().get(j));
+                        }
                     }
     
+                    // Display Treatments
                     System.out.println("  **Treatments:**");
-                    for (int k = 0; k < record.getTreatments().size(); k++) {
-                        System.out.println("    " + (k + 1) + ". " + record.getTreatments().get(k));
+                    if (record.getTreatments().isEmpty()) {
+                        System.out.println("    No treatments recorded.");
+                    } else {
+                        for (int k = 0; k < record.getTreatments().size(); k++) {
+                            System.out.println("    " + (k + 1) + ". " + record.getTreatments().get(k));
+                        }
                     }
                     System.out.println("-----------------------------------------------------");
                 }
             } else {
                 System.out.println("Patient information not found for ID: " + patientID);
             }
-            System.out.println("=====================================================");
+            System.out.println("=====================================================\n");
         }
     }
-    
-
     
 
     // view everyone patients medical record
@@ -393,83 +401,118 @@ public class MedicalManagement {
         }
     }
 
+    // for doctor to update it own patients medical record
     public void updateMedicalRecord() {
-        // medicalData.importData();
-
-        // Prompt user for patient ID with validation
-        Scanner scanner = new Scanner(System.in);
-        String patientID = "";
-        while (true) {
-            System.out.print("Enter Patient ID: ");
-            patientID = scanner.nextLine().trim();
-
-            if (patientID.isEmpty()) {
-                System.out.println("Patient ID cannot be empty. Please enter a valid Patient ID.");
-            } else {
-                break; // Valid ID provided, exit the loop
-            }
+        if (medicalData.getLists().isEmpty()) {
+            medicalData.importData();
+        }
+        if (appointmentData.getLists().isEmpty()) {
+            appointmentData.importData();
         }
 
-        // Find the medical record by ID
-        // MedicalRecord medicalRecord = findPatientById(patientID);
+        // Identify the current doctor
+        String doctorID = AuthorizationControl.getCurrentUserId();
 
-        UserLookup userLookup = new UserLookup();
-        final String findPatient = patientID;
-        MedicalRecord medicalRecord = userLookup.findByID(findPatient, medicalData.getLists(),
-                rec -> rec.getPatientID().equals(findPatient));
-        if (medicalRecord == null) {
-            System.out.println("Medical Record not found for Patient ID: " + patientID);
+        // Retrieve unique patient IDs for the doctor’s accepted or completed
+        // appointments
+        List<String> patientIDs = appointmentData.getLists().stream()
+                .filter(appointment -> appointment.getDoctorID().equals(doctorID) &&
+                        (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
+                                appointment.getStatus() == AppointmentStatus.COMPLETED))
+                .map(Appointment::getPatientID)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (patientIDs.isEmpty()) {
+            System.out.println("No patients available for updating medical records.");
             return;
         }
 
-        // Display update options to the user
-        String field = "";
-        while (true) {
-            System.out.print("Enter 'd' for diagnosis or 't' for treatments to update: ");
-            field = scanner.nextLine().trim();
+        // Display patients for selection
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Select a patient to update medical record:");
 
-            if (field.equalsIgnoreCase("d") || field.equalsIgnoreCase("t")) {
-                break; // Valid field provided, exit the loop
-            } else {
-                System.out.println("Invalid input. Please enter 'd' for diagnosis or 't' for prescription.");
+        List<Patient> doctorPatients = patientData.getLists().stream()
+                .filter(patient -> patientIDs.contains(patient.getUserID()))
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < doctorPatients.size(); i++) {
+            Patient patient = doctorPatients.get(i);
+            System.out.printf("%d. Patient ID: %s, Name: %s\n", i + 1, patient.getUserID(), patient.getName());
+        }
+
+        // Prompt user to select a patient
+        int patientChoice = -1;
+        while (patientChoice < 1 || patientChoice > doctorPatients.size()) {
+            System.out.print("Enter the number of the patient to update: ");
+            try {
+                patientChoice = Integer.parseInt(scanner.nextLine().trim());
+                if (patientChoice < 1 || patientChoice > doctorPatients.size()) {
+                    System.out.println("Invalid choice. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
             }
         }
 
-        // Update diagnoses or treatments
-        if (field.equalsIgnoreCase("d")) {
-            System.out.println("Updating diagnoses. Enter Diagnosis (or type 'done' to finish): ");
-            while (true) {
-                String diagnosis = scanner.nextLine().trim();
-                if (diagnosis.equalsIgnoreCase("done")) {
-                    break; // Exit the loop when done
-                }
-                if (diagnosis.isEmpty()) {
-                    System.out.println(
-                            "Diagnosis cannot be empty. Please enter a valid diagnosis or type 'done' to finish.");
-                } else {
-                    medicalRecord.addDiagnosis(diagnosis); // Add diagnosis to record
-                }
-            }
-        } else if (field.equalsIgnoreCase("t")) {
-            System.out.println("Updating treatments. Enter Treatment (or type 'done' to finish): ");
-            while (true) {
-                String treatment = scanner.nextLine().trim();
-                if (treatment.equalsIgnoreCase("done")) {
-                    break; // Exit the loop when done
-                }
-                if (treatment.isEmpty()) {
-                    System.out.println(
-                            "Treatment cannot be empty. Please enter a valid treatment or type 'done' to finish.");
-                } else {
-                    medicalRecord.addTreatment(treatment); // Add treatment to record
-                }
+        String selectedPatientID = doctorPatients.get(patientChoice - 1).getUserID();
+
+        // Find the medical record by Patient ID
+        MedicalRecord medicalRecord = medicalData.getLists().stream()
+                .filter(record -> record.getPatientID().equals(selectedPatientID))
+                .findFirst()
+                .orElse(null);
+
+        if (medicalRecord == null) {
+            System.out.println("Medical Record not found for Patient ID: " + selectedPatientID);
+            return;
+        }
+
+        // Display the selected patient's medical record
+        System.out.println("\n------ Patient ID: " + selectedPatientID + " ------");
+        System.out.println("Name           : " + doctorPatients.get(patientChoice - 1).getName());
+        System.out.println("Date of Birth  : " + doctorPatients.get(patientChoice - 1).getDateOfBirth());
+        System.out.println("Gender         : " + doctorPatients.get(patientChoice - 1).getGender());
+        System.out.println("Contact Info   : " + doctorPatients.get(patientChoice - 1).getContactInfo());
+
+        System.out.println("\nMedical Records:");
+        System.out.println("Record 1:");
+        System.out.println("  **Diagnoses:**");
+        for (int i = 0; i < medicalRecord.getDiagnoses().size(); i++) {
+            System.out.printf("    %d. %s\n", i + 1, medicalRecord.getDiagnoses().get(i));
+        }
+        System.out.println("  **Treatments:**");
+        for (int i = 0; i < medicalRecord.getTreatments().size(); i++) {
+            System.out.printf("    %d. %s\n", i + 1, medicalRecord.getTreatments().get(i));
+        }
+
+        boolean continueUpdating = true;
+
+        while (continueUpdating) {
+            // Prompt for diagnoses or treatments update
+            System.out.print("\nEnter 'd' to manage diagnoses, 't' to manage treatments, or 'exit' to finish: ");
+            String choice = scanner.nextLine().trim();
+
+            if (choice.equalsIgnoreCase("d")) {
+                manageField(scanner, medicalRecord.getDiagnoses(), "Diagnosis");
+            } else if (choice.equalsIgnoreCase("t")) {
+                manageField(scanner, medicalRecord.getTreatments(), "Treatment");
+            } else if (choice.equalsIgnoreCase("exit")) {
+                continueUpdating = false;
+            } else {
+                System.out.println("Invalid input. Please enter 'd', 't', or 'exit'.");
             }
         }
 
         // Save updated medical records to CSV file
         try {
-            // Get all medical records and overwrite the file
+            // Convert each diagnosis and treatment list into a single String with `|`
+            // separator
             List<MedicalRecord> allMedicalRecords = medicalData.getLists();
+            for (MedicalRecord record : allMedicalRecords) {
+                record.setDiagnoses(Arrays.asList(String.join("|", record.getDiagnoses()).split("\\|")));
+                record.setTreatments(Arrays.asList(String.join("|", record.getTreatments()).split("\\|")));
+            }
             medicalData.writeData("hms/src/data/Medical_Records.csv", allMedicalRecords);
             System.out.println("Medical Record updated and saved successfully.");
         } catch (IOException e) {
@@ -477,16 +520,71 @@ public class MedicalManagement {
         }
     }
 
-    /*
-     * private MedicalRecord findPatientById(String id) {
-     * for (MedicalRecord medicalRecord : medicalData.getLists()) {
-     * //System.out.println("Patient ID: " + medicalRecord);
-     * if (medicalRecord.getPatientID().equals(id)) {
-     * //System.out.println("Found Medical Record for Patient ID: " + id);
-     * return medicalRecord;
-     * }
-     * }
-     * return null; // Not found
-     * }
-     */
+    // Helper function to manage diagnoses or treatments
+    private void manageField(Scanner scanner, List<String> fieldList, String fieldType) {
+        boolean continueManaging = true;
+
+        while (continueManaging) {
+            System.out.printf("\nManaging %s\n", fieldType);
+            System.out.println("Options: ");
+            System.out.println("1. Add New " + fieldType);
+            System.out.println("2. Update Existing " + fieldType);
+            System.out.println("3. Delete Existing " + fieldType);
+            System.out.println("4. Go Back");
+
+            System.out.print("Enter your choice: ");
+            int actionChoice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (actionChoice) {
+                case 1:
+                    // Add new item
+                    System.out.print("Enter new " + fieldType + ": ");
+                    String newItem = scanner.nextLine().trim();
+                    if (!newItem.isEmpty()) {
+                        fieldList.add(newItem);
+                        System.out.println(fieldType + " added successfully.");
+                    } else {
+                        System.out.println(fieldType + " cannot be empty.");
+                    }
+                    break;
+                case 2:
+                    // Update existing item
+                    System.out.printf("Select the %s to update (1 to %d): ", fieldType, fieldList.size());
+                    int updateIndex = scanner.nextInt() - 1;
+                    scanner.nextLine(); // Consume newline
+                    if (updateIndex >= 0 && updateIndex < fieldList.size()) {
+                        System.out.print("Enter updated " + fieldType + ": ");
+                        String updatedItem = scanner.nextLine().trim();
+                        if (!updatedItem.isEmpty()) {
+                            fieldList.set(updateIndex, updatedItem);
+                            System.out.println(fieldType + " updated successfully.");
+                        } else {
+                            System.out.println(fieldType + " cannot be empty.");
+                        }
+                    } else {
+                        System.out.println("Invalid choice.");
+                    }
+                    break;
+                case 3:
+                    // Delete existing item
+                    System.out.printf("Select the %s to delete (1 to %d): ", fieldType, fieldList.size());
+                    int deleteIndex = scanner.nextInt() - 1;
+                    scanner.nextLine(); // Consume newline
+                    if (deleteIndex >= 0 && deleteIndex < fieldList.size()) {
+                        fieldList.remove(deleteIndex);
+                        System.out.println(fieldType + " deleted successfully.");
+                    } else {
+                        System.out.println("Invalid choice.");
+                    }
+                    break;
+                case 4:
+                    continueManaging = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
+            }
+        }
+    }
+
 }
