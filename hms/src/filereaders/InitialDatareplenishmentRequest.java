@@ -54,10 +54,10 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
             // If the file doesn't exist, write a header first
             if (!fileExists) {
-                bw.write("MedicineName,RequestedQuantity,Status,RequestBy\n");
+                bw.write("MedicineName,RequestedQuantity,Status,RequestBy,IsNewMedicine\n");
             }
             // Append the request data
-            bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "," + request.getRequestBy() + "\n");
+            bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "," + request.getRequestBy() + "," + request.getIsNewMedicine() + "\n");
         }
     }
     
@@ -68,7 +68,7 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
     
             // Write each replenishment request's details
             for (ReplenishmentRequest request : requests) {
-                bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "\n");
+                bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "," + request.getRequestBy() + "," + request.getIsNewMedicine() + "\n");
             }
         }
     }
@@ -85,7 +85,8 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
                     int requestedQuantity = Integer.parseInt(data[1].trim());
                     RequestStatus status = RequestStatus.valueOf(data[2].trim().toUpperCase());
                     String requestBy = data[3].trim();
-                    ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedQuantity, requestBy);
+                    Boolean isNewMedicine = Boolean.parseBoolean(data[4].trim());
+                    ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedQuantity, requestBy, isNewMedicine);
                     request.setStatus(status);
                     replenishmentRequests.add(request);
                 }
