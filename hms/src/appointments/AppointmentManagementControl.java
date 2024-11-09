@@ -108,41 +108,47 @@ public class AppointmentManagementControl {
         initialDataAppointments.reloadData();
         int recordCount = 1;
     
+        // Sort appointments by appointment date in ascending order (furthest in the past first)
+        List<Appointment> sortedAppointments = initialDataAppointments.getLists().stream()
+                .filter(appointment -> appointment.getStatus() == AppointmentStatus.COMPLETED && appointment.getOutcomeRecord() != null)
+                .sorted((a1, a2) -> {
+                    LocalDate date1 = LocalDate.parse(a1.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    LocalDate date2 = LocalDate.parse(a2.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    return date1.compareTo(date2); // Sort in ascending order by appointment date (oldest to newest)
+                })
+                .collect(Collectors.toList());
+    
         System.out.println("===== Outcome Records with Pending Prescriptions =====\n");
     
-        for (Appointment appointment : initialDataAppointments.getLists()) {
+        for (Appointment appointment : sortedAppointments) {
             OutcomeRecord outcomeRecord = appointment.getOutcomeRecord();
     
-            // Check if the appointment is completed and has an outcome record
-            if (appointment.getStatus() == AppointmentStatus.COMPLETED && outcomeRecord != null) {
+            // Check for prescriptions with "PENDING" status
+            List<Prescription> pendingPrescriptions = outcomeRecord.getPrescriptions().stream()
+                    .filter(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING)
+                    .collect(Collectors.toList());
     
-                // Check if there are prescriptions with a PENDING status
-                List<Prescription> pendingPrescriptions = outcomeRecord.getPrescriptions().stream()
-                        .filter(prescription -> prescription.getStatus() == PrescriptionStatus.PENDING)
-                        .collect(Collectors.toList());
+            if (!pendingPrescriptions.isEmpty()) {
+                System.out.printf("========== Outcome Record #%d ==========%n", recordCount++);
+                System.out.printf("Appointment ID       : %s%n", appointment.getAppointmentID());
+                System.out.printf("Patient ID           : %s%n", appointment.getPatientID());
+                System.out.printf("Doctor ID            : %s%n", appointment.getDoctorID());
+                System.out.printf("Appointment Date     : %s%n", appointment.getDate());
+                System.out.printf("Service Type         : %s%n", outcomeRecord.getServiceType());
+                System.out.printf("Consultation Notes   : %s%n", outcomeRecord.getConsultationNotes());
     
-                if (!pendingPrescriptions.isEmpty()) {
-                    System.out.printf("========== Outcome Record #%d ==========%n", recordCount++);
-                    System.out.printf("Appointment ID       : %s%n", appointment.getAppointmentID());
-                    System.out.printf("Patient ID           : %s%n", appointment.getPatientID());
-                    System.out.printf("Doctor ID            : %s%n", appointment.getDoctorID());
-                    System.out.printf("Date of Appointment  : %s%n", outcomeRecord.getDateOfAppointment());
-                    System.out.printf("Service Type         : %s%n", outcomeRecord.getServiceType());
-                    System.out.printf("Consultation Notes   : %s%n", outcomeRecord.getConsultationNotes());
+                System.out.println("\nPending Prescriptions:");
+                System.out.println("----------------------------------------------------");
+                System.out.printf("%-20s %-10s %-10s%n", "Medication Name", "Quantity", "Status");
+                System.out.println("----------------------------------------------------");
     
-                    System.out.println("\nPending Prescriptions:");
-                    System.out.println("----------------------------------------------------");
-                    System.out.printf("%-20s %-10s %-10s%n", "Medication Name", "Quantity", "Status");
-                    System.out.println("----------------------------------------------------");
-    
-                    for (Prescription prescription : pendingPrescriptions) {
-                        System.out.printf("%-20s %-10d %-10s%n",
-                                prescription.getMedicationName(),
-                                prescription.getQuantity(),
-                                prescription.getStatus());
-                    }
-                    System.out.println("====================================================\n");
+                for (Prescription prescription : pendingPrescriptions) {
+                    System.out.printf("%-20s %-10d %-10s%n",
+                            prescription.getMedicationName(),
+                            prescription.getQuantity(),
+                            prescription.getStatus());
                 }
+                System.out.println("====================================================\n");
             }
         }
     
@@ -150,6 +156,7 @@ public class AppointmentManagementControl {
             System.out.println("No completed appointments with pending prescriptions found.");
         }
     }
+    
     
 
     public void cancelAppointment() {
