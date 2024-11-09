@@ -51,9 +51,9 @@ public class AppointmentScheduling {
 
         // Retrieve all ACCEPTED appointments for the current user
         List<Appointment> userAcceptedAppointments = initialDataAppointments.getLists().stream()
-                .filter(appointment -> appointment.getPatientID().equals(currentUserID)
-                        && appointment.getStatus() == AppointmentStatus.ACCEPTED)
-                .collect(Collectors.toList());
+        .filter(appointment -> appointment.getPatientID().equals(currentUserID)
+                && (appointment.getStatus() == AppointmentStatus.ACCEPTED || appointment.getStatus() == AppointmentStatus.PENDING))
+        .collect(Collectors.toList());
 
         if (userAcceptedAppointments.isEmpty()) {
             System.out.println("No accepted appointments available for rescheduling.");
