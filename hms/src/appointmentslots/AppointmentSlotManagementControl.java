@@ -430,106 +430,115 @@ public class AppointmentSlotManagementControl {
     public void setDoctorAvailability() {
         Scanner scanner = new Scanner(System.in);
         String doctorID = AuthorizationControl.getCurrentUserId();
-
+    
         // Check if the doctor has specified any availability
         List<AppointmentSlot> existingSlots = initialDataAppointmentSlots.getLists();
-        boolean hasAvailability = existingSlots.stream().anyMatch(slot -> slot.getDoctorID().equals(doctorID));
-
+        AppointmentSlot currentSlot = existingSlots.stream()
+                .filter(slot -> slot.getDoctorID().equals(doctorID))
+                .findFirst()
+                .orElse(null);
+    
+        boolean hasAvailability = currentSlot != null;
+    
         if (hasAvailability) {
             // If availability exists, ask if they want to update
             System.out.print("You already have specified availability. Do you want to update it? (y/n): ");
             String response = scanner.nextLine().trim().toLowerCase();
-
+    
             if (response.equals("n")) {
                 System.out.println("No changes made to your availability.");
                 return; // Exit method
             }
-            // If they choose to update, we proceed to get new times
             System.out.println("Updating your availability...");
         } else {
             System.out.println("You have not specified any availability. Setting your availability now...");
         }
-
-        // Input for Start Time with validation
-        LocalTime startTime;
+    
+        // Input for Start Time with validation, show current if exists
+        LocalTime startTime = null;
         while (true) {
+            System.out.print("Enter Start Time (HH:mm, e.g., 09:00), if no change then press <Enter> [" + 
+                             (hasAvailability ? currentSlot.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "None") +
+                             "]: ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty() && hasAvailability) {
+                startTime = currentSlot.getStartTime(); // Keep current start time if Enter is pressed
+                break;
+            }
             try {
-                System.out.print("Enter Start Time (yyyy-MM-dd'T'HH:mm): ");
-                startTime = LocalTime.parse(scanner.nextLine().trim());
-
-                // Check if startTime is in the future
-                if (startTime.isBefore(LocalTime.now())) {
-                    System.out.println("Error: Start time must be in the future.");
-                    continue;
-                }
+                startTime = LocalTime.parse(input, DateTimeFormatter.ofPattern("HH:mm"));
                 break; // Exit loop if input is valid
             } catch (DateTimeParseException e) {
-                System.out.println("Error: Invalid date/time format. Please use 'yyyy-MM-dd'T'HH:mm'.");
+                System.out.println("Error: Invalid time format. Please use 'HH:mm' format.");
             }
         }
-
-        // Input for End Time with validation
-        LocalTime endTime;
+    
+        // Input for End Time with validation, show current if exists
+        LocalTime endTime = null;
         while (true) {
+            System.out.print("Enter End Time (HH:mm, e.g., 17:00), if no change then press <Enter> [" + 
+                             (hasAvailability ? currentSlot.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) : "None") +
+                             "]: ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty() && hasAvailability) {
+                endTime = currentSlot.getEndTime(); // Keep current end time if Enter is pressed
+                break;
+            }
             try {
-                System.out.print("Enter End Time (yyyy-MM-dd'T'HH:mm): ");
-                endTime = LocalTime.parse(scanner.nextLine().trim());
-
-                // Check if endTime is after startTime
-                if (endTime.isBefore(startTime)) {
+                endTime = LocalTime.parse(input, DateTimeFormatter.ofPattern("HH:mm"));
+                if (endTime.isAfter(startTime)) {
+                    break; // Exit loop if input is valid and endTime is after startTime
+                } else {
                     System.out.println("Error: End time must be after start time.");
-                    continue;
                 }
-
-                // Check if endTime is in the future
-                if (endTime.isBefore(LocalTime.now())) {
-                    System.out.println("Error: End time must be in the future.");
-                    continue;
-                }
-                break; // Exit loop if input is valid
             } catch (DateTimeParseException e) {
-                System.out.println("Error: Invalid date/time format. Please use 'yyyy-MM-dd'T'HH:mm'.");
+                System.out.println("Error: Invalid time format. Please use 'HH:mm' format.");
             }
         }
-        /*
-         * // Check for overlapping appointment slots
-         * for (AppointmentSlot slot : existingSlots) {
-         * if (slot.getDoctorID().equals(doctorID) &&
-         * !(endTime.isBefore(slot.getStartTime()) ||
-         * startTime.isAfter(slot.getEndTime()))) {
-         * System.out.
-         * println("Error: The new time slot overlaps with an existing appointment slot."
-         * );
-         * return; // Exit method or prompt for new input
-         * }
-         * }
-         */
-
-        // Prompt for working days
-        List<WorkingDay> workingDays = new ArrayList<>();
-        System.out.print("Enter working days (e.g., MONDAY,TUESDAY, etc.), separated by commas: ");
-        String[] daysInput = scanner.nextLine().split(",");
-        for (String day : daysInput) {
-            workingDays.add(WorkingDay.valueOf(day.trim().toUpperCase())); // Convert input to WorkingDay enum
+    
+        // Display each day and allow the doctor to mark "not working" days
+        List<WorkingDay> workingDays = new ArrayList<>(currentSlot != null ? currentSlot.getWorkingDays() : new ArrayList<>());
+        System.out.println("Select the days you will be working. For days you're not working, type 'n'. Press Enter to confirm if working.");
+    
+        for (WorkingDay day : WorkingDay.values()) {
+            System.out.print(day.name() + " (Enter to confirm working, 'n' if not working): ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("n")) {
+                workingDays.remove(day); // Remove from working days if 'n' is entered
+            } else if (!workingDays.contains(day)) {
+                workingDays.add(day); // Add to working days if confirmed as working
+            }
         }
-
+    
+        if (workingDays.isEmpty()) {
+            System.out.println("No working days selected. Availability not updated.");
+            return;
+        }
+    
         // Create and save the appointment slot
         AppointmentSlot newSlot = new AppointmentSlot(doctorID, startTime, endTime, workingDays);
         if (hasAvailability) {
-            // If doctor has existing availability, we can replace the old slot (or modify
-            // as needed)
-            // Here, simply removing the old slots and adding the new one
+            // Replace old slot if exists
             existingSlots.removeIf(slot -> slot.getDoctorID().equals(doctorID));
         }
         initialDataAppointmentSlots.getLists().add(newSlot);
-
+    
         // Save to CSV after adding
         try {
             initialDataAppointmentSlots.saveAppointmentSlots("hms/src/data/Appointment_Slots.csv");
-            System.out.println("Appointment slot saved successfully.");
+            System.out.println("\nAppointment slot saved successfully.");
+    
+            // Display the newly updated availability slot for the current doctor
+            System.out.println("\nUpdated Availability Slot for Dr. " + doctorID + ":");
+            System.out.println("--------------------------------------------------");
+            System.out.println("Start Time     : " + startTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+            System.out.println("End Time       : " + endTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+            System.out.println("Working Days   : " + workingDays.stream().map(Enum::name).collect(Collectors.joining(", ")));
+            System.out.println("--------------------------------------------------");
         } catch (IOException e) {
             System.out.println("Error saving appointment slots: " + e.getMessage());
         }
     }
+    
 
 }
