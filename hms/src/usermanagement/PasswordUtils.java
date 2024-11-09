@@ -6,6 +6,7 @@ import java.util.Base64;
 
 public class PasswordUtils {
     // Method to hash the password using SHA-256
+    // Method to hash the password using SHA-256
     public static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

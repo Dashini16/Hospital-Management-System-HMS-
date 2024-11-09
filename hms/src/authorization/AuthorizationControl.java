@@ -23,22 +23,26 @@ public class AuthorizationControl {
     public Users login(String userID, String password) {
         System.out.println("Attempting login for user: " + userID);
         Users user = users.get(userID); // Check the users map for the user
+        
         if (user != null) {
+            // Hash the input password to compare with the stored hashed password
             String hashedInputPassword = PasswordUtils.hashPassword(password);
-            //System.out.println("User found: " + user.getName());
+            
+            // Compare hashed passwords
             if (user.getPassword().equals(hashedInputPassword)) {
-                createSession(user);
-                //currentUserId = user.getUserID();
-                //System.out.println("Login successful for user: " + currentUserId);
+                createSession(user);  // Create a session for the logged-in user
+                System.out.println("Login successful for user: " + userID);
                 return user;
             } else {
-                //System.out.println("Password mismatch for user: " + userID);
+                System.out.println("Password mismatch for user: " + userID);
             }
         } else {
             System.out.println("User not found: " + userID);
         }
+        
         return null; // Return null if login fails
     }
+    
 
     // Create a session for the user
     public void createSession(Users user) {

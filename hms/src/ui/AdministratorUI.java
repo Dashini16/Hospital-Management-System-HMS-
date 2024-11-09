@@ -60,7 +60,7 @@ public class AdministratorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Appointments Details");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManager = new AppointmentManagementControl(dataMedicine, dataPatient, data,dataAppointments, dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManager = new AppointmentManagementControl(dataMedicine, data,dataAppointments);
                     appointmentManager.viewAllAppointments(false);
                     break;
                 case 3:

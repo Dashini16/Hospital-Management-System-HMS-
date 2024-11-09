@@ -63,7 +63,7 @@ public class PharmacistUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Appointment Outcome Record");
                     System.out.println("===================================\n"); 
-                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(dataMedicine, dataPatient, data,dataAppointments, dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(dataMedicine, data,dataAppointments);
                     appointmentManagementControl.viewOutcomeRecords(false);
                     break;
                 case 2:
@@ -72,7 +72,7 @@ public class PharmacistUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Update Prescription Status");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    appointmentManagementControl = new AppointmentManagementControl(dataMedicine, dataPatient, data,dataAppointments, dataAppointmentSlots);
+                    appointmentManagementControl = new AppointmentManagementControl(dataMedicine, data,dataAppointments);
                     appointmentManagementControl.updatePrescriptionStatus();
                     break;
                 case 3:

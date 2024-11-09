@@ -5,6 +5,7 @@ import users.Patient;
 import java.util.Scanner;
 
 import appointments.AppointmentManagementControl;
+import appointments.AppointmentScheduling;
 import appointments.MedicalManagement;
 import appointmentslots.AppointmentSlotManagementControl;
 import filereaders.InitialDataAppointmentSlots;
@@ -101,7 +102,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Schedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentScheduling appointmentManagementControl = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots);
                     appointmentManagementControl.scheduleAppointment();;
                     break;
                 case 5:
@@ -109,7 +110,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Reschedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl3 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentScheduling appointmentManagementControl3 = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots);
                     appointmentManagementControl3.rescheduleAppointment();
                     
                     break;
@@ -118,7 +119,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Cancel an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl1 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl1 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
                     appointmentManagementControl1.cancelAppointment();
                     
                     break;
@@ -127,7 +128,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Scheduled Appointments");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl4 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl4 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
                     appointmentManagementControl4.viewAppointments(false);
                     break;
                 case 8:
@@ -135,7 +136,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Past Appointment Outcome Records");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl5 = new AppointmentManagementControl(medicineData, initialDataPatient, initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl5 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
                     appointmentManagementControl5.viewOutcomeRecords(true);
                     break;
             
