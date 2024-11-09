@@ -108,7 +108,7 @@ public class DoctorUI {
                     System.out.println("Accepting or declining appointment requests");
                     System.out.println("===================================\n"); // Add a border for the login section
 
-                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(medicineData,patientData,data,dataAppointments,dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(medicineData,data,dataAppointments);
                     appointmentManagementControl.acceptOrDeclineAppointment();
                     break;
                 case 6:
@@ -116,7 +116,7 @@ public class DoctorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Upcoming Appointments");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl2 = new AppointmentManagementControl(medicineData,patientData,data,dataAppointments,dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl2 = new AppointmentManagementControl(medicineData,data,dataAppointments);
                     appointmentManagementControl2.viewAppointments(true);
                     break;
                 case 7:
@@ -124,7 +124,7 @@ public class DoctorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Recording appointment outcome");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControls = new AppointmentManagementControl(medicineData,patientData,data,dataAppointments,dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControls = new AppointmentManagementControl(medicineData,data,dataAppointments);
                     appointmentManagementControls.outcomeRecordUpdate();
 
                     break;
@@ -133,7 +133,7 @@ public class DoctorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Viewing past appointment outcome records");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl3 = new AppointmentManagementControl(medicineData,patientData,data,dataAppointments,dataAppointmentSlots);
+                    AppointmentManagementControl appointmentManagementControl3 = new AppointmentManagementControl(medicineData,data,dataAppointments);
                     appointmentManagementControl3.viewOutcomeRecords(false);
                     break;
                 

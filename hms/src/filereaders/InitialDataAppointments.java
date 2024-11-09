@@ -226,7 +226,6 @@ private OutcomeRecord parseOutcomeRecord(String outcomeRecordStr) {
     
     if (!outcomeRecordStr.startsWith("[") || !outcomeRecordStr.endsWith("]")) {
         System.out.println("Invalid outcome record format: " + outcomeRecordStr);
-        System.out.println("Outcome Record: " + outcomeRecordStr);
         return null;
     }
 
@@ -249,12 +248,15 @@ private OutcomeRecord parseOutcomeRecord(String outcomeRecordStr) {
         if (prescriptionPart.startsWith("[") && prescriptionPart.endsWith("]")) {
             String prescriptionStr = prescriptionPart.substring(1, prescriptionPart.length() - 1);
             String[] prescriptions = prescriptionStr.split(";");
+
             for (String prescription : prescriptions) {
                 String[] prescriptionDetails = prescription.split(",");
                 if (prescriptionDetails.length >= 1) {
                     String medicationName = prescriptionDetails[0].trim();
-                    String status = prescriptionDetails.length > 1 ? prescriptionDetails[1].trim() : "pending";
-                    outcomeRecord.addPrescription(new Prescription(medicationName)); // Note: Assuming you want to add the status as well.
+                    String status = prescriptionDetails.length > 1 ? prescriptionDetails[1].trim() : "pending"; // Default to "pending" if no status
+                    Prescription newPrescription = new Prescription(medicationName);
+                    outcomeRecord.addPrescription(newPrescription); // Pass both medication name and status
+                    newPrescription.updateStatus(PrescriptionStatus.valueOf(status.toUpperCase()));
                 }
             }
         }
@@ -262,6 +264,7 @@ private OutcomeRecord parseOutcomeRecord(String outcomeRecordStr) {
 
     return outcomeRecord;
 }
+
 
 @Override
 public void writeData(String filename, Appointment appointment) throws IOException {
