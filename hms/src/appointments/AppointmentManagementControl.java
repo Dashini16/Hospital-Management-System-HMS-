@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 
 import authorization.AuthorizationControl;
@@ -384,87 +387,206 @@ public class AppointmentManagementControl {
         // Reload data if necessary
         initialDataMedicine.reloadData();
     }
-
+    
     public void outcomeRecordUpdate() {
         Scanner scanner = new Scanner(System.in);
-
-        // Prompt user for Appointment ID
-        System.out.print("Enter the Appointment ID to update: ");
-        String appointmentID = scanner.nextLine().trim();
-
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+        System.out.println("== Outcome Record Update ==");
+        System.out.println("Would you like to update:");
+        System.out.println("1. New Appointment (Accepted)");
+        System.out.println("2. Old Appointment (Completed)");
+        System.out.print("Enter your choice (1 or 2): ");
+    
+        int choice;
         try {
-            // Read the existing appointment
-            Appointment existingAppointment = initialDataAppointments
-                    .findAppointment("hms/src/data/Appointments_List.csv", appointmentID);
-
-            // If appointment not found, notify the user and exit
-            if (existingAppointment == null) {
-                System.out.println("Appointment ID not found.");
+            choice = Integer.parseInt(scanner.nextLine().trim());
+            if (choice != 1 && choice != 2) {
+                System.out.println("Invalid choice. Please enter 1 or 2.");
                 return;
             }
-
-            // Prompt user for new outcome details
-            System.out.print("Enter the date of appointment (dd/MM/yyyy): ");
-            String dateOfAppointment = scanner.nextLine().trim();
-
-            System.out.print("Enter the service type: ");
-            String serviceType = scanner.nextLine().trim();
-
-            System.out.print("Enter consultation notes: ");
-            String consultationNotes = scanner.nextLine().trim();
-
-            // Gather prescription details
-            System.out.print("Enter the number of prescriptions: ");
-            int numPrescriptions = Integer.parseInt(scanner.nextLine().trim());
-            List<Prescription> prescriptions = new ArrayList<>();
-
-            // Display all available medicines
-            List<Medicine> medicines = initialDataMedicine.getLists(); // Assuming you have a method to get the list of
-                                                                       // medicines
-            System.out.println("Available Medicines:");
-            for (int i = 0; i < medicines.size(); i++) {
-                System.out.println((i + 1) + ". " + medicines.get(i).getName());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter 1 or 2.");
+            return;
+        }
+    
+        Appointment existingAppointment = null;
+        try {
+            List<Appointment> availableAppointments;
+    
+            if (choice == 1) {
+                availableAppointments = initialDataAppointments.getLists().stream()
+                        .filter(app -> app.getStatus() == AppointmentStatus.ACCEPTED)
+                        .collect(Collectors.toList());
+            } else {
+                availableAppointments = initialDataAppointments.getLists().stream()
+                        .filter(app -> app.getStatus() == AppointmentStatus.COMPLETED)
+                        .collect(Collectors.toList());
             }
-
-            for (int i = 0; i < numPrescriptions; i++) {
-                System.out.print("Enter the number corresponding to the medication for prescription " + (i + 1) + ": ");
-                int medicineIndex = Integer.parseInt(scanner.nextLine().trim()) - 1; // Adjust for zero-based index
-
-                if (medicineIndex < 0 || medicineIndex >= medicines.size()) {
+    
+            if (availableAppointments.isEmpty()) {
+                System.out.println("\nNo appointments found with the selected status.\n");
+                return;
+            }
+    
+            System.out.println("\n== Select an Appointment to Update ==");
+            System.out.printf("%-5s %-20s %-15s %-15s %-15s%n", "No.", "Appointment ID", "Patient ID", "Date", "Status");
+            for (int i = 0; i < availableAppointments.size(); i++) {
+                Appointment appointment = availableAppointments.get(i);
+                System.out.printf("%-5d %-20s %-15s %-15s %-15s%n",
+                        i + 1,
+                        appointment.getAppointmentID(),
+                        appointment.getPatientID(),
+                        appointment.getDate(),
+                        appointment.getStatus());
+            }
+    
+            System.out.print("\nEnter the number of the appointment to update (or type 'exit' to cancel): ");
+            String input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting update process.");
+                return;
+            }
+    
+            int appointmentIndex;
+            try {
+                appointmentIndex = Integer.parseInt(input) - 1;
+                if (appointmentIndex < 0 || appointmentIndex >= availableAppointments.size()) {
                     System.out.println("Invalid selection. Please try again.");
-                    i--; // Decrement the counter to repeat this iteration
-                    continue;
+                    return;
                 }
-
-                // Get the selected medication
-                String medicationName = medicines.get(medicineIndex).getName();
-                Prescription prescription = new Prescription(medicationName); // Create prescription with medication
-                                                                              // name
-                prescription.updateStatus(PrescriptionStatus.PENDING); // Update status to PENDING
-                prescriptions.add(prescription);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                return;
             }
-
-            // Create the new OutcomeRecord
-            OutcomeRecord outcomeRecord = new OutcomeRecord(dateOfAppointment, serviceType, consultationNotes);
-            for (Prescription prescription : prescriptions) {
-                outcomeRecord.addPrescription(prescription);
+    
+            existingAppointment = availableAppointments.get(appointmentIndex);
+    
+            OutcomeRecord outcomeRecord = existingAppointment.getOutcomeRecord();
+            if (existingAppointment.getStatus() == AppointmentStatus.COMPLETED && outcomeRecord != null) {
+                System.out.println("\n== Existing Outcome Record ==");
+                System.out.println("Date of Appointment   : " + outcomeRecord.getDateOfAppointment());
+                System.out.println("Service Type          : " + outcomeRecord.getServiceType());
+                System.out.println("Consultation Notes    : " + outcomeRecord.getConsultationNotes());
+                System.out.println("Prescriptions         : ");
+                for (Prescription prescription : outcomeRecord.getPrescriptions()) {
+                    System.out.println("  - " + prescription.getMedicationName() + " (" + prescription.getQuantity() +
+                            ", Status: " + prescription.getStatus() + ")");
+                }
+                System.out.println("Prescriptions cannot be modified for completed appointments.");
             }
-
-            // Update the existing appointment with the new outcome record
-            existingAppointment.setOutcomeRecord(outcomeRecord); // Assuming setOutcomeRecord method exists
-            existingAppointment.updateStatus(AppointmentStatus.COMPLETED);
-
-            // Write the updated appointment back to the file
+    
+            System.out.println("\n== Update Details (Press Enter to keep current value) ==");
+    
+            // Date input loop
+            String dateOfAppointment;
+            while (true) {
+                System.out.print("Enter the new date of appointment (dd/MM/yyyy): ");
+                dateOfAppointment = scanner.nextLine().trim();
+                if (dateOfAppointment.isEmpty()) break; // Keep current date if empty
+                try {
+                    LocalDate.parse(dateOfAppointment, dateFormatter);
+                    break; // Exit loop if date is valid
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Please use dd/MM/yyyy format.");
+                }
+            }
+            if (!dateOfAppointment.isEmpty()) {
+                existingAppointment.getOutcomeRecord().setDateOfAppointment(dateOfAppointment);
+            }
+    
+            System.out.print("Enter the new service type: ");
+            String serviceType = scanner.nextLine().trim();
+            if (!serviceType.isEmpty()) {
+                existingAppointment.getOutcomeRecord().setServiceType(serviceType);
+            }
+    
+            System.out.print("Enter updated consultation notes: ");
+            String consultationNotes = scanner.nextLine().trim();
+            if (!consultationNotes.isEmpty()) {
+                existingAppointment.getOutcomeRecord().setConsultationNotes(consultationNotes);
+            }
+    
+            // Prescription entry loop for accepted appointments
+            if (existingAppointment.getStatus() == AppointmentStatus.ACCEPTED) {
+                int numPrescriptions;
+                while (true) {
+                    System.out.print("Enter the number of prescriptions: ");
+                    try {
+                        numPrescriptions = Integer.parseInt(scanner.nextLine().trim());
+                        break; // Exit if input is valid
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input for number of prescriptions. Please enter a valid number.");
+                    }
+                }
+    
+                List<Prescription> prescriptions = new ArrayList<>();
+                List<Medicine> medicines = initialDataMedicine.getLists();
+                System.out.println("\n== Available Medicines ==");
+                for (int i = 0; i < medicines.size(); i++) {
+                    System.out.printf("%d. %s%n", i + 1, medicines.get(i).getName());
+                }
+    
+                for (int i = 0; i < numPrescriptions; i++) {
+                    int medicineIndex;
+                    while (true) {
+                        System.out.printf("Select medicine for prescription %d: ", i + 1);
+                        try {
+                            medicineIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                            if (medicineIndex >= 0 && medicineIndex < medicines.size()) {
+                                break; // Valid selection
+                            } else {
+                                System.out.println("Invalid selection. Please try again.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                        }
+                    }
+    
+                    String medicationName = medicines.get(medicineIndex).getName();
+                    int quantity;
+                    while (true) {
+                        System.out.print("Enter quantity for " + medicationName + ": ");
+                        try {
+                            quantity = Integer.parseInt(scanner.nextLine().trim());
+                            if (quantity > 0) {
+                                break; // Valid quantity
+                            } else {
+                                System.out.println("Quantity must be a positive number.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid quantity. Please enter a valid number.");
+                        }
+                    }
+    
+                    Prescription prescription = new Prescription(medicationName, quantity);
+                    prescription.updateStatus(PrescriptionStatus.PENDING);
+                    prescriptions.add(prescription);
+                }
+    
+                if (outcomeRecord == null) {
+                    outcomeRecord = new OutcomeRecord(dateOfAppointment, serviceType, consultationNotes);
+                    existingAppointment.setOutcomeRecord(outcomeRecord);
+                } else {
+                    outcomeRecord.getPrescriptions().clear();
+                }
+                prescriptions.forEach(outcomeRecord::addPrescription);
+            }
+    
+            if (existingAppointment.getStatus() == AppointmentStatus.ACCEPTED) {
+                existingAppointment.updateStatus(AppointmentStatus.COMPLETED);
+            }
+    
             initialDataAppointments.writeData("hms/src/data/Appointments_List.csv", existingAppointment);
-            System.out.println("Outcome record updated successfully.");
-
+            System.out.println("\nOutcome record updated successfully.");
+    
             initialDataAppointments.reloadData();
+    
         } catch (IOException e) {
             System.err.println("Error while updating the appointment: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid number format: " + e.getMessage());
         }
     }
-
+    
+    
 
 }
