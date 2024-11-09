@@ -54,10 +54,10 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
             // If the file doesn't exist, write a header first
             if (!fileExists) {
-                bw.write("MedicineName,RequestedQuantity,Status\n");
+                bw.write("MedicineName,RequestedQuantity,Status,RequestBy\n");
             }
             // Append the request data
-            bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "\n");
+            bw.write(request.getMedicineName() + "," + request.getRequestedStock() + "," + request.getStatus() + "," + request.getRequestBy() + "\n");
         }
     }
     
@@ -84,7 +84,8 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
                     String medicineName = data[0];
                     int requestedQuantity = Integer.parseInt(data[1].trim());
                     RequestStatus status = RequestStatus.valueOf(data[2].trim().toUpperCase());
-                    ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedQuantity);
+                    String requestBy = data[3].trim();
+                    ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedQuantity, requestBy);
                     request.setStatus(status);
                     replenishmentRequests.add(request);
                 }
