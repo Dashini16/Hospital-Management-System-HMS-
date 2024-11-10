@@ -2,6 +2,8 @@ package users;
 import ui.PatientUI;
 
 import java.time.LocalDate;
+import java.time.Period;
+
 import enums.Roles;
 public class Patient extends Users {
 
@@ -42,6 +44,14 @@ public class Patient extends Users {
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
     }
+
+    public int getAge() {
+        if (dateOfBirth == null) {
+            return 0; // or throw an exception if dateOfBirth is required
+        }
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+    }
+
 
     // Use the PatientUI for displaying the menu
     public void displayMenu() {
