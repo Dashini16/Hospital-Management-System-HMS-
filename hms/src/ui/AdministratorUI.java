@@ -29,6 +29,7 @@ public class AdministratorUI {
         InitialDataAppointmentSlots dataAppointmentSlots = new InitialDataAppointmentSlots();
         data.importData(); // Load data
         AuthorizationControl authControl = new AuthorizationControl();
+        InitialDataLeaveRequest leaveData = new InitialDataLeaveRequest();
         // Load users into AuthorizationControl (assuming you have this in your code)
         authControl.loadCredentialsFromStaff(data, dataPatient); 
 
@@ -43,7 +44,8 @@ public class AdministratorUI {
             System.out.println("5. Change Password");
             System.out.println("6. Backup Database");
             System.out.println("7. Report Analysis");
-            System.out.println("8. Logout");
+            System.out.println("8. Manage Leave Requests");
+            System.out.println("9. Logout");
             System.out.println("===================================");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -104,6 +106,13 @@ public class AdministratorUI {
                     break;
                 //
                 case 8:
+                    System.out.println("\n===================================");
+                    System.out.println("Manage Leave Requests");
+                    System.out.println("===================================\n");
+                    AdministratorLeaveRequestManagementUI leaveRequestUI = new AdministratorLeaveRequestManagementUI(leaveData, data);
+                    leaveRequestUI.manageLeaveRequests();
+                    break;
+                case 9:
                     System.out.println("Logging Out...");
                     return; // Logout
                 default:

@@ -6,6 +6,7 @@ import users.Pharmacist;
 import users.Users;
 import filereaders.InitialDataAppointmentSlots;
 import filereaders.InitialDataAppointments;
+import filereaders.InitialDataLeaveRequest;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataPatient;
 import filereaders.InitialDataStaff;
@@ -15,6 +16,7 @@ import usermanagement.StaffManagementControl;
 import java.io.IOException;
 import java.util.Scanner;
 import authorization.AuthorizationControl;
+import ui.StaffLeaveRequestUI;
 
 import appointments.AppointmentManagementControl;
 import appointments.MedicalManagement;
@@ -35,6 +37,8 @@ public class DoctorUI {
         InitialDataAppointments dataAppointments = new InitialDataAppointments();
         InitialDataAppointmentSlots dataAppointmentSlots = new InitialDataAppointmentSlots();
         InitialDataMedicine medicineData = new InitialDataMedicine();
+        InitialDataLeaveRequest leaveData = new InitialDataLeaveRequest();
+
         data.importData(); // Load data
         data.reloadData();
 
@@ -47,10 +51,14 @@ public class DoctorUI {
         dataAppointmentSlots.importData();
         dataAppointmentSlots.reloadData();
 
+        leaveData.reloadData();
+
         // Print the doctor menu to the console
         AuthorizationControl authControl = new AuthorizationControl();
         // Load users into AuthorizationControl (assuming you have this in your code)
         authControl.loadCredentialsFromStaff(data, patientData); 
+
+        StaffLeaveRequestUI leaveRequestUI = new StaffLeaveRequestUI(leaveData);
 
         while (true) {
             System.out.println("Doctor Menu");
@@ -62,8 +70,9 @@ public class DoctorUI {
             System.out.println("5. Accept or Decline Appointment Requests");
             System.out.println("6. View Upcoming Appointments");
             System.out.println("7. Record Appointment Outcome");
-            System.out.println("8. Change Password");
-            System.out.println("9. Logout");
+            System.out.println("8. Apply for Leave");
+            System.out.println("9. Change Password");
+            System.out.println("10. Logout");
             System.out.println("===================================");
 
             Scanner scanner = new Scanner(System.in);
@@ -136,6 +145,14 @@ public class DoctorUI {
                 //     appointmentManagementControl3.viewOutcomeRecords(false);
                 //     break;
                 case 8:
+                    // Apply for leave
+                    System.out.println("\n===================================");
+                    System.out.println("Applying for Leave");
+                    System.out.println("===================================");
+                    leaveRequestUI.manageLeaveRequests(doctor.getUserID());
+                    break;
+
+                case 9:
                     // Add code to change password
                     System.out.println("\n==================================="); 
                     System.out.println("Changing password");
@@ -144,7 +161,7 @@ public class DoctorUI {
                     //staffManagementControl.changeStaffPassword(scanner);
                     passwordManagement.changePassword(scanner);
                     break;
-                case 9:
+                case 10:
                     System.out.println("Logging Out...");
                     return; // Logout
                 default:
