@@ -52,7 +52,6 @@ public class Patient extends Users {
         return Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
-
     // Use the PatientUI for displaying the menu
     public void displayMenu() {
         ui.displayMenu(); // Delegate menu display to PatientUI

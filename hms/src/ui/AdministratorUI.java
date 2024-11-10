@@ -42,7 +42,8 @@ public class AdministratorUI {
             System.out.println("4. Patients Management");
             System.out.println("5. Change Password");
             System.out.println("6. Backup Database");
-            System.out.println("7. Logout");
+            System.out.println("7. Report Analysis");
+            System.out.println("8. Logout");
             System.out.println("===================================");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -93,7 +94,16 @@ public class AdministratorUI {
                     DatabaseBackUp.backupDatabase();
                     System.out.println("Backup Successful");
                     break;
+                //
                 case 7:
+                    System.out.println("\n==================================="); 
+                    System.out.println("Report Analysis");
+                    System.out.println("===================================\n"); 
+                    AdministratorReportUI reportUI = new AdministratorReportUI(dataPatient);
+                    reportUI.displayReportMenu();
+                    break;
+                //
+                case 8:
                     System.out.println("Logging Out...");
                     return; // Logout
                 default:

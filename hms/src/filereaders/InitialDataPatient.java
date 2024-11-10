@@ -25,6 +25,16 @@ public class InitialDataPatient implements  DataImporter, DataExporterAppend<Pat
 
     }
 
+    public Patient findPatientById(String patientID) {
+        for (Patient patient : patients) {
+            if (patient.getUserID().equalsIgnoreCase(patientID)) {
+                return patient;
+            }
+        }
+        System.out.println("Patient with ID " + patientID + " not found.");
+        return null;
+    }
+
     @Override
     public void importData() {
         try {
