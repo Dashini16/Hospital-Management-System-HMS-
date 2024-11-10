@@ -54,29 +54,53 @@ public class ReplenishmentRequestManagementControl {
                     continue; // Prompt again for input
                 }
     
-                //Medicine medicine = findMedicineByName(request.getMedicineName());
-                UserLookup userLookup = new UserLookup();
-                Medicine medicine = userLookup.findByID(request.getMedicineName(), medicineData.getLists(), med -> med.getName().equalsIgnoreCase(request.getMedicineName()));
-    
-                if (medicine != null) {
-                    // Update stock and set request status to fulfilled
-                    medicine.setInitialStock(medicine.getInitialStock() + request.getRequestedStock());
-                    request.setStatus(RequestStatus.FULFILLED);
-                    System.out.println("Replenishment approved for " + request.getMedicineName() +
-                                       " with " + request.getRequestedStock() + " units.");
-    
-                    // Save changes to CSV files
+                // Check if the request is for a new medicine
+                if (request.getIsNewMedicine()) {
+                    // Prompt for low stock level alert
+                    System.out.print("Enter low stock level alert for " + request.getMedicineName() + ": ");
+                    int lowStockLevelAlert;
                     try {
-                        medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv");
-                        replenishmentRequestData.rewriteReplenishmentRequests("hms/src/data/Replenishment_Requests.csv", replenishmentRequests);
-                        System.out.println("Updates saved to file.");
-                    } catch (IOException e) {
-                        System.out.println("Error updating files: " + e.getMessage());
+                        lowStockLevelAlert = Integer.parseInt(scanner.nextLine().trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Using default low stock level alert of 10.");
+                        lowStockLevelAlert = 10; // Default value if input is invalid
                     }
-                    break; // Exit after successful approval
+    
+                    // Create new medicine entry
+                    Medicine newMedicine = new Medicine(request.getMedicineName(), request.getRequestedStock(), lowStockLevelAlert);
+                    medicineData.getLists().add(newMedicine); // Add new medicine to in-memory list
+    
+                    System.out.println("New medicine " + request.getMedicineName() + " added to inventory with initial stock of " 
+                                       + request.getRequestedStock() + " and low stock alert of " + lowStockLevelAlert);
+    
                 } else {
-                    System.out.println("Medicine not found in inventory for request: " + request.getMedicineName());
+                    // Existing medicine: Find and update
+                    UserLookup userLookup = new UserLookup();
+                    Medicine medicine = userLookup.findByID(request.getMedicineName(), medicineData.getLists(),
+                                                            med -> med.getName().equalsIgnoreCase(request.getMedicineName()));
+                    
+                    if (medicine == null) {
+                        System.out.println("Medicine not found in inventory for request: " + request.getMedicineName());
+                        continue;
+                    }
+    
+                    // Update stock for existing medicine
+                    medicine.setInitialStock(medicine.getInitialStock() + request.getRequestedStock());
+                    System.out.println("Stock updated for " + request.getMedicineName() + " with " + request.getRequestedStock() + " units.");
                 }
+    
+                // Set request status to fulfilled
+                request.setStatus(RequestStatus.FULFILLED);
+    
+                // Save updates to CSV files
+                try {
+                    medicineData.rewriteMedicines("hms/src/data/Medicine_List.csv");
+                    replenishmentRequestData.rewriteReplenishmentRequests("hms/src/data/Replenishment_Requests.csv", replenishmentRequests);
+                    System.out.println("Updates saved to file.");
+                } catch (IOException e) {
+                    System.out.println("Error updating files: " + e.getMessage());
+                }
+                break; // Exit after successful approval
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a number.");
             }
@@ -84,24 +108,38 @@ public class ReplenishmentRequestManagementControl {
     }
     
     
+    
     public void viewReplenishmentRequests() {
-        System.out.println("\nCurrent Replenishment Requests:");
+        System.out.println("\n========== Current Replenishment Requests ==========\n");
     
         if (replenishmentRequests == null || replenishmentRequests.isEmpty()) {
             System.out.println("No replenishment requests available.");
             return;
         }
     
+        // Print table headers
+        System.out.printf("%-5s %-20s %-15s %-15s %-15s %-15s%n", "No.", "Medicine Name", "Requested Stock", "Status", "Requested By", "Is New Medicine");
+        System.out.println("-----------------------------------------------------------------------------------------");
+    
+        // Print each replenishment request in a formatted way
         int count = 1;
         for (ReplenishmentRequest request : replenishmentRequests) {
             try {
-                System.out.println(count + ". " + request.getMedicineName() + ", " +
-                                   request.getRequestedStock() + ", " + request.getStatus());
+                System.out.printf("%-5d %-20s %-15d %-15s %-15s %-15s%n", 
+                    count, 
+                    request.getMedicineName(), 
+                    request.getRequestedStock(), 
+                    request.getStatus(), 
+                    request.getRequestBy(), 
+                    request.getIsNewMedicine() ? "Yes" : "No"
+                );
                 count++;
             } catch (Exception e) {
                 System.out.println("Error retrieving request details: " + e.getMessage());
             }
         }
+        System.out.println("=========================================================================================");
     }
+    
 
 }

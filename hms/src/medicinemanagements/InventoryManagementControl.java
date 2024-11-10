@@ -22,8 +22,13 @@ public class InventoryManagementControl {
 
 
     public void addNewMedicine(Scanner scanner) {
-        System.out.print("Enter new medicine name: ");
+        System.out.print("Enter new medicine name (or type 'exit' to cancel): ");
         String name = scanner.nextLine().trim();
+        
+        if (name.equalsIgnoreCase("exit")) {
+            System.out.println("Exiting add medicine process.");
+            return;
+        }
         
         if (name.isEmpty()) {
             System.out.println("Error: Medicine name cannot be empty.");
@@ -43,8 +48,14 @@ public class InventoryManagementControl {
     
         // Handle initial stock input with error checking
         while (true) {
-            System.out.print("Enter initial stock: ");
+            System.out.print("Enter initial stock (or type 'exit' to cancel): ");
             String initialStockInput = scanner.nextLine().trim();
+            
+            if (initialStockInput.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting add medicine process.");
+                return;
+            }
+            
             try {
                 initialStock = Integer.parseInt(initialStockInput);
                 if (initialStock < 0) {
@@ -59,8 +70,14 @@ public class InventoryManagementControl {
     
         // Handle low stock level alert input with error checking
         while (true) {
-            System.out.print("Enter low stock level alert: ");
+            System.out.print("Enter low stock level alert (or type 'exit' to cancel): ");
             String lowStockInput = scanner.nextLine().trim();
+            
+            if (lowStockInput.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting add medicine process.");
+                return;
+            }
+            
             try {
                 lowStockLevelAlert = Integer.parseInt(lowStockInput);
                 if (lowStockLevelAlert < 0) {
@@ -84,6 +101,7 @@ public class InventoryManagementControl {
             System.out.println("Error adding medicine: " + e.getMessage());
         }
     }
+    
 
     public void displayInventory() {
         System.out.println("===== Current Medication Inventory =====");
@@ -106,23 +124,31 @@ public class InventoryManagementControl {
     // Helper method to select a medicine by number
     private Medicine selectMedicineByNumber(Scanner scanner) {
         displayInventory(); // Show the inventory with numbering
-        System.out.print("Enter the number corresponding to the medicine: ");
+        System.out.print("Enter the number corresponding to the medicine (or type 'exit' to cancel): ");
         
-        int choice = -1;
         while (true) {
             String input = scanner.nextLine().trim();
+            
+            // Check if the user wants to exit
+            if (input.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting medicine selection process.");
+                return null; // Return null to indicate cancellation
+            }
+            
+            // Try to parse the input as an integer
             try {
-                choice = Integer.parseInt(input);
+                int choice = Integer.parseInt(input);
                 if (choice > 0 && choice <= medicineData.getLists().size()) {
                     return medicineData.getLists().get(choice - 1); // Return the selected medicine
                 } else {
                     System.out.println("Error: Please enter a valid number between 1 and " + medicineData.getLists().size() + ".");
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Error: Please enter a valid integer.");
+                System.out.println("Error: Please enter a valid number or type 'exit' to cancel.");
             }
         }
     }
+    
     
     public void removeMedicine(Scanner scanner) {
         Medicine medicine = selectMedicineByNumber(scanner);

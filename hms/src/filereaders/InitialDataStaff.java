@@ -135,7 +135,6 @@ public class InitialDataStaff implements DataImporter, DataExporterAppend<Users>
         }
     }
 
-
     
     public List<Doctor> getDoctors() {
         return doctors;
@@ -148,5 +147,15 @@ public class InitialDataStaff implements DataImporter, DataExporterAppend<Users>
     public List<Pharmacist> getPharmacists() { // Add getter for pharmacists
         return pharmacists;
     }
+
+    // to retreive all the staffs
+    public List<Users> getStaffList() {
+        List<Users> allStaff = new ArrayList<>();
+        allStaff.addAll(doctors);
+        allStaff.addAll(administrators);
+        allStaff.addAll(pharmacists);
+        return allStaff;
+    }
+
 
 }

@@ -19,7 +19,11 @@ public class AdministratorInventoryManagementUI {
 
     public AdministratorInventoryManagementUI(InitialDataMedicine data) {
         this.data = data;
-        this.replenishmentRequests = new ArrayList<>(); // Initialize the request list
+        
+        this.replenishmentRequestData = new InitialDatareplenishmentRequest(); 
+        this.replenishmentRequestData.reloadData(); // Load data from CSV
+        this.replenishmentRequests = replenishmentRequestData.getLists(); // populate list from replenishment data
+        
         this.inventoryManager = new InventoryManagementControl(data);
         data.reloadData();
     }
