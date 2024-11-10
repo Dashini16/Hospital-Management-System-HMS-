@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import authorization.AuthorizationControl;
 
@@ -112,12 +114,12 @@ public class PatientManagementControl {
         // Generate a new unique patient ID based on existing patients
         String patientID = generateUniquePatientID();
         System.out.println("Generated Patient ID: " + patientID);
-
+    
         System.out.print("Enter patient's name (or type 'exit' to cancel): ");
         String patientName = scanner.nextLine().trim();
         if (patientName.equalsIgnoreCase("exit"))
             return;
-
+    
         LocalDate dateOfBirth = null;
         while (dateOfBirth == null) {
             System.out.print("Enter patient's date of birth (YYYY-MM-DD) (or type 'exit' to cancel): ");
@@ -134,7 +136,7 @@ public class PatientManagementControl {
                 System.out.println("Error: Please enter a valid date in the format YYYY-MM-DD.");
             }
         }
-
+    
         System.out.println("Select patient's gender:");
         System.out.println("1. Male");
         System.out.println("2. Female");
@@ -152,7 +154,7 @@ public class PatientManagementControl {
                 System.out.println("Error: Invalid choice. Please select 1 or 2.");
             }
         }
-
+    
         // Select blood type from a standardized list
         String[] bloodTypes = { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
         String patientBloodType = "";
@@ -176,23 +178,30 @@ public class PatientManagementControl {
                 System.out.println("Error: Please enter a valid number.");
             }
         }
-
+    
         String patientContactInfo = "";
         while (patientContactInfo.isEmpty()) {
-            System.out.print("Enter patient's contact information (or type 'exit' to cancel): ");
+            System.out.print("Enter patient's contact information (email) (or type 'exit' to cancel): ");
             patientContactInfo = scanner.nextLine().trim();
             if (patientContactInfo.equalsIgnoreCase("exit"))
                 return;
-
+    
+            // Validate email format
+            if (!isValidEmail(patientContactInfo)) {
+                System.out.println("Error: Invalid email format. Please enter a valid email address.");
+                patientContactInfo = ""; // Reset to prompt for re-entry
+                continue;
+            }
+    
             // Check for duplicate contact info
             if (isContactInfoDuplicate(patientContactInfo)) {
                 System.out.println("Error: This contact information is already associated with another patient.");
                 patientContactInfo = ""; // Reset to prompt for re-entry
             }
         }
-
+    
         String patientPassword = PasswordUtils.hashPassword("defaultPasswords");
-
+    
         Patient newPatient = new Patient(patientID, patientName, dateOfBirth, patientGender, patientBloodType,
                 patientContactInfo, patientPassword);
         try {
@@ -226,10 +235,10 @@ public class PatientManagementControl {
     }
 
     public void updatePatient(Scanner scanner) {
-        // get the current login user ID
+        // Get the current login user ID
         String patientID = AuthorizationControl.getCurrentUserId();
-
-        // find the patient using the UserLookup utility
+    
+        // Find the patient using the UserLookup utility
         UserLookup userLookup = new UserLookup();
         Patient patient = userLookup.findByID(patientID, data.getLists(),
                 med -> med.getUserID().equalsIgnoreCase(patientID));
@@ -237,34 +246,33 @@ public class PatientManagementControl {
             System.out.println("Error: Patient not found.");
             return;
         }
-
-        // display the menu for the user to choose which action they want to perform
+    
+        // Display the menu for the user to choose which action they want to perform
         boolean updating = true;
-        while (updating) { // keep looping until the user exit this menu
-            // display the menu
+        while (updating) { // Keep looping until the user exits this menu
             System.out.println("\nSelect the field you want to update:");
             System.out.println("1. Update Name");
             System.out.println("2. Update Date of Birth");
-            System.out.println("3. Update Contact Info");
+            System.out.println("3. Update Contact Info (Email)");
             System.out.println("4. Exit");
-
+    
             System.out.print("Enter your choice: ");
-            String choice = scanner.nextLine().trim(); // ask for user input
-
+            String choice = scanner.nextLine().trim(); // Ask for user input
+    
             switch (choice) {
-                // update name
+                // Update name
                 case "1":
                     System.out.print("Enter new name (leave blank for no change): ");
                     String newName = scanner.nextLine().trim();
                     if (!newName.isEmpty()) {
                         patient.setName(newName);
-                        System.out.println("Name updated successfully");
+                        System.out.println("Name updated successfully.");
                     } else {
-                        System.out.println("Name not changed");
+                        System.out.println("Name not changed.");
                     }
                     break;
-
-                // update dob
+    
+                // Update date of birth
                 case "2":
                     LocalDate newDateOfBirth = null;
                     while (newDateOfBirth == null) {
@@ -282,33 +290,41 @@ public class PatientManagementControl {
                         }
                     }
                     break;
-
-                // update contact info
+    
+                // Update contact info (email)
                 case "3":
-                    System.out.print("Enter new contact info (leave blank for no change): ");
-                    String newContactInfo = scanner.nextLine().trim();
-                    if (!newContactInfo.isEmpty()) {
-                        patient.setContactInfo(newContactInfo);
-                        System.out.println("Contact info updated successfully.");
-                    } else {
-                        System.out.println("Contact info not changed.");
+                    while (true) {
+                        System.out.print("Enter new contact info (email, or type 'exit' to cancel): ");
+                        String newContactInfo = scanner.nextLine().trim();
+                        if (newContactInfo.equalsIgnoreCase("exit")) {
+                            System.out.println("Email update canceled.");
+                            break;
+                        }
+                        // Validate email format
+                        if (isValidEmail(newContactInfo)) {
+                            patient.setContactInfo(newContactInfo);
+                            System.out.println("Contact info (email) updated successfully.");
+                            break;
+                        } else {
+                            System.out.println("Invalid email format. Please enter a valid email address.");
+                        }
                     }
                     break;
-
-                // exit the program
+    
+                // Exit the update menu
                 case "4":
-                    updating = false; // to stop the while loop
-                    System.out.println("Exiting update info menu....");
+                    updating = false; // Exit the while loop
+                    System.out.println("Exiting update info menu...");
                     break;
-
-                // default case
+    
+                // Default case for invalid choice
                 default:
                     System.out.println("Invalid choice. Please select a valid option.");
                     break;
             }
         }
-
-        // save the changes to the csv
+    
+        // Save the changes to the CSV
         try {
             data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
             System.out.println("Patient updated successfully.");
@@ -316,22 +332,31 @@ public class PatientManagementControl {
             System.out.println("Error updating patient: " + e.getMessage());
         }
     }
+    
+    // Helper function to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+    
 
     public void deletePatient(Scanner scanner) {
         List<Patient> patients = data.getLists();
-        
+
         if (patients.isEmpty()) {
             System.out.println("No patients found.");
             return;
         }
-    
+
         // Display list of patients with numbering
         System.out.println("Select a patient to delete:");
         for (int i = 0; i < patients.size(); i++) {
             Patient patient = patients.get(i);
             System.out.printf("%d. ID: %s, Name: %s%n", i + 1, patient.getUserID(), patient.getName());
         }
-    
+
         // Prompt the user to select a patient to delete
         System.out.print("Enter the number corresponding to the patient to delete (or type 'exit' to cancel): ");
         String input = scanner.nextLine().trim();
@@ -339,7 +364,7 @@ public class PatientManagementControl {
             System.out.println("Deletion process canceled.");
             return;
         }
-    
+
         int patientIndex;
         try {
             patientIndex = Integer.parseInt(input) - 1; // Convert input to zero-based index
@@ -351,25 +376,25 @@ public class PatientManagementControl {
             System.out.println("Error: Please enter a valid number.");
             return;
         }
-    
+
         Patient patient = patients.get(patientIndex);
-    
+
         // Confirm deletion
         System.out.printf("Are you sure you want to delete patient '%s' (ID: %s)? (yes/no): ",
-                          patient.getName(), patient.getUserID());
+                patient.getName(), patient.getUserID());
         String confirmation = scanner.nextLine().trim().toLowerCase();
         if (!confirmation.equals("yes")) {
             System.out.println("Deletion canceled.");
             return;
         }
-    
+
         // Remove patient and rewrite the CSV file
         boolean removed = patients.remove(patient);
         if (!removed) {
             System.out.println("Error: Could not remove patient from the list.");
             return;
         }
-    
+
         try {
             data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
             System.out.println("Patient deleted successfully.");

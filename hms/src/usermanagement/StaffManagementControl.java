@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
+import enums.Roles;
+
 public class StaffManagementControl {
     private InitialDataStaff data;
 
@@ -34,40 +36,28 @@ public class StaffManagementControl {
 
     public void addDoctor(Scanner scanner) {
         try {
-            System.out.print("Enter doctor's ID: ");
-            String doctorID = scanner.nextLine().trim(); // Trim input
-
-            Users staff = findStaffById(doctorID);
-            // Check if ID exists
-            if (staff != null) {
-                System.out.println("Error: Doctor with ID " + doctorID + " already exists.");
-                return;
-            }
-
-            // Validate ID
-            if (doctorID.isEmpty()) {
-                System.out.println("Error: Doctor ID cannot be empty.");
-                return;
-            }
-
+            // Generate a new unique doctor ID in the format D001, D002, etc.
+            String doctorID = generateUniqueDoctorID();
+            System.out.println("Generated Doctor ID: " + doctorID);
+    
             System.out.print("Enter doctor's name: ");
             String doctorName = scanner.nextLine().trim(); // Trim input
-
+    
             // Validate name
             if (doctorName.isEmpty()) {
                 System.out.println("Error: Doctor name cannot be empty.");
                 return;
             }
-
+    
+            // Gender selection
             String doctorGender = "";
-
             while (true) {
                 System.out.println("Select doctor's gender:");
                 System.out.println("1. Male");
                 System.out.println("2. Female");
                 System.out.print("Enter the number corresponding to the gender: ");
-                String genderChoice = scanner.nextLine().trim(); // Trim input
-
+                String genderChoice = scanner.nextLine().trim();
+    
                 if (genderChoice.equals("1")) {
                     doctorGender = "Male";
                     break;
@@ -78,12 +68,13 @@ public class StaffManagementControl {
                     System.out.println("Error: Invalid choice. Please enter 1 or 2.");
                 }
             }
-
+    
+            // Age input and validation
             int doctorAge;
             while (true) {
                 System.out.print("Enter doctor's age: ");
                 try {
-                    doctorAge = Integer.parseInt(scanner.nextLine().trim()); // Trim input
+                    doctorAge = Integer.parseInt(scanner.nextLine().trim());
                     if (doctorAge <= 0) {
                         System.out.println("Error: Age must be a positive integer.");
                     } else {
@@ -93,57 +84,67 @@ public class StaffManagementControl {
                     System.out.println("Error: Please enter a valid integer for age.");
                 }
             }
-
+    
+            // Set default password and create a new doctor
             String doctorPassword = PasswordUtils.hashPassword("defaultPasswords");
-
             Doctor newDoctor = new Doctor(doctorID, doctorName, doctorGender, doctorAge, doctorPassword);
+    
+            // Append the doctor to CSV
             try {
                 data.appendData("hms/src/data/Staff_List.csv", newDoctor);
                 System.out.println("Doctor added successfully: " + doctorName);
             } catch (IOException e) {
                 System.out.println("Error saving doctor: " + e.getMessage());
             }
-
+    
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
+    
+    // Generates a unique doctor ID by finding the last used ID and incrementing it
+    private String generateUniqueDoctorID() {
+        List<Doctor> existingDoctors = data.getDoctors();
+        if (existingDoctors.isEmpty()) {
+            return "D001"; // Start with D001 if no doctors exist
+        }
+    
+        // Find the maximum numeric part of the existing doctor IDs
+        int maxId = existingDoctors.stream()
+            .map(doctor -> Integer.parseInt(doctor.getUserID().substring(1))) // Remove the "D" prefix
+            .max(Integer::compareTo)
+            .orElse(0);
+    
+        // Increment the max ID and format it with leading zeros
+        return String.format("D%03d", maxId + 1); // Ensures a 3-digit format with leading zeros
+    }
+    
+
 
     public void addPharmacist(Scanner scanner) {
         try {
-            System.out.print("Enter pharmacist's ID: ");
-            String pharmacistID = scanner.nextLine().trim(); // Trim input
-
-            Users staff = findStaffById(pharmacistID);
-            // Check if ID exists
-            if (staff != null) {
-                System.out.println("Error: Pharmacist with ID " + pharmacistID + " already exists.");
-                return;
-            }
-
-            // Validate ID
-            if (pharmacistID.isEmpty()) {
-                System.out.println("Error: Pharmacist ID cannot be empty.");
-                return;
-            }
-
+            // Generate a new unique pharmacist ID in the format PH001, PH002, etc.
+            String pharmacistID = generateUniquePharmacistID();
+            System.out.println("Generated Pharmacist ID: " + pharmacistID);
+    
             System.out.print("Enter pharmacist's name: ");
-            String pharmacistName = scanner.nextLine().trim(); // Trim input
-
+            String pharmacistName = scanner.nextLine().trim();
+    
             // Validate name
             if (pharmacistName.isEmpty()) {
                 System.out.println("Error: Pharmacist name cannot be empty.");
                 return;
             }
-
+    
+            // Gender selection
             String pharmacistGender = "";
             while (true) {
                 System.out.println("Select pharmacist's gender:");
                 System.out.println("1. Male");
                 System.out.println("2. Female");
                 System.out.print("Enter the number corresponding to the gender: ");
-                String genderChoice = scanner.nextLine().trim(); // Trim input
-
+                String genderChoice = scanner.nextLine().trim();
+    
                 if (genderChoice.equals("1")) {
                     pharmacistGender = "Male";
                     break;
@@ -154,12 +155,13 @@ public class StaffManagementControl {
                     System.out.println("Error: Invalid choice. Please enter 1 or 2.");
                 }
             }
-
+    
+            // Age input and validation
             int pharmacistAge;
             while (true) {
                 System.out.print("Enter pharmacist's age: ");
                 try {
-                    pharmacistAge = Integer.parseInt(scanner.nextLine().trim()); // Trim input
+                    pharmacistAge = Integer.parseInt(scanner.nextLine().trim());
                     if (pharmacistAge <= 0) {
                         System.out.println("Error: Age must be a positive integer.");
                     } else {
@@ -169,86 +171,94 @@ public class StaffManagementControl {
                     System.out.println("Error: Please enter a valid integer for age.");
                 }
             }
-
-            String pharmacistPassword = PasswordUtils.hashPassword("defaultPasswords"); // Set default password
-
-            Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge,
-                    pharmacistPassword);
+    
+            // Set default password and create a new pharmacist
+            String pharmacistPassword = PasswordUtils.hashPassword("defaultPasswords");
+            Pharmacist newPharmacist = new Pharmacist(pharmacistID, pharmacistName, pharmacistGender, pharmacistAge, pharmacistPassword);
+    
+            // Append the pharmacist to CSV
             try {
                 data.appendData("hms/src/data/Staff_List.csv", newPharmacist);
                 System.out.println("Pharmacist added successfully: " + pharmacistName);
             } catch (IOException e) {
                 System.out.println("Error saving pharmacist: " + e.getMessage());
             }
-
+    
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
+    
+    // Generates a unique pharmacist ID by finding the last used ID and incrementing it
+    private String generateUniquePharmacistID() {
+        List<Pharmacist> existingPharmacists = data.getPharmacists();
+        if (existingPharmacists.isEmpty()) {
+            return "PH001"; // Start with PH001 if no pharmacists exist
+        }
+    
+        // Find the maximum numeric part of the existing pharmacist IDs
+        int maxId = existingPharmacists.stream()
+            .map(pharmacist -> Integer.parseInt(pharmacist.getUserID().substring(2))) // Remove the "PH" prefix
+            .max(Integer::compareTo)
+            .orElse(0);
+    
+        // Increment the max ID and format it with leading zeros
+        return String.format("PH%03d", maxId + 1); // Ensures a 3-digit format with leading zeros
+    }
+    
 
     public void addAdministrator(Scanner scanner) {
         try {
-            System.out.print("Enter administrator's ID: ");
-            String adminID = scanner.nextLine().trim(); // Trim input
+            // Generate or request unique Administrator ID
+            String adminID = generateUniqueAdminID();
+            System.out.println("Generated Administrator ID: " + adminID);
 
-            Users staff = findStaffById(adminID);
-            // Check if ID exists
-            if (staff != null) {
-                System.out.println("Error: Administrator with ID " + adminID + " already exists.");
+            System.out.print("Enter administrator's name (or type 'exit' to cancel): ");
+            String adminName = scanner.nextLine().trim();
+            if (adminName.equalsIgnoreCase("exit"))
                 return;
-            }
 
-            // Validate ID
-            if (adminID.isEmpty()) {
-                System.out.println("Error: Administrator ID cannot be empty.");
-                return;
-            }
-
-            System.out.print("Enter administrator's name: ");
-            String adminName = scanner.nextLine().trim(); // Trim input
-
-            // Validate name
-            if (adminName.isEmpty()) {
-                System.out.println("Error: Administrator name cannot be empty.");
-                return;
-            }
-
+            // Validate gender selection with exit option
             String adminGender = "";
-            while (true) {
+            while (adminGender.isEmpty()) {
                 System.out.println("Select administrator's gender:");
                 System.out.println("1. Male");
                 System.out.println("2. Female");
-                System.out.print("Enter the number corresponding to the gender: ");
-                String genderChoice = scanner.nextLine().trim(); // Trim input
+                System.out.print("Enter the number corresponding to the gender (or type 'exit' to cancel): ");
+                String genderChoice = scanner.nextLine().trim();
+                if (genderChoice.equalsIgnoreCase("exit"))
+                    return;
 
                 if (genderChoice.equals("1")) {
                     adminGender = "Male";
-                    break;
                 } else if (genderChoice.equals("2")) {
                     adminGender = "Female";
-                    break;
                 } else {
                     System.out.println("Error: Invalid choice. Please enter 1 or 2.");
                 }
             }
 
-            int adminAge;
-            while (true) {
-                System.out.print("Enter administrator's age: ");
+            // Validate and retrieve administrator's age with exit option
+            int adminAge = 0;
+            while (adminAge <= 0) {
+                System.out.print("Enter administrator's age (or type 'exit' to cancel): ");
+                String ageInput = scanner.nextLine().trim();
+                if (ageInput.equalsIgnoreCase("exit"))
+                    return;
+
                 try {
-                    adminAge = Integer.parseInt(scanner.nextLine().trim()); // Trim input
+                    adminAge = Integer.parseInt(ageInput);
                     if (adminAge <= 0) {
                         System.out.println("Error: Age must be a positive integer.");
-                    } else {
-                        break;
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Error: Please enter a valid integer for age.");
                 }
             }
 
-            String adminPassword = PasswordUtils.hashPassword("defaultPasswords"); // Set default password
+            String adminPassword = PasswordUtils.hashPassword("defaultPasswords"); // Default password for new admin
 
+            // Create new Administrator and append data to Staff List CSV
             Administrator newAdmin = new Administrator(adminID, adminName, adminGender, adminAge, adminPassword);
             try {
                 data.appendData("hms/src/data/Staff_List.csv", newAdmin);
@@ -260,6 +270,19 @@ public class StaffManagementControl {
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    // Generates a unique Administrator ID
+    private String generateUniqueAdminID() {
+        List<Administrator> existingAdministrators = data.getAdministrators();
+        // Find the maximum numeric part of the existing administrator IDs
+        int maxId = existingAdministrators.stream()
+                .map(admin -> Integer.parseInt(admin.getUserID().substring(1))) // Remove the "A" prefix
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        // Increment the max ID and format it with leading zeros
+        return String.format("A%03d", maxId + 1);
     }
 
     // public void updateStaff(Scanner scanner) {
@@ -332,11 +355,12 @@ public class StaffManagementControl {
     // System.out.println("Error updating staff: " + e.getMessage());
     // }
     // }
+    
     public void updateStaff(Scanner scanner) {
         // Retrieve and sort the list of all staff members by name
         List<Users> staffList = data.getStaffList();
         staffList.sort(Comparator.comparing(Users::getName));
-    
+
         // Display the sorted staff list
         System.out.println("\n===== Staff List =====");
         for (int i = 0; i < staffList.size(); i++) {
@@ -344,7 +368,7 @@ public class StaffManagementControl {
             System.out.printf("%d. ID: %s, Name: %s%n", i + 1, staff.getUserID(), staff.getName());
         }
         System.out.println("======================");
-    
+
         // Prompt for staff selection
         System.out.print("Enter the number corresponding to the staff you wish to update: ");
         int staffIndex;
@@ -358,24 +382,24 @@ public class StaffManagementControl {
             System.out.println("Invalid input. Please enter a valid number.");
             return;
         }
-    
+
         // Get the selected staff member
         Users staff = staffList.get(staffIndex);
-    
+
         // Display the staff member's details (excluding the password)
         System.out.println("\n===== Selected Staff Details =====");
         System.out.println("ID      : " + staff.getUserID());
         System.out.println("Name    : " + staff.getName());
         System.out.println("Role    : " + staff.getRole());
         System.out.println("Gender  : " + staff.getGender());
-        System.out.println("Age     : " + (staff instanceof Doctor ? ((Doctor) staff).getAge() :
-                          staff instanceof Administrator ? ((Administrator) staff).getAge() :
-                          staff instanceof Pharmacist ? ((Pharmacist) staff).getAge() : "N/A"));
+        System.out.println("Age     : " + (staff instanceof Doctor ? ((Doctor) staff).getAge()
+                : staff instanceof Administrator ? ((Administrator) staff).getAge()
+                        : staff instanceof Pharmacist ? ((Pharmacist) staff).getAge() : "N/A"));
         System.out.println("===================================");
-    
+
         System.out.print("Enter new name (leave blank for no change): ");
         String newName = scanner.nextLine();
-    
+
         String newGender = "";
         while (true) {
             System.out.println("Select new gender (leave blank for no change):");
@@ -383,7 +407,7 @@ public class StaffManagementControl {
             System.out.println("2. Female");
             System.out.print("Enter the number corresponding to the gender: ");
             String genderChoice = scanner.nextLine();
-    
+
             if (genderChoice.isEmpty()) {
                 break; // No change in gender
             } else if (genderChoice.equals("1")) {
@@ -396,11 +420,11 @@ public class StaffManagementControl {
                 System.out.println("Error: Invalid choice. Please enter 1 or 2.");
             }
         }
-    
+
         System.out.print("Enter new age (leave blank for no change): ");
         String newAgeInput = scanner.nextLine();
         Integer newAge = null;
-    
+
         if (!newAgeInput.isEmpty()) {
             try {
                 newAge = Integer.parseInt(newAgeInput);
@@ -413,7 +437,7 @@ public class StaffManagementControl {
                 return;
             }
         }
-    
+
         // Update fields if new values provided
         if (!newName.isEmpty()) {
             staff.setName(newName);
@@ -424,7 +448,7 @@ public class StaffManagementControl {
         if (newAge != null) {
             updateStaffAge(staff, newAge);
         }
-    
+
         try {
             data.rewriteStaff("hms/src/data/Staff_List.csv"); // Rewrite staff data to CSV
             System.out.println("Staff updated successfully.");
@@ -432,7 +456,6 @@ public class StaffManagementControl {
             System.out.println("Error updating staff: " + e.getMessage());
         }
     }
-    
 
     // Helper method to update age based on staff type
     private void updateStaffAge(Users staff, int newAge) {
@@ -445,19 +468,18 @@ public class StaffManagementControl {
         }
     }
 
-  
     public void deleteStaff(Scanner scanner) {
         // Display a list of all staff members with their names and IDs
         System.out.println("\n===== Staff List =====");
         List<Users> staffList = data.getStaffList();
         staffList.sort(Comparator.comparing(Users::getName)); // Sort staff by name
-        
+
         for (int i = 0; i < staffList.size(); i++) {
             Users staff = staffList.get(i);
             System.out.printf("%d. ID: %s, Name: %s%n", i + 1, staff.getUserID(), staff.getName());
         }
         System.out.println("======================");
-    
+
         // Prompt user to select a staff member by list number
         System.out.print("\nEnter the number corresponding to the staff you wish to delete: ");
         int staffIndex;
@@ -471,18 +493,19 @@ public class StaffManagementControl {
             System.out.println("Invalid input. Please enter a valid number.");
             return;
         }
-    
+
         // Get the selected staff member for deletion
         Users staff = staffList.get(staffIndex);
-    
+
         // Confirm deletion
-        System.out.print("Are you sure you want to delete " + staff.getName() + " (ID: " + staff.getUserID() + ")? (yes/no): ");
+        System.out.print(
+                "Are you sure you want to delete " + staff.getName() + " (ID: " + staff.getUserID() + ")? (yes/no): ");
         String confirmation = scanner.nextLine().trim().toLowerCase();
         if (!confirmation.equals("yes")) {
             System.out.println("Deletion aborted.");
             return;
         }
-    
+
         // Remove the staff from their respective list
         boolean removed = false;
         if (staff instanceof Doctor) {
@@ -492,7 +515,7 @@ public class StaffManagementControl {
         } else if (staff instanceof Pharmacist) {
             removed = data.getPharmacists().remove(staff);
         }
-    
+
         // Rewrite the staff data to file if deletion was successful
         if (removed) {
             try {
@@ -505,7 +528,6 @@ public class StaffManagementControl {
             System.out.println("Error: Staff could not be removed from the list. Please try again.");
         }
     }
-    
 
     private Users findStaffById(String id) {
         for (Doctor doctor : data.getDoctors()) {
