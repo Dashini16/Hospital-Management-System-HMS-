@@ -210,7 +210,6 @@ public class AppointmentScheduling {
         }
     }
     
-    
 
     public void scheduleAppointment() {
         Scanner scanner = new Scanner(System.in);
@@ -258,8 +257,17 @@ public class AppointmentScheduling {
         Doctor selectedDoctor = availableDoctors.get(doctorIndex);
         String doctorID = selectedDoctor.getUserID();
     
+        // Retrieve approved leave dates for the doctor
+        List<LocalDate> approvedLeaveDates = initialDataLeaveRequest.getAllRequests().stream()
+                .filter(request -> request.getRequesterID().equals(doctorID) && request.getStatus() == LeaveRequestStatus.APPROVED)
+                .map(LeaveRequest::getLeaveDate)
+                .collect(Collectors.toList());
+    
         // Retrieve available dates excluding leave days
-        List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID);
+        List<LocalDate> availableDates = getDoctorAvailabilityNext14Days(doctorID).stream()
+                .filter(date -> !approvedLeaveDates.contains(date)) // Exclude dates with approved leave
+                .collect(Collectors.toList());
+    
         if (availableDates.isEmpty()) {
             System.out.println("Doctor not available in the next 14 days.");
             return;
@@ -369,6 +377,7 @@ public class AppointmentScheduling {
     
         initialDataAppointments.reloadData();
     }
+    
     
     // Method to print available times for a specific date
     private List<LocalTime> printAvailableTimes(String doctorID, LocalDate date) {

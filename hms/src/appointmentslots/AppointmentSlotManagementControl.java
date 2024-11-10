@@ -228,10 +228,10 @@ public class AppointmentSlotManagementControl {
     public void viewPersonalSchedule() {
         initialData.importData(); // Ensure the latest data is loaded
         Scanner scanner = new Scanner(System.in);
-
+    
         // Use the current user as doctor ID
         String doctorID = AuthorizationControl.getCurrentUserId();
-
+    
         // Validate if the doctor exists
         UserLookup userLookup = new UserLookup();
         Doctor doctor = userLookup.findByID(doctorID, initialData.getDoctors(),
@@ -240,11 +240,12 @@ public class AppointmentSlotManagementControl {
             System.out.println("Doctor ID not found. Please try again.");
             return;
         }
-
-        // Step 1: Display all upcoming accepted appointments for the doctor, ordered by
-        // date
+    
+        // Step 1: Display all upcoming accepted appointments for the doctor, ordered by date
         System.out.println("Your Upcoming Accepted Appointments (Nearest First):");
         List<Appointment> upcomingAppointments = getUpcomingAcceptedAppointmentsForDoctor(doctorID);
+        filterAppointmentsOnLeave(upcomingAppointments, doctorID);
+    
         if (upcomingAppointments.isEmpty()) {
             System.out.println("You have no upcoming accepted appointments.");
         } else {
@@ -253,13 +254,14 @@ public class AppointmentSlotManagementControl {
                         + appointment.getDate() + " at " + appointment.getTime());
             }
         }
-
+    
         System.out.println("\n--------------------------------------");
-
-        // Step 2: Display all pending appointment requests for the doctor, ordered by
-        // date
+    
+        // Step 2: Display all pending appointment requests for the doctor, ordered by date
         System.out.println("Pending Appointment Requests (Nearest First):");
         List<Appointment> pendingRequests = getPendingRequestsForDoctor(doctorID);
+        filterAppointmentsOnLeave(pendingRequests, doctorID);
+    
         if (pendingRequests.isEmpty()) {
             System.out.println("You have no pending appointment requests.");
         } else {
@@ -268,12 +270,33 @@ public class AppointmentSlotManagementControl {
                         + appointment.getDate() + " at " + appointment.getTime());
             }
         }
-
+    
         System.out.println("\n--------------------------------------");
-
+    
         // Step 3: Display available slots for the next 14 days, ordered by date
         System.out.println("Your Availability for the Next 14 Days (Nearest First):");
         displayAvailableSlotsForNext14Days(doctorID);
+    
+        // Allow the user to type "exit" to quit the program
+        System.out.print("Type 'exit' to return to the main menu: ");
+        String input = scanner.nextLine().trim();
+        if ("exit".equalsIgnoreCase(input)) {
+            System.out.println("Returning to main menu...");
+            return;
+        }
+    }
+    
+
+    // Helper method to filter out appointments on leave days
+    private void filterAppointmentsOnLeave(List<Appointment> appointments, String doctorID) {
+        List<LocalDate> leaveDates = initialDataLeaveRequest.getAllRequests().stream()
+                .filter(request -> request.getRequesterID().equals(doctorID) && 
+                        request.getStatus() == LeaveRequestStatus.APPROVED)
+                .map(LeaveRequest::getLeaveDate)
+                .collect(Collectors.toList());
+
+        appointments.removeIf(appointment -> leaveDates.contains(
+                LocalDate.parse(appointment.getDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
     }
 
     // Helper function to retrieve upcoming accepted appointments for the doctor
@@ -304,16 +327,24 @@ public class AppointmentSlotManagementControl {
                 .collect(Collectors.toList());
     }
 
-    // Helper function to display available slots for the next 14 days
+    // Helper function to display available slots for the next 14 days excluding leave days
     private void displayAvailableSlotsForNext14Days(String doctorID) {
         LocalDate today = LocalDate.now();
         LocalDate limitDate = today.plusDays(14);
+
+        // Get approved leave dates
+        List<LocalDate> leaveDates = initialDataLeaveRequest.getAllRequests().stream()
+                .filter(request -> request.getRequesterID().equals(doctorID) && 
+                        request.getStatus() == LeaveRequestStatus.APPROVED)
+                .map(LeaveRequest::getLeaveDate)
+                .collect(Collectors.toList());
 
         List<LocalDate> availableDates = initialDataAppointmentSlots.getLists().stream()
                 .filter(slot -> slot.getDoctorID().equals(doctorID))
                 .flatMap(slot -> today.datesUntil(limitDate.plusDays(1))
                         .filter(date -> slot.getWorkingDays().stream()
-                                .anyMatch(day -> day.name().equalsIgnoreCase(date.getDayOfWeek().name()))))
+                                .anyMatch(day -> day.name().equalsIgnoreCase(date.getDayOfWeek().name()))
+                                && !leaveDates.contains(date))) // Exclude leave dates
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
@@ -324,6 +355,7 @@ public class AppointmentSlotManagementControl {
             System.out.println("--------------------------------------");
         }
     }
+
 
     // Helper function to print available times for a given doctor and date
     private void printAvailableTimes(String doctorID, LocalDate date) {
