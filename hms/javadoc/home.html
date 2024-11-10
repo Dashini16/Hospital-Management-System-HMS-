@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabbed Interface for Code Details</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Tab Container */
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 2rem auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background-color: #333;
+        }
+
+        .tab-nav button {
+            flex: 1;
+            padding: 1rem;
+            color: #fff;
+            background-color: #333;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .tab-nav button.active {
+            background-color: #4CAF50;
+        }
+
+        .tab-nav button:hover {
+            background-color: #45a049;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th, table td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tab Container -->
+    <div class="tab-container">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-link active" onclick="openTab(event, 'code-overview')">Code Overview</button>
+            <button class="tab-link" onclick="openTab(event, 'data-structures')">Data Structures</button>
+            <button class="tab-link" onclick="openTab(event, 'algorithms')">Algorithms</button>
+            <button class="tab-link" onclick="openTab(event, 'documentation')">Documentation</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="code-overview" class="tab-content active">
+            <h2>Code Overview</h2>
+            <p>This section provides a high-level overview of your code.</p>
+            <table>
+                <tr><th>File Name</th><th>Description</th></tr>
+                <tr><td>main.py</td><td>Main execution script.</td></tr>
+                <tr><td>utils.py</td><td>Utility functions for data processing.</td></tr>
+                <tr><td>config.py</td><td>Configuration settings.</td></tr>
+            </table>
+        </div>
+
+        <div id="data-structures" class="tab-content">
+            <h2>Data Structures</h2>
+            <p>Details about the data structures used in the codebase.</p>
+            <table>
+                <tr><th>Data Structure</th><th>Purpose</th></tr>
+                <tr><td>Array</td><td>Used for storing sequences of data.</td></tr>
+                <tr><td>Stack</td><td>Manages Last-In-First-Out operations.</td></tr>
+                <tr><td>Queue</td><td>Manages First-In-First-Out operations.</td></tr>
+            </table>
+        </div>
+
+        <div id="algorithms" class="tab-content">
+            <h2>Algorithms</h2>
+            <p>Key algorithms implemented within the project.</p>
+            <table>
+                <tr><th>Algorithm</th><th>Description</th></tr>
+                <tr><td>Binary Search</td><td>Efficiently searches a sorted array.</td></tr>
+                <tr><td>Merge Sort</td><td>Sorts an array with divide-and-conquer.</td></tr>
+                <tr><td>Dijkstra's Algorithm</td><td>Finds shortest paths in a weighted graph.</td></tr>
+            </table>
+        </div>
+
+        <div id="documentation" class="tab-content">
+            <h2>Documentation</h2>
+            <p>Important notes and documentation regarding the code.</p>
+            <table>
+                <tr><th>Section</th><th>Details</th></tr>
+                <tr><td>Installation</td><td>Steps to install and set up the project.</td></tr>
+                <tr><td>Usage</td><td>Guide on using the different functionalities.</td></tr>
+                <tr><td>Testing</td><td>Instructions for running tests on the code.</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript for Tab Functionality -->
+    <script>
+        function openTab(event, tabId) {
+            // Hide all tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tab buttons
+            const tabLinks = document.querySelectorAll('.tab-link');
+            tabLinks.forEach(link => link.classList.remove('active'));
+
+            // Show the clicked tab's content and make the button active
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>
