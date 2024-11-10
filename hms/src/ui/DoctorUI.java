@@ -10,6 +10,7 @@ import filereaders.InitialDataLeaveRequest;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataPatient;
 import filereaders.InitialDataStaff;
+import filereaders.InitialDataLeaveRequest;
 import usermanagement.PasswordManagement;
 import usermanagement.StaffManagementControl;
 
@@ -26,6 +27,7 @@ public class DoctorUI {
     private Doctor doctor;
     private InitialDataStaff data;
     private InitialDataPatient patientData;
+
 
     public DoctorUI(Doctor doctor) {
         this.doctor = doctor;
@@ -100,7 +102,7 @@ public class DoctorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Viewing personal schedule");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentSlotManagementControl appointmentSlotManagement = new AppointmentSlotManagementControl(data, dataAppointmentSlots, dataAppointments);
+                    AppointmentSlotManagementControl appointmentSlotManagement = new AppointmentSlotManagementControl(data, dataAppointmentSlots, dataAppointments, leaveData);
                     appointmentSlotManagement.viewPersonalSchedule();
                     break;
                 case 4:
@@ -108,7 +110,7 @@ public class DoctorUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Setting availability for appointments");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentSlotManagementControl appointmentSlotManagementControl = new AppointmentSlotManagementControl(data, dataAppointmentSlots, dataAppointments);
+                    AppointmentSlotManagementControl appointmentSlotManagementControl = new AppointmentSlotManagementControl(data, dataAppointmentSlots, dataAppointments, leaveData);
                     appointmentSlotManagementControl.setDoctorAvailability();
                     break;
                 case 5:

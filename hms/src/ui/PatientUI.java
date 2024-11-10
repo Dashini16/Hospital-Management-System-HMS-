@@ -13,6 +13,7 @@ import filereaders.InitialDataAppointments;
 import filereaders.InitialDataMedicine;
 import filereaders.InitialDataPatient;
 import filereaders.InitialDataStaff;
+import filereaders.InitialDataLeaveRequest;
 import usermanagement.PasswordManagement;
 import usermanagement.PatientManagementControl;
 import usermanagement.StaffManagementControl;
@@ -33,6 +34,8 @@ public class PatientUI {
         InitialDataAppointments dataAppointments = new InitialDataAppointments();
         InitialDataAppointmentSlots dataAppointmentSlots = new InitialDataAppointmentSlots();
         InitialDataMedicine medicineData = new InitialDataMedicine();
+        InitialDataLeaveRequest leaveData = new InitialDataLeaveRequest();
+
         initialData.importData();
         initialData.reloadData();
 
@@ -47,6 +50,7 @@ public class PatientUI {
 
         medicineData.importData();
         medicineData.reloadData();
+
         
 
         // Print the pharmacist menu to the console
@@ -94,7 +98,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("View Available Appointment Slots");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentSlotManagementControl appointmentManagementControl2 = new AppointmentSlotManagementControl(initialData,dataAppointmentSlots,dataAppointments);
+                    AppointmentSlotManagementControl appointmentManagementControl2 = new AppointmentSlotManagementControl(initialData,dataAppointmentSlots,dataAppointments, leaveData);
                     appointmentManagementControl2.viewAvailableTimeSlots();;
                     break;
                 case 4:
@@ -102,7 +106,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Schedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentScheduling appointmentManagementControl = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentScheduling appointmentManagementControl = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots, leaveData);
                     appointmentManagementControl.scheduleAppointment();;
                     break;
                 case 5:
@@ -110,7 +114,7 @@ public class PatientUI {
                     System.out.println("\n==================================="); 
                     System.out.println("Reschedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentScheduling appointmentManagementControl3 = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots);
+                    AppointmentScheduling appointmentManagementControl3 = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots, leaveData);
                     appointmentManagementControl3.rescheduleAppointment();
                     
                     break;
