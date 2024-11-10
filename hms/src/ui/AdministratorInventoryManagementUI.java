@@ -46,27 +46,45 @@ public class AdministratorInventoryManagementUI {
             switch (choice) 
             {
                 case 1:
+                    System.out.println("\n===================================");
+                    System.out.println("Add New Medication");
+                    System.out.println("===================================\n");
                     inventoryManager.addNewMedicine(scanner);
                     break;
 
                 case 2:
+                    System.out.println("\n===================================");
+                    System.out.println("Remove Medication");
+                    System.out.println("===================================\n");
                     inventoryManager.removeMedicine(scanner);
                     break;
 
                 case 3:
+                    System.out.println("\n===================================");
+                    System.out.println("Update Initial Stock");
+                    System.out.println("===================================\n");
                     inventoryManager.updateStockInitial(scanner);
                     break;
 
                 case 4:
+                    System.out.println("\n===================================");
+                    System.out.println("Update Low Stock Level Alert");
+                    System.out.println("===================================\n");
                     inventoryManager.updateLowStockLevelAlert(scanner);
                     break;
 
                 case 5:
-                AdministratorReplenishmentRequestManagementUI requestManager = new AdministratorReplenishmentRequestManagementUI(replenishmentRequestData,data, replenishmentRequests);
+                    System.out.println("\n===================================");
+                    System.out.println("Manage Replenishment Requests");
+                    System.out.println("===================================\n");
+                    AdministratorReplenishmentRequestManagementUI requestManager = new AdministratorReplenishmentRequestManagementUI(replenishmentRequestData,data, replenishmentRequests);
                     requestManager.manageRequests();
                     break;
 
                 case 6:
+                    System.out.println("\n===================================");
+                    System.out.println("Medication Inventory");
+                    System.out.println("===================================\n");
                     inventoryManager.displayInventory();
                     break;
 

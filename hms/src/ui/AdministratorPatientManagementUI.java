@@ -31,10 +31,16 @@ public class AdministratorPatientManagementUI {
 
             switch (choice) {
                 case 1:
+                    System.out.println("\n===================================");
+                    System.out.println("Display All Patients");
+                    System.out.println("===================================\n");
                     patientManager.displayPatients();
                     break;
 
                 case 2:
+                    System.out.println("\n===================================");
+                    System.out.println("Add New Patient");
+                    System.out.println("===================================\n");
                     patientManager.addPatient(scanner);
                     break;
 
@@ -43,6 +49,9 @@ public class AdministratorPatientManagementUI {
                     //break;
 
                 case 3:
+                    System.out.println("\n===================================");
+                    System.out.println("Delete Patient");
+                    System.out.println("===================================\n");
                     patientManager.deletePatient(scanner);
                     break;
 
