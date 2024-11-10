@@ -1,6 +1,7 @@
 Name,InitialStock,LowStockLevelAlert
 Paracetamol,138,20
 Ibuprofen,72,10
-Amoxicillin,99,100
-KOOKIWA,900,100
-kookoo,500,200
+Amoxicillin,101,100
+KOOKIWA,904,100
+kookoo,300,100
+cough med,30,20

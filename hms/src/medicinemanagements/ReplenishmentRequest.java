@@ -48,8 +48,8 @@ public class ReplenishmentRequest {
         this.status = status;
    }
 
-   public void setRequestBy(String requestBy) {
-    this.requestBy = requestBy;
+    public void setRequestBy(String requestBy) {
+        this.requestBy = requestBy;
     }
 
     public void setIsNewMedicine(Boolean isNewMedicine) {

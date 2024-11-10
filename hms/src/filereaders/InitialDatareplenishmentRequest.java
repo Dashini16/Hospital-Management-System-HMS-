@@ -29,7 +29,6 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
     public void importData() {
         try {
 
-
             importDatafromFile("hms/src/data/Replenishment_Requests.csv");
 
         } catch (IOException e) {
@@ -64,7 +63,7 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
     public void rewriteReplenishmentRequests(String filename, List<ReplenishmentRequest> requests) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             // Write the header
-            bw.write("MedicineName,RequestedQuantity,Status\n");
+            bw.write("MedicineName,RequestedQuantity,Status,RequestBy,IsNewMedicine\n");
     
             // Write each replenishment request's details
             for (ReplenishmentRequest request : requests) {
@@ -80,7 +79,7 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
             br.readLine(); // Skip header line
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length == 3) {
+                if (data.length == 5) {
                     String medicineName = data[0];
                     int requestedQuantity = Integer.parseInt(data[1].trim());
                     RequestStatus status = RequestStatus.valueOf(data[2].trim().toUpperCase());
@@ -95,9 +94,14 @@ public class InitialDatareplenishmentRequest implements DataImporter,ListInterfa
     }
 
     @Override
-
-    public List<ReplenishmentRequest> getLists()
-    {
+    // public List<ReplenishmentRequest> getLists()
+    // {
+    //     return replenishmentRequests;
+    // }
+    public List<ReplenishmentRequest> getLists() {
+        if (replenishmentRequests == null) {
+            replenishmentRequests = new ArrayList<>();
+        }
         return replenishmentRequests;
     }
 

@@ -1,7 +1,6 @@
 UserID,Name,Role,Gender,Age,Password
 D001,John Smith,DOCTOR,Male,45,PL/enpZNT0aj1ppDbTdDuIWmX1kq30d5+t44hgcu3B0=
 D002,Emily Clarke,DOCTOR,Female,38,n5Ud+Reayre/RiuXHQaSD3cQMzJwEZUBcZEcLDR+DSI=
-D003,Tim,DOCTOR,Male,34,sDeOmcjOCYI3fJSWAMrNRhJp8uQ307y9lmyMXj5tUXM=
 D102,Timmy Tan,DOCTOR,Male,34,0TAJDn99cXmwds87Qlcy8SmeeTDWx91/oDQhen//Mlk=
 D022,Michelle Tan,DOCTOR,Female,42,I80YpKkCQIdL6Z6Yt4goPnBmVF3Jzs2Cq7mIGStdZPs=
 A001,Sarah Lee,ADMINISTRATOR,Female,40,SORsRICqYgDZKsyo0zLC3YaSwxGnKq7vt0VTfv+P5cY=

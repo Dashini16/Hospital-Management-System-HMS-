@@ -15,15 +15,23 @@ public class AdministratorReplenishmentRequestManagementUI {
     private List<ReplenishmentRequest> replenishmentRequests;
     private InitialDataMedicine dataMedicine;
 
-    public AdministratorReplenishmentRequestManagementUI(InitialDatareplenishmentRequest data,InitialDataMedicine dataMedicine, List<ReplenishmentRequest> replenishmentRequests) {
+    public AdministratorReplenishmentRequestManagementUI(InitialDatareplenishmentRequest data,
+            InitialDataMedicine dataMedicine, List<ReplenishmentRequest> replenishmentRequests) {
+
+        // Initialize data and dataMedicine, ensuring they are not null
+        if (data == null || dataMedicine == null) {
+            throw new IllegalArgumentException("Data and dataMedicine cannot be null.");
+        }
+
         this.data = data;
-        this.replenishmentRequests = data.getLists();
         this.dataMedicine = dataMedicine;
+        
 
         data.reloadData();
         dataMedicine.reloadData();
-        
-        this.replenishmentManager = new ReplenishmentRequestManagementControl(replenishmentRequests, dataMedicine,data);
+
+        this.replenishmentManager = new ReplenishmentRequestManagementControl(replenishmentRequests, dataMedicine,
+                data);
 
     }
 
@@ -56,6 +64,5 @@ public class AdministratorReplenishmentRequestManagementUI {
             }
         }
     }
-
 
 }
