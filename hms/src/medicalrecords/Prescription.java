@@ -6,12 +6,14 @@ import enums.PrescriptionStatus;
 public class Prescription{
 
     private String medicationName;
+    private int quantity;
     private PrescriptionStatus status;
 
     // Constructor to initialize with medication name, setting status to "Pending" by default
-    public Prescription(String medicationName) {
+    public Prescription(String medicationName, int quantity) {
 
         this.medicationName = medicationName;
+        this.quantity = quantity;
         this.status = PrescriptionStatus.PENDING;
     }
 
@@ -26,6 +28,15 @@ public class Prescription{
         this.medicationName = medicationName;
     }
 
+     // Getter and setter for quantity
+     public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     // Getter for status
     public PrescriptionStatus getStatus() {
         return status;
@@ -37,8 +48,12 @@ public class Prescription{
     }
 
     // Method to print the prescription
+    // public String toString() {
+    //     return "Prescription: " + medicationName + ", Status: " + status;
+    // }@Override
     public String toString() {
-        return "Prescription: " + medicationName + ", Status: " + status;
+        return medicationName + " (Quantity: " + quantity + ", Status: " + status + ")";
     }
+
 }
 

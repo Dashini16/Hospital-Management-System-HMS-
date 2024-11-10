@@ -253,8 +253,9 @@ private OutcomeRecord parseOutcomeRecord(String outcomeRecordStr) {
                 String[] prescriptionDetails = prescription.split(",");
                 if (prescriptionDetails.length >= 1) {
                     String medicationName = prescriptionDetails[0].trim();
-                    String status = prescriptionDetails.length > 1 ? prescriptionDetails[1].trim() : "pending"; // Default to "pending" if no status
-                    Prescription newPrescription = new Prescription(medicationName);
+                    int quantity = Integer.parseInt(prescriptionDetails[1].trim());
+                    String status = prescriptionDetails.length > 1 ? prescriptionDetails[2].trim() : "pending"; // Default to "pending" if no status
+                    Prescription newPrescription = new Prescription(medicationName, quantity);
                     outcomeRecord.addPrescription(newPrescription); // Pass both medication name and status
                     newPrescription.updateStatus(PrescriptionStatus.valueOf(status.toUpperCase()));
                 }
@@ -286,7 +287,7 @@ public void writeData(String filename, Appointment appointment) throws IOExcepti
     StringBuilder prescriptionList = new StringBuilder();
     for (Prescription p : appointment.getOutcomeRecord().getPrescriptions()) {
         if (prescriptionList.length() > 0) prescriptionList.append(";");
-        prescriptionList.append(p.getMedicationName()).append(",").append(p.getStatus());
+        prescriptionList.append(p.getMedicationName()).append(",").append(p.getQuantity()).append(",").append(p.getStatus());
     }
 
     // Constructing the outcome record using String.format

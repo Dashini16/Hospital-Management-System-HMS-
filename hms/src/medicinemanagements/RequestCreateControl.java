@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
+import authorization.AuthorizationControl;
 import enums.RequestStatus;
 
 public class RequestCreateControl {
@@ -24,44 +26,103 @@ public class RequestCreateControl {
         data.reloadData();
         dataReplenishmentRequest.reloadData();
     }
-
+    
     public void createReplenishmentRequest(Scanner scanner) {
-        System.out.print("Enter medicine name: ");
-        String name = scanner.nextLine().trim(); // Trim whitespace from input
+        // Automatically get the Pharmacist ID through AuthorizationControl
+        String requestBy = AuthorizationControl.getCurrentUserId();
+        
+        System.out.println("\nChoose an option:");
+        System.out.println("1. Request replenishment for existing low-stock medicine");
+        System.out.println("2. Request replenishment for a new medicine");
+        System.out.print("Enter your choice (1 or 2): ");
     
-        // Check if the medicine exists
-        //Medicine existingMedicine = findMedicineByName(name);
-        UserLookup userLookup = new UserLookup();
-        Medicine existingMedicine = userLookup.findByID(name, data.getLists(), med -> med.getName().equalsIgnoreCase(name));
-    
-        if (existingMedicine == null) {
-            System.out.println("Medicine not found. Please enter a valid medicine name.");
-            return; // Exit the method if medicine does not exist
+        int choice;
+        try {
+            choice = Integer.parseInt(scanner.nextLine().trim());
+            if (choice != 1 && choice != 2) {
+                System.out.println("Invalid choice. Please enter 1 or 2.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter 1 or 2.");
+            return;
         }
     
-        int requestedStock = 0; // Variable to hold the requested stock
-        boolean validInput = false; // Flag to check if the input is valid
+        String medicineName;
+        int requestedStock = 0;
+        boolean isNewMedicine;
     
-        // Loop until valid stock quantity is entered
-        while (!validInput) {
+        if (choice == 1) {
+            // Option 1: Request for existing low-stock medicine
+            isNewMedicine = false;
+            System.out.println("\nLow-stock Medicines:");
+            System.out.printf("%-5s %-20s %-15s %-15s%n", "No.", "Medicine Name", "Stock Quantity", "Low Stock Alert");
+            System.out.println("-------------------------------------------------------");
+    
+            // Fetch low-stock medicines
+            List<Medicine> lowStockMedicines = data.getLists().stream()
+                    .filter(med -> med.getInitialStock() < med.getLowStockLevelAlert())
+                    .collect(Collectors.toList());
+    
+            if (lowStockMedicines.isEmpty()) {
+                System.out.println("No low-stock medicines available for replenishment.");
+                return;
+            }
+    
+            // Display low-stock medicines
+            for (int i = 0; i < lowStockMedicines.size(); i++) {
+                Medicine medicine = lowStockMedicines.get(i);
+                System.out.printf("%-5d %-20s %-15d %-15d%n", 
+                                  i + 1, 
+                                  medicine.getName(), 
+                                  medicine.getInitialStock(), 
+                                  medicine.getLowStockLevelAlert());
+            }
+    
+            // Select a medicine to replenish
+            System.out.print("\nSelect the number of the medicine to replenish: ");
+            int medicineIndex;
+            try {
+                medicineIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+                if (medicineIndex < 0 || medicineIndex >= lowStockMedicines.size()) {
+                    System.out.println("Invalid selection. Please try again.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                return;
+            }
+    
+            Medicine selectedMedicine = lowStockMedicines.get(medicineIndex);
+            medicineName = selectedMedicine.getName();
+    
+        } else {
+            // Option 2: Request for new medicine
+            isNewMedicine = true;
+            System.out.print("Enter the name of the new medicine: ");
+            medicineName = scanner.nextLine().trim();
+        }
+    
+        // Request quantity from the user
+        while (true) {
             System.out.print("Enter requested stock quantity (positive integer): ");
             try {
-                requestedStock = Integer.parseInt(scanner.nextLine()); // Read and parse input
+                requestedStock = Integer.parseInt(scanner.nextLine().trim());
                 if (requestedStock <= 0) {
                     System.out.println("Error: Please enter a positive integer for the stock quantity.");
-                }  else {
-                    validInput = true; // Input is valid
+                } else {
+                    break;
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Error: Invalid input. Please enter a valid integer for the stock quantity.");
             }
         }
     
-        // Create and add the replenishment request
-        ReplenishmentRequest request = new ReplenishmentRequest(name, requestedStock);
+        // Create and save the replenishment request
+        ReplenishmentRequest request = new ReplenishmentRequest(medicineName, requestedStock, requestBy, isNewMedicine);
         request.setStatus(RequestStatus.PENDING);
         replenishmentRequests.add(request); // Add to in-memory list
-        System.out.println("Replenishment request created for " + name + " with quantity " + requestedStock);
+        System.out.println("Replenishment request created for " + medicineName + " with quantity " + requestedStock);
     
         // Save request to CSV file
         try {
@@ -71,5 +132,5 @@ public class RequestCreateControl {
             System.out.println("Error saving replenishment request: " + e.getMessage());
         }
     }
- 
+    
 }

@@ -1,4 +1,8 @@
-MedicineName,RequestedQuantity,Status
-Amoxicillin,200,PENDING
-KOOKIWA,100,FULFILLED
-KOOKIWA,4,PENDING
+MedicineName,RequestedQuantity,Status,RequestBy,isNewMedicine
+Amoxicillin,200,PENDING,P001,false
+KOOKIWA,100,FULFILLED,P001,false
+KOOKIWA,4,PENDING,P001,false
+Amoxicillin,13,PENDING,P001,false
+Amoxicillin,2,PENDING,P001,false
+Amoxicillin,23,PENDING,P001,false
+cough med,30,PENDING,P001,true

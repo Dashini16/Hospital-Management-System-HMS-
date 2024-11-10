@@ -84,15 +84,24 @@ public class InventoryManagementControl {
             System.out.println("Error adding medicine: " + e.getMessage());
         }
     }
-    
+
     public void displayInventory() {
-        System.out.println("Current Medication Inventory:");
+        System.out.println("===== Current Medication Inventory =====");
+        System.out.printf("%-5s %-20s %-15s %-15s%n", "No.", "Medication Name", "Stock Quantity", "Low Stock Alert");
+        System.out.println("--------------------------------------------------------");
+    
         int index = 1;
         for (Medicine medicine : medicineData.getLists()) {
-            System.out.println(index + ". " + medicine.getName() + "," + medicine.getInitialStock() + "," + medicine.getLowStockLevelAlert());
+            System.out.printf("%-5d %-20s %-15d %-15d%n", 
+                              index, 
+                              medicine.getName(), 
+                              medicine.getInitialStock(), 
+                              medicine.getLowStockLevelAlert());
             index++;
         }
+        System.out.println("========================================");
     }
+    
     
     // Helper method to select a medicine by number
     private Medicine selectMedicineByNumber(Scanner scanner) {

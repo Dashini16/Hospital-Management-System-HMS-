@@ -293,7 +293,7 @@ public class AppointmentScheduling {
 
         // Set default outcome record and prescription
         OutcomeRecord outcomeRecord = new OutcomeRecord("00/00/0000", "-", "-");
-        Prescription prescription = new Prescription("-");
+        Prescription prescription = new Prescription("-", 0);
         prescription.updateStatus(PrescriptionStatus.PENDING);
         outcomeRecord.addPrescription(prescription);
         appointment.setOutcomeRecord(outcomeRecord);
