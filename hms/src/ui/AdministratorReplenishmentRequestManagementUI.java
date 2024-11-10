@@ -47,11 +47,18 @@ public class AdministratorReplenishmentRequestManagementUI {
 
             switch (choice) {
                 case 1:
+                    System.out.println("\n===================================");
+                    System.out.println("Replenishment Requests");
+                    System.out.println("===================================\n");
                     data.reloadData();
                     replenishmentManager.viewReplenishmentRequests();
                     break;
 
                 case 2:
+                    System.out.println("\n===================================");
+                    System.out.println("Replenishment Requests");
+                    System.out.println("===================================\n");
+                    data.reloadData();
                     replenishmentManager.approveReplenishment(scanner);
                     data.reloadData();
                     break;

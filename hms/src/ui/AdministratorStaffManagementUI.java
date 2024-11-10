@@ -19,6 +19,8 @@ public class AdministratorStaffManagementUI {
     public void manageStaff() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            
+            System.out.println("\n===================================");
             System.out.println("\nChoose an action:");
             System.out.println("1. Add Doctor");
             System.out.println("2. Add Pharmacist");
@@ -27,6 +29,7 @@ public class AdministratorStaffManagementUI {
             System.out.println("5. Delete Staff");
             System.out.println("6. View Staff");
             System.out.println("7. Go back to the menu");
+            System.out.println("===================================");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
