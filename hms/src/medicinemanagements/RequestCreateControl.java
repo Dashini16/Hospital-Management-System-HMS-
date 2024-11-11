@@ -116,6 +116,20 @@ public class RequestCreateControl {
             isNewMedicine = true;
             System.out.print("Enter the name of the new medicine: ");
             medicineName = scanner.nextLine().trim();
+                // Prompt the user for the quantity of the new medicine
+            System.out.print("Enter the quantity of the new medicine: ");
+            while (true) {
+                try {
+                    requestedStock = Integer.parseInt(scanner.nextLine().trim());
+                    if (requestedStock <= 0) {
+                        System.out.println("Error: Please enter a positive integer for the stock quantity.");
+                    } else {
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid input. Please enter a valid integer for the stock quantity.");
+                }
+            }
         }
     
         // Create and save the replenishment request
@@ -139,5 +153,7 @@ public class RequestCreateControl {
         } catch (IOException e) {
             System.out.println("Error saving updated medicine list: " + e.getMessage());
         }
+        dataReplenishmentRequest.reloadData();
+        data.reloadData();
     }
 }
