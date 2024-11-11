@@ -1,4 +1,4 @@
 PatientID;Diagnoses;Treatments
-P1002;klkas,low potassium,high cholestrol,high blood pressure;yest2,Analgesics,Antidepressants,Antibiotics
+P1002;klkas,low potassium,high cholestrol,high blood pressure,diabetes;Oral Medications,Analgesics,Antidepressants,Antibiotics
 P1003;klsdk,test,test2,euefuefh,ef,stomach issues,blood issues,Hypertension (High Blood Pressure),Atrial Fibrillation,Myocardial Infarction (Heart Attack);uiilklk,pills,healthy food,Medication,Vaccinations,Physical therapy
 P1001;Hypertension (High Blood Pressure),Diabetes Mellitus (Type 2),Asthma,Chronic Obstructive Pulmonary Disease (COPD),Osteoarthritis,dome,diarhea,shhshs;Antihypertensive Medications for Hypertension,Insulin or Oral Hypoglycemics for Diabetes Mellitus (Type 2),Inhalers and Steroids for Asthma,Bronchodilators and Steroids for COPD,Pain Relief and Physical Therapy for Osteoarthritis,test1,test2
