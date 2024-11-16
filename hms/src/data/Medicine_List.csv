@@ -1,8 +1,10 @@
 Name,InitialStock,LowStockLevelAlert
-Paracetamol,156,20
-Ibuprofen,72,30
+Paracetamol,154,20
+Ibuprofen,100,30
 Amoxicillin,337,100
-KOOKIWA,904,200
-Aspirin,10,32
+KOOKIWA,903,200
+Aspirin,210,32
 Rolaids,200,130
 Insulin,300,40
+Albuterol,200,30
+Ciprofloxacin,200,10

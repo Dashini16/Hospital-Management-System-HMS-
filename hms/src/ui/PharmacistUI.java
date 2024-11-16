@@ -6,19 +6,18 @@ import medicinemanagements.*;
 import usermanagement.PasswordManagement;
 import authorization.AuthorizationControl;
 
-
 import java.util.Scanner;
 
 import appointments.AppointmentManagementControl;
 
 public class PharmacistUI {
     private Pharmacist pharmacist;
-    //private InitialData data;
-    //private AuthorizationControl authControl; 
+    // private InitialData data;
+    // private AuthorizationControl authControl;
 
     public PharmacistUI(Pharmacist pharmacist) {
         this.pharmacist = pharmacist;
-        //this.data = data;
+        // this.data = data;
     }
 
     public void displayMenu() {
@@ -39,7 +38,7 @@ public class PharmacistUI {
         // Print the pharmacist menu to the console
         AuthorizationControl authControl = new AuthorizationControl();
         // Load users into AuthorizationControl (assuming you have this in your code)
-        authControl.loadCredentialsFromStaff(data,dataPatient); 
+        authControl.loadCredentialsFromStaff(data, dataPatient);
 
         while (true) {
             System.out.println("Pharmacist Menu:");
@@ -60,25 +59,27 @@ public class PharmacistUI {
                 case 1:
                     // Add code to view appointment outcome record
 
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("View Appointment Outcome Record");
-                    System.out.println("===================================\n"); 
-                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(dataMedicine, data,dataAppointments);
+                    System.out.println("===================================\n");
+                    AppointmentManagementControl appointmentManagementControl = new AppointmentManagementControl(
+                            dataMedicine, data, dataAppointments);
                     appointmentManagementControl.viewOutcomeRecords(false);
                     break;
                 case 2:
                     // Add code to update prescription status
-                    
-                    System.out.println("\n==================================="); 
+
+                    System.out.println("\n===================================");
                     System.out.println("Update Prescription Status");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    appointmentManagementControl = new AppointmentManagementControl(dataMedicine, data,dataAppointments);
+                    appointmentManagementControl = new AppointmentManagementControl(dataMedicine, data,
+                            dataAppointments);
                     appointmentManagementControl.updatePrescriptionStatus();
                     break;
                 case 3:
                     // Add code to view medication inventory
-                    //System.out.println("Viewing medication inventory...");
-                    System.out.println("\n==================================="); 
+                    // System.out.println("Viewing medication inventory...");
+                    System.out.println("\n===================================");
                     System.out.println("View Medication Inventory");
                     System.out.println("===================================\n"); // Add a border for the login section
                     InventoryManagementControl inventoryManager = new InventoryManagementControl(dataMedicine);
@@ -86,19 +87,20 @@ public class PharmacistUI {
                     break;
                 case 4:
                     // Add code to submit replenishment request
-                    //System.out.println("Submitting replenishment request...");
-                    System.out.println("\n==================================="); 
+                    // System.out.println("Submitting replenishment request...");
+                    System.out.println("\n===================================");
                     System.out.println("Submit Replenishment Request");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    RequestCreateControl requestCreateControl = new RequestCreateControl(dataMedicine, dataReplenishmentRequest);
+                    RequestCreateControl requestCreateControl = new RequestCreateControl(dataMedicine,
+                            dataReplenishmentRequest);
                     requestCreateControl.createReplenishmentRequest(scanner);
                     break;
                 case 5:
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Change Password");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    PasswordManagement staffManagementControl = new PasswordManagement(data,dataPatient);
-                    //staffManagementControl.changeStaffPassword(scanner);
+                    PasswordManagement staffManagementControl = new PasswordManagement(data, dataPatient);
+                    // staffManagementControl.changeStaffPassword(scanner);
                     staffManagementControl.changePassword(scanner);
                     break;
                 case 6:

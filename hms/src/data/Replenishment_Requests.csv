@@ -13,3 +13,6 @@ Aspirin,200,PENDING,PH001,false
 Aspirin,200,PENDING,PH001,false
 Aspirin,12,PENDING,PH001,false
 Insulin,300,FULFILLED,PH001,true
+Aspirin,200,PENDING,PH002,false
+Aspirin,200,FULFILLED,PH001,false
+Albuterol,200,FULFILLED,PH001,true

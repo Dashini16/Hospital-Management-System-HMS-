@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 public class PatientUI {
     private Patient patient;
-    
+
     public PatientUI(Patient patient) {
         this.patient = patient;
     }
@@ -51,12 +51,10 @@ public class PatientUI {
         medicineData.importData();
         medicineData.reloadData();
 
-        
-
         // Print the pharmacist menu to the console
         AuthorizationControl authControl = new AuthorizationControl();
         // Load users into AuthorizationControl (assuming you have this in your code)
-        authControl.loadCredentialsFromStaff(initialData, initialDataPatient); 
+        authControl.loadCredentialsFromStaff(initialData, initialDataPatient);
         // Print the patient menu to the console
         while (true) {
             System.out.println("Patient Menu:");
@@ -79,7 +77,7 @@ public class PatientUI {
             switch (choice) {
                 case 1:
                     // Code to view medical record
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("View Medical Record");
                     System.out.println("===================================\n"); // Add a border for the login section
                     MedicalManagement medicalManagement = new MedicalManagement();
@@ -87,77 +85,87 @@ public class PatientUI {
                     break;
                 case 2:
                     // Code to update personal information
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Update Personal Information");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    PatientManagementControl patientManagementControl = new PatientManagementControl(initialDataPatient);
-                    patientManagementControl.updatePatient(scanner);;
+                    PatientManagementControl patientManagementControl = new PatientManagementControl(
+                            initialDataPatient);
+                    patientManagementControl.updatePatient(scanner);
+                    ;
                     break;
                 case 3:
                     // Code to view available appointment slots
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("View Available Appointment Slots");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentSlotManagementControl appointmentManagementControl2 = new AppointmentSlotManagementControl(initialData,dataAppointmentSlots,dataAppointments, leaveData);
-                    appointmentManagementControl2.viewAvailableTimeSlots();;
+                    AppointmentSlotManagementControl appointmentManagementControl2 = new AppointmentSlotManagementControl(
+                            initialData, dataAppointmentSlots, dataAppointments, leaveData);
+                    appointmentManagementControl2.viewAvailableTimeSlots();
+                    ;
                     break;
                 case 4:
                     // Code to schedule an appointment
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Schedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentScheduling appointmentManagementControl = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots, leaveData);
-                    appointmentManagementControl.scheduleAppointment();;
+                    AppointmentScheduling appointmentManagementControl = new AppointmentScheduling(initialData,
+                            dataAppointments, dataAppointmentSlots, leaveData);
+                    appointmentManagementControl.scheduleAppointment();
+                    ;
                     break;
                 case 5:
                     // Code to reschedule an appointment
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Reschedule an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentScheduling appointmentManagementControl3 = new AppointmentScheduling(initialData,dataAppointments, dataAppointmentSlots, leaveData);
+                    AppointmentScheduling appointmentManagementControl3 = new AppointmentScheduling(initialData,
+                            dataAppointments, dataAppointmentSlots, leaveData);
                     appointmentManagementControl3.rescheduleAppointment();
-                    
+
                     break;
                 case 6:
                     // Code to cancel an appointment
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Cancel an Appointment");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl1 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
+                    AppointmentManagementControl appointmentManagementControl1 = new AppointmentManagementControl(
+                            medicineData, initialData, dataAppointments);
                     appointmentManagementControl1.cancelAppointment();
-                    
+
                     break;
                 case 7:
                     // Code to view scheduled appointments
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("View Scheduled Appointments");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl4 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
+                    AppointmentManagementControl appointmentManagementControl4 = new AppointmentManagementControl(
+                            medicineData, initialData, dataAppointments);
                     appointmentManagementControl4.viewAppointments(false);
                     break;
                 case 8:
                     // Code to view past appointment outcome records
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("View Past Appointment Outcome Records");
                     System.out.println("===================================\n"); // Add a border for the login section
-                    AppointmentManagementControl appointmentManagementControl5 = new AppointmentManagementControl(medicineData, initialData,dataAppointments);
+                    AppointmentManagementControl appointmentManagementControl5 = new AppointmentManagementControl(
+                            medicineData, initialData, dataAppointments);
                     appointmentManagementControl5.viewOutcomeRecords(true);
                     break;
-            
+
                 case 9:
                     // Add code to create patient medical record
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Add Your Medical Record");
                     System.out.println("===================================\n"); // Add a border for the login section
                     MedicalManagement medicalManagement2 = new MedicalManagement();
                     medicalManagement2.createMedicalRecord();
                     break;
                 case 10:
-                    System.out.println("\n==================================="); 
+                    System.out.println("\n===================================");
                     System.out.println("Change Password");
                     System.out.println("===================================\n"); // Add a border for the login section
                     PasswordManagement passwordManagement = new PasswordManagement(initialData, initialDataPatient);
-                    //patientPasswordManagementControl.changePatientPassword(scanner);;
+                    // patientPasswordManagementControl.changePatientPassword(scanner);;
                     passwordManagement.changePassword(scanner);
                     break;
                 case 11:
