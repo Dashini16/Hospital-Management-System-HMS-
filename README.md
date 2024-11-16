@@ -28,7 +28,7 @@ Contains all project-related files and subfolders for HMS.
 
 ## How to Use  
 
-1. Navigate to the **`javadoc`** folder to review the complete documentation of the code.  
+1. Navigate to the **`Javadocmain`** folder to review the complete documentation of the code.  
 2. Access the **`src`** folder to view and edit the source code.  
 
 ## Prerequisites  
