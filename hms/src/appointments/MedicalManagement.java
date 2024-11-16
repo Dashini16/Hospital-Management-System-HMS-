@@ -255,6 +255,7 @@ public class MedicalManagement {
                     LocalDate dob = matchingPatient.getDateOfBirth();
                     String gender = matchingPatient.getGender();
                     String contactInfo = matchingPatient.getContactInfo();
+                    String bloodType = matchingPatient.getBloodType();
 
                     // display all the medical record
                     System.out.println("### Medical Record View for Patient ID: " + record.getPatientID());
@@ -264,6 +265,7 @@ public class MedicalManagement {
                     System.out.println("Date of Birth: " + dob);
                     System.out.println("Gender: " + gender);
                     System.out.println("Contact Info: " + contactInfo);
+                    System.out.println("Blood Type: " + bloodType);
 
                     // display diagnoses
                     System.out.println("\n**Diagnoses:**");
@@ -300,46 +302,48 @@ public class MedicalManagement {
         if (appointmentData.getLists().isEmpty()) {
             appointmentData.importData();
         }
-    
+
         // Identify the current doctor
         String doctorID = AuthorizationControl.getCurrentUserId();
-    
-        // Step 1: Retrieve the list of unique patient IDs with past appointments (ACCEPTED or COMPLETED) with this doctor
+
+        // Step 1: Retrieve the list of unique patient IDs with past appointments
+        // (ACCEPTED or COMPLETED) with this doctor
         List<String> patientIDs = appointmentData.getLists().stream()
                 .filter(appointment -> appointment.getDoctorID().equals(doctorID) &&
-                                       (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
-                                        appointment.getStatus() == AppointmentStatus.COMPLETED))
+                        (appointment.getStatus() == AppointmentStatus.ACCEPTED ||
+                                appointment.getStatus() == AppointmentStatus.COMPLETED))
                 .map(Appointment::getPatientID)
                 .distinct()
                 .collect(Collectors.toList());
-    
+
         if (patientIDs.isEmpty()) {
             System.out.println("No patients with completed or accepted appointments found.");
             return;
         }
-    
+
         // Step 2: Group the medical records by patient ID, ensuring unique records
         Map<String, List<MedicalRecord>> groupedRecords = medicalData.getLists().stream()
                 .filter(record -> patientIDs.contains(record.getPatientID()))
                 .collect(Collectors.groupingBy(MedicalRecord::getPatientID));
-    
+
         if (groupedRecords.isEmpty()) {
             System.out.println("No medical records found for your patients.");
             return;
         }
-    
+
         // Step 3: Display the medical records grouped by patient
         System.out.println("Viewing Medical Records for Your Patients:");
         System.out.println("===========================================");
-    
-        // Step 4: Iterate over each patient’s records and display them in a clear format
+
+        // Step 4: Iterate over each patient’s records and display them in a clear
+        // format
         for (String patientID : groupedRecords.keySet()) {
             // Retrieve the patient's basic information
             Patient patient = patientData.getLists().stream()
                     .filter(p -> p.getUserID().equals(patientID))
                     .findFirst()
                     .orElse(null);
-    
+
             if (patient != null) {
                 // Display patient header
                 System.out.println("------ Patient ID: " + patient.getUserID() + " ------");
@@ -347,14 +351,14 @@ public class MedicalManagement {
                 System.out.println("Date of Birth  : " + patient.getDateOfBirth());
                 System.out.println("Gender         : " + patient.getGender());
                 System.out.println("Contact Info   : " + patient.getContactInfo());
-    
+
                 // Display the medical records for this patient
                 List<MedicalRecord> records = groupedRecords.get(patientID);
                 System.out.println("\nMedical Records:");
                 for (int i = 0; i < records.size(); i++) {
                     MedicalRecord record = records.get(i);
                     System.out.println("Record " + (i + 1) + ":");
-    
+
                     // Display Diagnoses
                     System.out.println("  **Diagnoses:**");
                     if (record.getDiagnoses().isEmpty()) {
@@ -364,7 +368,7 @@ public class MedicalManagement {
                             System.out.println("    " + (j + 1) + ". " + record.getDiagnoses().get(j));
                         }
                     }
-    
+
                     // Display Treatments
                     System.out.println("  **Treatments:**");
                     if (record.getTreatments().isEmpty()) {
@@ -382,7 +386,6 @@ public class MedicalManagement {
             System.out.println("=====================================================\n");
         }
     }
-    
 
     // view everyone patients medical record
     public void viewallMedicalRecords() {
