@@ -1,3 +1,11 @@
+## Contributors
+1. ANANTHULA HARINEESH REDDY(3)
+2. DASHINI NAIDU(11)
+3. TAN JIN YONG(23)
+4. TAN ZHI XIAN(25)
+5. VALERIE RICHELLE REIVANKA(27)
+ 
+
 # Hospital Management System (HMS)
 
 **HMS** is a software application designed to automate the management of hospital operations, including:  
