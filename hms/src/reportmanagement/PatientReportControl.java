@@ -52,6 +52,7 @@ public class PatientReportControl {
     }
 
     // Average Age by Diagnosis
+
     public void displayAverageAgeByDiagnosis() {
         Map<String, Integer> diagnosisCounts = new HashMap<>();
         Map<String, Integer> diagnosisAgeSums = new HashMap<>();
@@ -59,6 +60,12 @@ public class PatientReportControl {
 
         for (Map.Entry<String, List<String>> entry : patientDiagnosesMap.entrySet()) {
             Patient patient = dataPatient.findPatientById(entry.getKey());
+            if (patient == null) {
+                // System.err.println("Patient with ID " + entry.getKey() + " not found.
+                // Skipping...");
+                continue;
+            }
+
             int age = calculateAge(patient.getDateOfBirth());
             for (String diagnosis : entry.getValue()) {
                 diagnosisCounts.put(diagnosis, diagnosisCounts.getOrDefault(diagnosis, 0) + 1);
@@ -91,10 +98,14 @@ public class PatientReportControl {
     }
 
     private String getAgeGroup(int age) {
-        if (age < 18) return "0-17";
-        else if (age < 30) return "18-29";
-        else if (age < 50) return "30-49";
-        else return "50+";
+        if (age < 18)
+            return "0-17";
+        else if (age < 30)
+            return "18-29";
+        else if (age < 50)
+            return "30-49";
+        else
+            return "50+";
     }
 
     private Map<String, Integer> getDiagnosisDistribution() {
@@ -163,8 +174,9 @@ public class PatientReportControl {
 
     private void printSortedBarChart(Map<String, Integer> data) {
         data.entrySet().stream()
-            .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-            .forEach(entry -> System.out.printf("%-30s : %s (%d)\n", entry.getKey(), generateBar(entry.getValue()), entry.getValue()));
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .forEach(entry -> System.out.printf("%-30s : %s (%d)\n", entry.getKey(), generateBar(entry.getValue()),
+                        entry.getValue()));
     }
 
     private String generateBar(int count) {
