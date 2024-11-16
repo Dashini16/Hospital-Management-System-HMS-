@@ -1,9 +1,9 @@
 Name,InitialStock,LowStockLevelAlert
 Paracetamol,154,20
 Ibuprofen,100,30
-Aspirin,410,32
-Rolaids,200,130
+Aspirin,410,600
+Rolaids,200,300
 Insulin,300,40
 Albuterol,200,30
-Ciprofloxacin,200,10
+Ciprofloxacin,200,204
 Amoxicillin,337,100
