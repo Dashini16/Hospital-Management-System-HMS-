@@ -18,7 +18,7 @@ The system aims to:
 Contains all project-related files and subfolders for HMS.  
 
 ### 2. **Subfolders**  
-- **`javadoc`**:  
+- **`Javadocmain`**:  
   This folder contains the complete Javadoc documentation for the project. It includes detailed descriptions of all classes, methods, and attributes used in the HMS application.  
 
 - **`src`**:  
