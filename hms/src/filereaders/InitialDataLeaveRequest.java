@@ -51,8 +51,9 @@ public class InitialDataLeaveRequest {
 
     private void saveRequestToFile(LeaveRequest leaveRequest) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, true))) {
+            // Write the new request in the correct CSV format and ensure it's on a new line
             bw.write(formatRequestAsCSV(leaveRequest));
-            bw.newLine();
+            bw.newLine();  // Ensure the next entry starts on a new line
         } catch (IOException e) {
             System.out.println("Error saving leave request: " + e.getMessage());
         }
@@ -70,17 +71,18 @@ public class InitialDataLeaveRequest {
     public void updateRequest(LeaveRequest updatedRequest) {
         leaveRequests.removeIf(request -> request.getLeaveRequestID().equals(updatedRequest.getLeaveRequestID())); // Use LeaveRequestID
         leaveRequests.add(updatedRequest);
-        saveAllRequests();
+        saveAllRequests(); // Re-save all requests after updating
     }
 
     // Save all leave requests to the CSV file (used for updates)
     private void saveAllRequests() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             bw.write("RequestID,RequesterID,LeaveDate,Status,Reason");
-            bw.newLine();
+            bw.newLine();  // Ensure the header is written first
             for (LeaveRequest request : leaveRequests) {
-                bw.write(formatRequestAsCSV(request));
-                bw.newLine();
+                String csvLine = formatRequestAsCSV(request);
+                bw.write(csvLine);
+                bw.newLine();  // Ensure each request is on a new line
             }
         } catch (IOException e) {
             System.out.println("Error updating leave requests: " + e.getMessage());

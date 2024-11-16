@@ -2,7 +2,7 @@ package enums;
 
 public enum PrescriptionStatus 
 {
-    ACCEPTED,
+    //ACCEPTED,
     DISPENSED, 
     PENDING,
     REJECTED

@@ -168,26 +168,42 @@
     <div class="tab-container">
         <!-- Tab Navigation -->
         <div class="tab-nav">
-            <button class="tab-link active" onclick="openTab(event, 'code-overview')">Code Overview</button>
-            <button class="tab-link" onclick="openTab(event, 'data-structures')">Data Structures</button>
-            <button class="tab-link" onclick="openTab(event, 'algorithms')">Algorithms</button>
-            <button class="tab-link" onclick="openTab(event, 'documentation')">Documentation</button>
+            <button class="tab-link active" onclick="openTab(event, 'user-management')">Code Overview</button>
+            <button class="tab-link" onclick="openTab(event, 'appointment-medicine-management')">Data Structures</button>
+            <button class="tab-link" onclick="openTab(event, 'data-management-and-backup')">Algorithms</button>
+            <button class="tab-link" onclick="openTab(event, 'utilities-and-ui')">Documentation</button>
         </div>
 
         <!-- Tab Content -->
-        <div id="code-overview" class="tab-content active">
-            <h2>Code Overview</h2>
+        <div id="user-management" class="tab-content active">
+            <h2>User Management</h2>
             <p>This section provides a high-level overview of your code.</p>
             <table>
                 <tr><th>File Name</th><th>Description</th></tr>
-                <tr><td>main.py</td><td class="expandable">Main execution script. <span class="expandable-content"><p>This script initializes the program, handles primary function calls, and manages input/output operations.</p></span></td></tr>
+
+
+
+                <tr>
+                    <td>User.java</td>
+                    <td class="expandable">This script initializes the program, handles primary function calls, and manages input/output operations. It also interacts with the <code>Users</code> class, which serves as a base for various user types like Administrator, Pharmacist, Doctor, and Patient.  
+                      <span class="expandable-content">
+                        <p>The <code>Users</code> class defines common attributes such as <code>userID</code>, <code>name</code>, <code>role</code> (using the <code>Roles</code> enum), <code>gender</code>, and <code>password</code>, which are shared across different user types. It provides getter and setter methods to access and modify these attributes. Additionally, the class includes two abstract methods, <code>displayMenu</code> and <code>toStrings</code>, which must be implemented by subclasses to provide role-specific functionality, such as displaying personalized menus and formatting user information.</p>
+                      </span>
+                    </td>
+                </tr>
+
+                  
+
+
+
+
                 <tr><td>utils.py</td><td class="expandable">Utility functions for data processing. <span class="expandable-content"><p>Contains helper functions for data manipulation and validation, used across various modules in the project.</p></span></td></tr>
                 <tr><td>config.py</td><td class="expandable">Configuration settings. <span class="expandable-content"><p>Stores configuration variables and environment settings, allowing easy updates without modifying main scripts.</p></span></td></tr>
             </table>
         </div>
 
-        <div id="data-structures" class="tab-content">
-            <h2>Data Structures</h2>
+        <div id="appointment-medicine-management" class="tab-content">
+            <h2>Appointment and Medicine Management</h2>
             <p>Details about the data structures used in the codebase.</p>
             <table>
                 <tr><th>Data Structure</th><th>Purpose</th></tr>
@@ -197,8 +213,8 @@
             </table>
         </div>
 
-        <div id="algorithms" class="tab-content">
-            <h2>Algorithms</h2>
+        <div id="data-management-and-backup" class="tab-content">
+            <h2>Data Management and Backup</h2>
             <p>Key algorithms implemented within the project.</p>
             <table>
                 <tr><th>Algorithm</th><th>Description</th></tr>
@@ -208,8 +224,8 @@
             </table>
         </div>
 
-        <div id="documentation" class="tab-content">
-            <h2>Documentation</h2>
+        <div id="utilities-and-ui" class="tab-content">
+            <h2>Utilities and UI</h2>
             <p>Important notes and documentation regarding the code.</p>
             <table>
                 <tr><th>Section</th><th>Details</th></tr>

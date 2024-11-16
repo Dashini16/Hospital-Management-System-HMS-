@@ -247,6 +247,9 @@ public class PatientManagementControl {
             return;
         }
     
+        // Flag to track whether any updates were made
+        boolean changesMade = false;
+    
         // Display the menu for the user to choose which action they want to perform
         boolean updating = true;
         while (updating) { // Keep looping until the user exits this menu
@@ -260,19 +263,18 @@ public class PatientManagementControl {
             String choice = scanner.nextLine().trim(); // Ask for user input
     
             switch (choice) {
-                // Update name
                 case "1":
                     System.out.print("Enter new name (leave blank for no change): ");
                     String newName = scanner.nextLine().trim();
                     if (!newName.isEmpty()) {
                         patient.setName(newName);
                         System.out.println("Name updated successfully.");
+                        changesMade = true; // Mark changes as made
                     } else {
                         System.out.println("Name not changed.");
                     }
                     break;
     
-                // Update date of birth
                 case "2":
                     LocalDate newDateOfBirth = null;
                     while (newDateOfBirth == null) {
@@ -285,13 +287,13 @@ public class PatientManagementControl {
                             newDateOfBirth = LocalDate.parse(newDateOfBirthInput);
                             patient.setDateOfBirth(newDateOfBirth);
                             System.out.println("Date of birth updated successfully.");
+                            changesMade = true; // Mark changes as made
                         } catch (Exception e) {
                             System.out.println("Error: Please enter a valid date in the format YYYY-MM-DD.");
                         }
                     }
                     break;
     
-                // Update contact info (email)
                 case "3":
                     while (true) {
                         System.out.print("Enter new contact info (email, or type 'exit' to cancel): ");
@@ -304,6 +306,7 @@ public class PatientManagementControl {
                         if (isValidEmail(newContactInfo)) {
                             patient.setContactInfo(newContactInfo);
                             System.out.println("Contact info (email) updated successfully.");
+                            changesMade = true; // Mark changes as made
                             break;
                         } else {
                             System.out.println("Invalid email format. Please enter a valid email address.");
@@ -311,33 +314,42 @@ public class PatientManagementControl {
                     }
                     break;
     
-                // Exit the update menu
                 case "4":
                     updating = false; // Exit the while loop
                     System.out.println("Exiting update info menu...");
                     break;
     
-                // Default case for invalid choice
                 default:
                     System.out.println("Invalid choice. Please select a valid option.");
                     break;
             }
         }
     
-        // Save the changes to the CSV
-        try {
-            data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
-            System.out.println("Patient updated successfully.");
-        } catch (IOException e) {
-            System.out.println("Error updating patient: " + e.getMessage());
+        // Save the changes to the CSV if any updates were made
+        if (changesMade) {
+            try {
+                data.rewritePatients("hms/src/data/Patient_List.csv"); // Rewrite patient data to CSV
+                System.out.println("Patient updated successfully.");
+            } catch (IOException e) {
+                System.out.println("Error updating patient: " + e.getMessage());
+            }
         }
     }
     
+    
+    
     // Helper function to validate email format
     private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        // Check if the email is null or empty
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+    
+        // Refined regex for email validation, ensuring valid domain and TLD
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z.-]+\\.[A-Za-z]{2,}$";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
+    
         return matcher.matches();
     }
     

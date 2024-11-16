@@ -124,7 +124,10 @@ public class InitialDataAppointments implements ListInterface<Appointment>,Appoi
         StringBuilder prescriptionList = new StringBuilder();
         for (Prescription p : appointment.getOutcomeRecord().getPrescriptions()) {
             if (prescriptionList.length() > 0) prescriptionList.append(";");
-            prescriptionList.append(p.getMedicationName()).append(",").append(p.getStatus());
+            // Make sure you include both quantity and status in the string
+            prescriptionList.append(p.getMedicationName()).append(",")
+                            .append(p.getQuantity()).append(",")
+                            .append(p.getStatus());
         }
     
         // Constructing the outcome record using String.format
@@ -133,21 +136,19 @@ public class InitialDataAppointments implements ListInterface<Appointment>,Appoi
                 appointment.getOutcomeRecord().getServiceType(),
                 appointment.getOutcomeRecord().getConsultationNotes(),
                 prescriptionList.toString());
-        
-        // Format the date using the formatDate method
-        String formattedDate = formatDate(appointment.getDate());
     
-        // Construct the appointment line with the formatted date
+        String formattedDate = formatDate(appointment.getDate());
+        
+        // Construct the appointment line
         String appointmentLine = String.join(",",
-        appointment.getAppointmentID(),
-        appointment.getPatientID(),
-        appointment.getDoctorID(),
-        formattedDate,  // Use the formatted date
-        appointment.getTime(),
-        appointment.getStatus().toString(),  // Convert AppointmentStatus to String
-        outcomeRecord
-);
-
+            appointment.getAppointmentID(),
+            appointment.getPatientID(),
+            appointment.getDoctorID(),
+            formattedDate,
+            appointment.getTime(),
+            appointment.getStatus().toString(),
+            outcomeRecord
+        );
     
         boolean appointmentUpdated = false;
     
@@ -178,6 +179,7 @@ public class InitialDataAppointments implements ListInterface<Appointment>,Appoi
             }
         }
     }
+    
     
 
 
@@ -282,12 +284,15 @@ public void writeData(String filename, Appointment appointment) throws IOExcepti
             }
         }
     }
-    
+
     // Prepare the new Outcome Record string
     StringBuilder prescriptionList = new StringBuilder();
     for (Prescription p : appointment.getOutcomeRecord().getPrescriptions()) {
         if (prescriptionList.length() > 0) prescriptionList.append(";");
-        prescriptionList.append(p.getMedicationName()).append(",").append(p.getQuantity()).append(",").append(p.getStatus());
+        // Make sure to include quantity and status
+        prescriptionList.append(p.getMedicationName()).append(",")
+                        .append(p.getQuantity()).append(",")
+                        .append(p.getStatus());
     }
 
     // Constructing the outcome record using String.format
@@ -296,14 +301,15 @@ public void writeData(String filename, Appointment appointment) throws IOExcepti
             appointment.getOutcomeRecord().getServiceType(),
             appointment.getOutcomeRecord().getConsultationNotes(),
             prescriptionList.toString());
-    
-    String appointmentLine = appointment.getAppointmentID() + "," +
-            appointment.getPatientID() + "," +
-            appointment.getDoctorID() + "," +
-            appointment.getDate() + "," +
-            appointment.getTime() + "," +
-            appointment.getStatus() + "," +
-            outcomeRecord;
+
+    String appointmentLine = String.join(",",
+            appointment.getAppointmentID(),
+            appointment.getPatientID(),
+            appointment.getDoctorID(),
+            appointment.getDate(),
+            appointment.getTime(),
+            appointment.getStatus().toString(),
+            outcomeRecord);
 
     boolean appointmentUpdated = false;
 
@@ -334,6 +340,7 @@ public void writeData(String filename, Appointment appointment) throws IOExcepti
         }
     }
 }
+
 
 @Override
     public Appointment findAppointment(String filename, String appointmentID) throws IOException {

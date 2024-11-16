@@ -1,7 +1,6 @@
 package medicinemanagements;
 
 import filereaders.InitialDataMedicine;
-import filereaders.InitialDataStaff;
 import filereaders.InitialDatareplenishmentRequest;
 import lookups.UserLookup;
 
@@ -26,7 +25,7 @@ public class RequestCreateControl {
         data.reloadData();
         dataReplenishmentRequest.reloadData();
     }
-    
+
     public void createReplenishmentRequest(Scanner scanner) {
         // Automatically get the Pharmacist ID through AuthorizationControl
         String requestBy = AuthorizationControl.getCurrentUserId();
@@ -35,7 +34,7 @@ public class RequestCreateControl {
         System.out.println("1. Request replenishment for existing low-stock medicine");
         System.out.println("2. Request replenishment for a new medicine");
         System.out.print("Enter your choice (1 or 2): ");
-    
+        
         int choice;
         try {
             choice = Integer.parseInt(scanner.nextLine().trim());
@@ -96,25 +95,40 @@ public class RequestCreateControl {
             Medicine selectedMedicine = lowStockMedicines.get(medicineIndex);
             medicineName = selectedMedicine.getName();
     
+            // Update stock quantity in the medicine list
+            System.out.print("Enter requested stock quantity (positive integer): ");
+            while (true) {
+                try {
+                    requestedStock = Integer.parseInt(scanner.nextLine().trim());
+                    if (requestedStock <= 0) {
+                        System.out.println("Error: Please enter a positive integer for the stock quantity.");
+                    } else {
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid input. Please enter a valid integer for the stock quantity.");
+                }
+            }
+    
+            selectedMedicine.setInitialStock(selectedMedicine.getInitialStock() + requestedStock);
         } else {
             // Option 2: Request for new medicine
             isNewMedicine = true;
             System.out.print("Enter the name of the new medicine: ");
             medicineName = scanner.nextLine().trim();
-        }
-    
-        // Request quantity from the user
-        while (true) {
-            System.out.print("Enter requested stock quantity (positive integer): ");
-            try {
-                requestedStock = Integer.parseInt(scanner.nextLine().trim());
-                if (requestedStock <= 0) {
-                    System.out.println("Error: Please enter a positive integer for the stock quantity.");
-                } else {
-                    break;
+                // Prompt the user for the quantity of the new medicine
+            System.out.print("Enter the quantity of the new medicine: ");
+            while (true) {
+                try {
+                    requestedStock = Integer.parseInt(scanner.nextLine().trim());
+                    if (requestedStock <= 0) {
+                        System.out.println("Error: Please enter a positive integer for the stock quantity.");
+                    } else {
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid input. Please enter a valid integer for the stock quantity.");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Error: Invalid input. Please enter a valid integer for the stock quantity.");
             }
         }
     
@@ -131,6 +145,15 @@ public class RequestCreateControl {
         } catch (IOException e) {
             System.out.println("Error saving replenishment request: " + e.getMessage());
         }
-    }
     
+        // Save the updated medicine list back to the CSV
+        try {
+            data.rewriteMedicines("hms/src/data/Medicines.csv");
+            System.out.println("Updated medicine stock saved successfully.");
+        } catch (IOException e) {
+            System.out.println("Error saving updated medicine list: " + e.getMessage());
+        }
+        dataReplenishmentRequest.reloadData();
+        data.reloadData();
+    }
 }
